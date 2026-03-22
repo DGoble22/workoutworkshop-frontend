@@ -214,10 +214,88 @@
   max-width: 100%;
 }
 
-/* For small screens make them slightly smaller */
-@media (max-width: 420px) {
-  .expiry-input {
-    padding: 6px 8px;
-    font-size: 0.95rem;
-  }
+/* Coach availability editor */
+.availability-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.availability-day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.availability-day-btn {
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    border-radius: 8px;
+    padding: 8px 0;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.availability-day-btn:hover {
+    border-color: #999;
+    transform: translateY(-1px);
+}
+
+.availability-day-btn.is-active {
+    background: #198754;
+    border-color: #198754;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.25);
+}
+
+.availability-day-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.availability-slots-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.availability-row {
+    display: grid;
+    grid-template-columns: 38px 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+.availability-row-day {
+    font-weight: 700;
+    color: #444;
+    text-align: center;
+    background: #f5f5f5;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 10px 0;
+}
+
+.availability-row-error {
+    grid-column: 1 / -1;
+    color: #c62828;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 520px) {
+    .availability-day-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .availability-row {
+        grid-template-columns: 1fr;
+    }
+
+    .availability-row-day {
+        text-align: left;
+        padding: 8px 12px;
+    }
 }

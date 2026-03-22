@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import "./AuthModal.css";
 import { AuthContext } from "../context/AuthContext";
+import CoachAvailabilityEditor from "./CoachAvailabilityEditor";
 
 export default function Register({ onClose, onSwitchToLogin }) {
     const { setToken, setUser } = useContext(AuthContext);
@@ -17,11 +18,12 @@ export default function Register({ onClose, onSwitchToLogin }) {
         certifications: [],
         pricing: 50,
         bio: "",
-        availability: "",
+        availability: [],
         // goal step
         current_weight: 150,
         goal_weight: 140,
         goal_type: "",
+        goal_text: "",
         // payment
         cardName: "",
         cardNumber: "",
@@ -56,6 +58,24 @@ export default function Register({ onClose, onSwitchToLogin }) {
           setFormData({ ...formData, [name]: value });
         }
     };
+
+    // Specific handler for coach availability editor
+    const handleAvailabilityChange = (nextAvailability) => {
+        setFormData((prev) => ({ ...prev, availability: nextAvailability }));
+    };
+
+    // Validation helper for coach availability step
+    const hasInvalidAvailability = (slots) => {
+        if (!Array.isArray(slots) || slots.length === 0) return true; //empty
+        return slots.some((slot) => {
+            if (!slot || !slot.dow || !slot.start_time || !slot.end_time) return true; // missing fields
+            return slot.start_time >= slot.end_time;
+        });
+    };
+
+    // Determine total steps and display step number based on whether user is registering as a coach
+    const totalSteps = formData.isCoach ? 5 : 4;
+    const displayStep = formData.isCoach ? step : (step >= 4 ? step - 1 : step);
 
     // Check username availability (POST to /auth/check-username expecting { available: true/false })
     const checkUsernameAvailability = async (username) => {
@@ -122,7 +142,6 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 alert('Passwords do not match');
                 return;
             }
-
             if (usernameAvailable === null && !checkingUsername) {
                 const avail = await checkUsernameAvailability(formData.username);
                 if (avail === false) {
@@ -130,16 +149,16 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     return;
                 }
             }
-
             if (checkingUsername) {
                 alert('Checking username availability, please wait');
                 return;
             }
-
             if (usernameAvailable === false) {
                 alert('Username is already taken');
                 return;
             }
+            setStep(2);
+            return;
         }
 
         // validation for step 2
@@ -164,16 +183,25 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     alert('Please enter a bio');
                     return;
                 }
-                // availability required for coach
-                if (!formData.availability || !formData.availability.trim()) {
-                    alert('Please enter your availability');
-                    return;
-                }
+                setStep(3);
+                return;
             }
+            setStep(4);
+            return;
         }
 
-        // validation for step 3
+        // validation for step 3 (coach availability)
         if (step === 3) {
+            if (formData.isCoach && hasInvalidAvailability(formData.availability)) {
+                alert('Please add at least one valid availability time slot');
+                return;
+            }
+            setStep(4);
+            return;
+        }
+
+        // validation for step 4 (goals)
+        if (step === 4) {
             if (!formData.goal_type) {
                 alert('Please select a goal type before continuing.');
                 return;
@@ -188,12 +216,29 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 alert('Please set your goal weight');
                 return;
             }
+            setStep(5);
         }
-
-        setStep(s => s + 1);
     };
 
-    const goBack = () => setStep(s => Math.max(1, s - 1));
+    const goBack = () => {
+        if (step === 5) {
+            setStep(4);
+            return;
+        }
+        if (step === 4) {
+            setStep(formData.isCoach ? 3 : 2);
+            return;
+        }
+        if (step === 3) {
+            setStep(2);
+            return;
+        }
+        if (step === 2) {
+            setStep(1);
+            return;
+        }
+        setStep(1);
+    };
 
     const handleSubmit = async (e) => {
         e && e.preventDefault();
@@ -244,6 +289,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
             current_weight: formData.current_weight,
             goal_weight: formData.goal_weight,
             goal_type: formData.goal_type,
+            goal_text: formData.goal_text,
             // Optional
             payment: anyPayment ? {
                 name: formData.cardName,
@@ -299,10 +345,11 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     certifications: [],
                     pricing: 50,
                     bio: "",
-                    availability: "",
+                    availability: [],
                     current_weight: 150,
                     goal_weight: 140,
                     goal_type: "",
+                    goal_text: "",
                     cardName: "",
                     cardNumber: "",
                     cardExpMonth: "",
@@ -326,7 +373,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
             <div className="auth-modal-content" onClick={(e) => e.stopPropagation()}>
                 <button className="auth-close-btn" onClick={onClose}>×</button>
 
-                <h2 className="auth-title">Register</h2>
+                <h2 className="auth-title">Register ({displayStep} of {totalSteps})</h2>
 
                 {/* Step 1 Username, password, coach? */}
                 {step === 1 && (
@@ -362,7 +409,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                   </form>
                 )}
 
-                {/* Step 2 Firstname, LastName, Birthday Coach:(Certifications, Pricing, Bio, Availability) */}
+                {/* Step 2 Firstname, LastName, Birthday Coach:(Certifications, Pricing, Bio) */}
                 {step === 2 && (
                   <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
                     <div className="auth-field">
@@ -401,11 +448,6 @@ export default function Register({ onClose, onSwitchToLogin }) {
                             <label htmlFor="bio">Bio</label>
                             <textarea id="bio" name="bio" value={formData.bio} onChange={handleChange} placeholder="Tell users about yourself" />
                         </div>
-
-                        <div className="auth-field">
-                            <label htmlFor="availability">Availability</label>
-                            <input type="text" id="availability" name="availability" value={formData.availability} onChange={handleChange} placeholder="e.g., M/W/F 9-11am" />
-                        </div>
                       </>
                     )}
 
@@ -416,8 +458,26 @@ export default function Register({ onClose, onSwitchToLogin }) {
                   </form>
                 )}
 
-                {/* Step 3 Current Weight, Goal Weight, Goal */}
-                {step === 3 && (
+                {/* Step 3 Coach Availability */}
+                {step === 3 && formData.isCoach && (
+                  <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
+                    <div className="auth-field">
+                        <label>Availability</label>
+                        <CoachAvailabilityEditor
+                            value={formData.availability}
+                            onChange={handleAvailabilityChange}
+                        />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
+                      <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
+                      <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Step 4 Current Weight, Goal Weight, Goal */}
+                {step === 4 && (
                   <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="current_weight">Current Weight: {formData.current_weight} lbs</label>
@@ -441,6 +501,11 @@ export default function Register({ onClose, onSwitchToLogin }) {
                       </div>
                     </div>
 
+                    <div className="auth-field">
+                        <label htmlFor="goal_text">Goal Notes (optional)</label>
+                        <input type="text" id="goal_text" name="goal_text" value={formData.goal_text} onChange={handleChange} placeholder="e.g., Lose 15 lbs by summer"/>
+                    </div>
+
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
                       <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
                       <div>
@@ -460,7 +525,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 )}
 
                 {/* Optional Payment details */}
-                {step === 4 && (
+                {step === 5 && (
                   <form onSubmit={handleSubmit} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="cardName">Name on Card</label>
