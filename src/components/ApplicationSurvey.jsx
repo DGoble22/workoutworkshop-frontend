@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
+import { AuthContext } from "../context/AuthContext"
 
 const MODAL_STYLES={
   position: "fixed",
@@ -50,29 +51,55 @@ function ApplicationError({show}){
     )
 }
 
-export default function ApplicationSurvey( {show, handleClose} ){
+export default function ApplicationSurvey( {show, handleClose, id} ){
     if (!show){return null}
 
     const [comment, setComment] = useState("")
     const [applicationError, setApplicationError] = useState(false)
     const [applyButton, setApplyButton] = useState("Apply")
+    const {user} = useContext(AuthContext)
 
-    function validateComment(){
-        let valid=true
+    async function validateComment(){
         let data ={}
-        //data["user"] = /*ID of the logged in user*/
         if(comment.length === 0 || comment.trim() === ""){
             setApplicationError(true)
             valid = false
             return
         }
         else{
-            data["message"] = comment
-            console.log(comment)
-            setApplyButton("Applied!")
+            data={
+                user_id: user.id,
+                coach_id: id,
+                comment: comment.trim()
+            }
+            console.log(data["user_id"])
+            console.log(data["coach_id"])
+            console.log(data["comment"])
+            let posted = await postData(data)
+            if(posted){setApplyButton("Applied!")}
         }
 
-        /*post the data*/
+    }
+
+    async function postData(data){
+        if(!data){alert("Error occured while applying to coach")}
+
+        try{
+            const apiBase = import.meta.env.VITE_API_URL || '';
+            const endpoint = `${apiBase}/coach/send-user-coach-app`;
+
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            return response.ok
+        }
+        catch{
+            alert("Error with application. Try again later")
+            return false
+        }
     }
 
     return(

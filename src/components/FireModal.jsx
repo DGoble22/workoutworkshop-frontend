@@ -1,4 +1,5 @@
-import React from "react"
+import React, {useContext, useState} from "react"
+import { AuthContext } from "../context/AuthContext"
 
 const OVERLAY_STYLES={
   position: 'fixed',
@@ -28,10 +29,35 @@ const MODAL_STYLES={
 }
 
 
-export default function FireModal( {show, handleClose, name, coach_id}){
+export default function FireModal( {show, handleClose, name, id}){
     if(!show){return null}
 
-    /* Handle removing the user coach pair from coach_subscriptions */
+    const {user} = useContext(AuthContext)
+    const [conformation, setConformation] = useState("Yes")
+
+    async function fireCoach(){
+        let data = {
+            user_id: user.id,
+            coach_id: id
+        }
+
+        try{
+            const apiBase = import.meta.env.VITE_API_URL || '';
+            const endpoint = `${apiBase}/coach/fire-coach`;
+
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            if(response.ok){setConformation("Fired!")}
+        }
+        catch{
+            alert("Error firing coach. Try again later")
+            return false
+        }
+    }
 
     return(
         <div style={OVERLAY_STYLES}>
@@ -41,7 +67,7 @@ export default function FireModal( {show, handleClose, name, coach_id}){
                 </div>
                 <div style={{display:"flex", width:"100%", height:"100%", alignItems:"center", justifyContent:"center", gap:"10%"}}>
                     <button onClick={handleClose} style={{border:"none", backgroundColor:"#2C2C2C", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>Back</button>
-                    <button style={{border:"none", backgroundColor:"#711A19", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>Yes</button>
+                    <button onClick={fireCoach} style={{border:"none", backgroundColor:"#711A19", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>{conformation}</button>
                 </div>
             </div>
         </div>

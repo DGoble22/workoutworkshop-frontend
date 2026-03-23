@@ -51,8 +51,9 @@ export default function FindCoach() {
     const [unfiltered, setUnFiltered] = useState([])
     const [Filtered, setFiltered] = useState([])
     
+    const apiBase = import.meta.env.VITE_API_URL;
     useEffect(() => {
-        axios.get('http://localhost:5000/coach-data')
+        axios.get(`${apiBase}/coach/coach-data`)
         .then(res => {setFiltered(res.data["data"]), setUnFiltered(res.data["data"])})
         .catch(err => console.log(err))
     }, [])

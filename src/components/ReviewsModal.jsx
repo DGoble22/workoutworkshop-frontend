@@ -67,8 +67,9 @@ export default function ReviewModal( {show, handleClose, coach_id, name} ){
 
     const [reviews, setReviews] = useState([])
 
+    const apiBase = import.meta.env.VITE_API_URL;
     useEffect(() => {
-        axios.get(`http://localhost:5000/coach-reviews/${coach_id}`)
+        axios.get(`${apiBase}/coach/coach-reviews/${coach_id}`)
         .then(res => {setReviews(res.data["data"])})
         .catch(err => console.log(err))
     }, [])

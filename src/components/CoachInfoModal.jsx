@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Image from 'react-bootstrap/Image';
 import DefaultProfilePic from '../images/DefaultProfile.jpg'
 import axios from 'axios'
@@ -10,6 +10,7 @@ import ReviewModal from './ReviewsModal'
 import ApplicationSurvey from './ApplicationSurvey';
 import ReportModal from './ReportModal';
 import FireModal from './FireModal';
+import { AuthContext } from '../context/AuthContext';
 
 
 const MODAL_STYLES={
@@ -178,8 +179,22 @@ const FIREBUTTON_STYLES={display:"flex",
     fontSize:"75%"
 }
 
-function Header( {hired, handleClose, handleOpenApply, handleOpenReport, handleOpenFire} ){
-    if(hired){
+/*handle edgr case where user is hired so they cannot apply to another coach*/
+
+function Header( { id, handleClose, handleOpenApply, handleOpenReport, handleOpenFire} ){
+    const [isHired, setIsHired] = useState(false)
+    const [hasCoach, setHasCoach] = useState (true) //use to track if the user already has a coach, not implemented
+    const {user} = useContext(AuthContext)
+
+
+    const apiBase = import.meta.env.VITE_API_URL;
+    useEffect(() => {
+            axios.get(`${apiBase}/coach/user-coach-sub/${user.id}/${id}`) //replace 24 with ${user.id}
+            .then(res => {setIsHired(res.data["hired"])})
+            .catch(err => console.log(err))
+        }, [])
+
+    if(isHired){
         return(
         <>   
             <button onClick={handleOpenReport} style={REPORTBUTTON_STYLES}>Report</button>
@@ -189,26 +204,28 @@ function Header( {hired, handleClose, handleOpenApply, handleOpenReport, handleO
         )
     }
     else{
-        return(
-        <>   
-            <button onClick={handleOpenApply} style={APPLYBUTTON_STYLES}>Apply</button>
-            <button onClick={handleClose} style={TEMPButton_Styles}> X </button>
-        </>
-        )
+        if(hasCoach){
+            return(
+            <>   
+                <button onClick={handleOpenApply} style={APPLYBUTTON_STYLES}>Apply</button>
+                <button onClick={handleClose} style={TEMPButton_Styles}> X </button>
+            </>
+            )
+        }
+        else{
+            return(
+            <>   
+                <button onClick={handleClose} style={TEMPButton_Styles}> X </button>
+            </>
+            )
+        }
     }
 }
 
 export default function CoachInfoModal( {show, handleClose, name, URL, price, category, id, bio, rating} ){
     if(!show){return null;}
 
-    const [isHired, setIsHired] = useState(false)
-
-
-    useEffect(() => {
-        axios.get('http://localhost:5000/user-coach-sub/24/1')
-        .then(res => {setIsHired(res.data["hired"])})
-        .catch(err => console.log(err))
-    }, [])
+    const [availablility, setAvailability] = useState([])
 
     let imgURL = ""
     if (URL === "error: Field 'null' not found" || !URL){
@@ -243,7 +260,7 @@ export default function CoachInfoModal( {show, handleClose, name, URL, price, ca
                     <div style={HEADER_STYLES}>
                         {name}
                         <div style={{display:"flex", maxWidth:"60%", width:"100%", height:"75%", marginLeft:"10%", alignItems:"center", flexDirection:"row", justifyContent:"flex-end"}}>
-                            <Header hired={isHired} handleClose={handleClose} handleOpenApply={handleOpenApply} handleOpenReport={handleOpenReport} handleOpenFire={handleOpenFire}/>
+                            <Header id={id} handleClose={handleClose} handleOpenApply={handleOpenApply} handleOpenReport={handleOpenReport} handleOpenFire={handleOpenFire}/>
                         </div>
                     </div>
                     <div style={{width:"100%", height:"95%", display:"flex", flexDirection:"column", marginLeft:"5%"}}>{/*MAIN body*/}
@@ -289,9 +306,9 @@ export default function CoachInfoModal( {show, handleClose, name, URL, price, ca
                     </div> {/*MAIN BODY*/}
                 </div> {/*MODAL*/}
             </div> {/*OVERLAY*/}
-            <FireModal show={openFire} handleClose={handleCloseFire} name={name}/>
-            <ReportModal show={openReport} handleClose={handleCloseReport}/>
-            <ApplicationSurvey show={openApply} handleClose={handleCloseApply}/>
+            <FireModal show={openFire} handleClose={handleCloseFire} name={name} id={id}/>
+            <ReportModal show={openReport} handleClose={handleCloseReport} id={id}/>
+            <ApplicationSurvey show={openApply} handleClose={handleCloseApply} id={id}/>
             <ReviewModal name={name} coach_id={id} show={openReviews} handleClose={handleCloseReviews}/>
         </>
 

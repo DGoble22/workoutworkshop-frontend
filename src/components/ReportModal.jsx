@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-
+import React, { useState, useEffect, useContext } from "react"
+import { AuthContext } from "../context/AuthContext"
 
 const OVERLAY_STYLES={
   position: 'fixed',
@@ -59,7 +59,7 @@ function ReportError({show}){
     )
 }
 
-export default function ReportModal( {show, handleClose, coach_id}){
+export default function ReportModal( {show, handleClose, id}){
     if(!show){return null}
 
     const [report, setReport] = useState("")
@@ -67,22 +67,46 @@ export default function ReportModal( {show, handleClose, coach_id}){
     const [reportError, setReportError] = useState(false)
     const [reportButton, setReportButton] = useState("Send to Report")
     const [buttonOmmited, setButtonOmmited] = useState(false) // idea is to use this to make the report button get ommited after a report is sent, the user cannot spam
-    
-    function validateReport(){
-        let valid=true
+    const {user} = useContext(AuthContext)
+
+    async function validateReport(){
         let data ={}
-        //data["user"] = /*ID of the logged in user*/
         if(report.length === 0 || report.trim() === ""){
             setReportError(true)
-            valid = false
             return
         }
         else{
-            data["message"] = report
-            console.log(report)
-            setReportButton("Reported!")
+            data={
+                reporter_id: user.id,
+                coach_id: id,
+                message: report
+            }
+
+            if( await postData(data)){setReportButton("Reported!")}
+            else{alert("Error submitting report. Try again later")}
         }
-        /*post the data*/
+        
+    }
+
+    async function postData(data){
+        if(!data){alert("Error occured while applying to coach")}
+
+        try{
+            const apiBase = import.meta.env.VITE_API_URL || '';
+            const endpoint = `${apiBase}/coach/send-coach-report`;
+
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            return response.ok
+        }
+        catch{
+            alert("Error with report. Try again later")
+            return false
+        }
     }
 
     return(
