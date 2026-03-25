@@ -1,0 +1,250 @@
+.home-page {
+    min-height: calc(100vh - 90px);
+    padding: 24px 0 40px;
+}
+
+.home-hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+}
+
+.home-hero-card {
+    width: 100%;
+    max-width: 820px;
+    background: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 16px;
+    padding: 44px 28px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+.home-kicker {
+    margin: 0 0 10px;
+    color: #ff0000;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.home-title {
+    margin: 0;
+    color: #111;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    font-weight: 800;
+}
+
+.home-subtitle {
+    margin: 14px auto 0;
+    max-width: 600px;
+    color: #555;
+    font-size: 1.05rem;
+}
+
+.home-actions {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.home-auth-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.home-auth-btn-login {
+    background: #ff0000;
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(255, 0, 0, 0.25);
+}
+
+.home-auth-btn-login:hover {
+    background: #cb0a0a;
+    transform: translateY(-1px);
+}
+
+.home-auth-btn-register {
+    background: #222;
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.home-auth-btn-register:hover {
+    background: #000;
+    transform: translateY(-1px);
+}
+
+.navbar-auth-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.home-dashboard {
+    padding-top: 10px;
+}
+
+.dashboard-header {
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.dashboard-title {
+    margin: 0;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    color: #111;
+    font-weight: 800;
+}
+
+.dashboard-subtitle {
+    margin-top: 8px;
+    color: #666;
+    font-weight: 500;
+}
+
+.dashboard-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.dashboard-card {
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.dashboard-card h3 {
+    margin: 0 0 8px;
+    color: #111;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.dashboard-card p {
+    margin: 0;
+    color: #666;
+    text-align: center;
+}
+
+.dashboard-card button {
+    background: #ff0000;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-card button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    background: #dd0000;
+}
+
+.dashboard-card-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Add styles for the daily survey stars */
+.daily-survey-stars {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.daily-survey-stars .star {
+    font-size: 5rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.daily-survey-stars .star.selected {
+    color: #FFD700; /* Yellow color for selected stars */
+}
+
+.daily-survey-stars .star:hover {
+    transform: scale(1.2);
+}
+
+@media (min-width: 768px) {
+    .home-hero {
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+    }
+
+    .home-hero-card {
+        max-width: 1100px;
+        padding: 4rem 3rem;
+        font-size: 1.2rem;
+        text-align: center;
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        border: 1px solid #ddd;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
+
+    .home-title {
+        font-size: 3.5rem;
+        color: #333;
+    }
+
+    .home-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 1rem;
+    }
+
+    .home-actions {
+        margin-top: 2rem;
+    }
+
+    .home-auth-btn {
+        padding: 14px 28px;
+        font-size: 1rem;
+    }
+
+    .home-auth-btn-login {
+        background: #ff0000;
+        color: #fff;
+        box-shadow: 0 10px 20px rgba(230, 57, 70, 0.3);
+    }
+
+    .home-auth-btn-login:hover {
+        background: #dd0000;
+    }
+
+    .home-auth-btn-register {
+        background: #343a40;
+        color: #fff;
+        box-shadow: 0 10px 20px rgba(52, 58, 64, 0.3);
+    }
+
+    .home-auth-btn-register:hover {
+        background: #212529;
+    }
+}

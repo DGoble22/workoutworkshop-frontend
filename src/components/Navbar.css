@@ -45,21 +45,20 @@
 
 /* Styling for Login Button */
 .nav-button {
-    background: darkgray;
+    background: #ff0000;
     color: white;
     border: none;
     padding: 10px 24px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .nav-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    background: gray;
+    background: #dd0000;
 }
 
 .nav-button:active {
