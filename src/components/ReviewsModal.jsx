@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import ReviewCard from './ReviewCard'
+import LeaveReview from './LeaveReview'
 
 const MODAL_STYLES={
   position: "fixed",
@@ -21,12 +22,11 @@ const HEADER_STYLES={
     display: "flex",
     height: "5rem",
     width:"95%",
-    maxWidth:"60rem",
+    maxWidth:"45vw",
     PaddingBottom: "10%",
     borderRadius: "50px",
     border: "none",
     alignItems:"center",
-    paddingLeft:"5%",
     fontSize: "175%",
     whiteSpace:"nowrap"
 }
@@ -67,6 +67,8 @@ export default function ReviewModal( {show, handleClose, coach_id, name} ){
 
     const [reviews, setReviews] = useState([])
 
+    const [leaveReview, setLeaveReview] = useState(false)
+
     const apiBase = import.meta.env.VITE_API_URL;
     useEffect(() => {
         axios.get(`${apiBase}/coach/coach-reviews/${coach_id}`)
@@ -74,12 +76,16 @@ export default function ReviewModal( {show, handleClose, coach_id, name} ){
         .catch(err => console.log(err))
     }, [])
 
+    const handleOpenLeaveReview = () => setLeaveReview(true)
+    const handleCloseLeaveReview = () => setLeaveReview(false)
+
     return(
+        <>
         <div style={MODAL_STYLES}>
             <div style={HEADER_STYLES}>
                 <h3>{name}</h3>
-                <div style={{display:"flex", maxWidth:"60%", width:"100%", height:"75%", marginLeft:"10%", alignItems:"center", flexDirection:"row", justifyContent:"flex-end"}}>
-                    <button style={{borderRadius:"25px", marginRight:"5px"}}>Leave Review</button>
+                <div style={{display:"flex", float:"right", maxWidth:"100%", width:"100%", height:"75%", marginLeft:"10%", alignItems:"center", flexDirection:"row", justifyContent:"flex-end"}}>
+                    <button onClick={handleOpenLeaveReview} style={{borderRadius:"25px", marginRight:"5px"}}>Leave Review</button>
                     <button onClick={handleClose} style={CLOSEBUTTON_STYLES}> X </button>
                 </div>
             </div>
@@ -91,6 +97,8 @@ export default function ReviewModal( {show, handleClose, coach_id, name} ){
                 </div>
             </div>
         </div>
+        <LeaveReview show={leaveReview} handleClose={handleCloseLeaveReview} id={coach_id}/>
+        </>
     )
 
 }

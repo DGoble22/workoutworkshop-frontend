@@ -189,8 +189,8 @@ function Header( { id, handleClose, handleOpenApply, handleOpenReport, handleOpe
 
     const apiBase = import.meta.env.VITE_API_URL;
     useEffect(() => {
-            axios.get(`${apiBase}/coach/user-coach-sub/${user.id}/${id}`) //replace 24 with ${user.id}
-            .then(res => {setIsHired(res.data["hired"])})
+            axios.get(`${apiBase}/coach/user-coach-sub/${user.id}/${id}`) 
+            .then(res => {setIsHired(res.data["hired"]), setHasCoach(res.data["hasCoach"])})
             .catch(err => console.log(err))
         }, [])
 
@@ -204,7 +204,7 @@ function Header( { id, handleClose, handleOpenApply, handleOpenReport, handleOpe
         )
     }
     else{
-        if(hasCoach){
+        if(!hasCoach){
             return(
             <>   
                 <button onClick={handleOpenApply} style={APPLYBUTTON_STYLES}>Apply</button>

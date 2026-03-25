@@ -34,6 +34,7 @@ export default function FireModal( {show, handleClose, name, id}){
 
     const {user} = useContext(AuthContext)
     const [conformation, setConformation] = useState("Yes")
+    const [buttonOmmited, setButtonOmmited] = useState(false)
 
     async function fireCoach(){
         let data = {
@@ -51,7 +52,10 @@ export default function FireModal( {show, handleClose, name, id}){
                 body: JSON.stringify(data)
             });
 
-            if(response.ok){setConformation("Fired!")}
+            if(response.ok){
+                setConformation("Fired!")
+                setButtonOmmited(true)
+            }
         }
         catch{
             alert("Error firing coach. Try again later")
@@ -67,7 +71,7 @@ export default function FireModal( {show, handleClose, name, id}){
                 </div>
                 <div style={{display:"flex", width:"100%", height:"100%", alignItems:"center", justifyContent:"center", gap:"10%"}}>
                     <button onClick={handleClose} style={{border:"none", backgroundColor:"#2C2C2C", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>Back</button>
-                    <button onClick={fireCoach} style={{border:"none", backgroundColor:"#711A19", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>{conformation}</button>
+                    <button disabled={buttonOmmited} onClick={fireCoach} style={{border:"none", backgroundColor:"#711A19", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>{conformation}</button>
                 </div>
             </div>
         </div>

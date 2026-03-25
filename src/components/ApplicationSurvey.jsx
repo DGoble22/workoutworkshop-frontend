@@ -10,7 +10,6 @@ const MODAL_STYLES={
   backgroundColor:"#FFF",
   width:"40vw",
   height:"50vh",
-  paddingTop:"22px",
   borderRadius:"3%",
   alignItems:"center",
   flexDirection: "column",
@@ -44,6 +43,17 @@ const CLOSEBUTTON_STYLES={
     float:"right"
 }
 
+const HEADER_STYLES={
+    display: "flex",
+    height: "3rem",
+    width:"100%",
+    maxWidth:"60rem",
+    borderRadius: "50px",
+    alignItems:"center",
+    justifyContent:"center",
+    fontSize: "225%"
+}
+
 function ApplicationError({show}){
     if(!show){return null}
     return(
@@ -57,6 +67,7 @@ export default function ApplicationSurvey( {show, handleClose, id} ){
     const [comment, setComment] = useState("")
     const [applicationError, setApplicationError] = useState(false)
     const [applyButton, setApplyButton] = useState("Apply")
+    const [buttonOmmited, setButtonOmmited] = useState(false)
     const {user} = useContext(AuthContext)
 
     async function validateComment(){
@@ -76,7 +87,10 @@ export default function ApplicationSurvey( {show, handleClose, id} ){
             console.log(data["coach_id"])
             console.log(data["comment"])
             let posted = await postData(data)
-            if(posted){setApplyButton("Applied!")}
+            if(posted){
+                setApplyButton("Applied!")
+                setButtonOmmited(true)
+            }
         }
 
     }
@@ -105,17 +119,23 @@ export default function ApplicationSurvey( {show, handleClose, id} ){
     return(
     <div style={OVERLAY_STYLES}>
         <div style={MODAL_STYLES}>
-            <div style={{display:"flex", minWidth:"450px", justifyContent:"center", fontSize:"34px"}}>
-                <b>APPLICATION SURVEY</b>
-                <button style={CLOSEBUTTON_STYLES} onClick={handleClose}> X </button>
+            <div style={HEADER_STYLES}>
+                <div style={{display:"flex", maxWidth:"100%", width:"100%", height:"75%", marginLeft:"25px", alignItems:"center", justifyContent:"center"}}>
+                    <b>Application Survey</b>
+                </div>
+                <div style={{display:"flex", maxWidth:"100%", height:"100%", float:"right", marginRight:"10px"}}>
+                    <button style={CLOSEBUTTON_STYLES} onClick={handleClose}> X </button>
+                </div>
             </div>
-            <p>
-                -Explain why you want/need coaching <br/>
-                -Explain why you think im a good fit to be your coach
-            </p>
+            <div style={{width:"95%", float:"left"}}>
+                <p>
+                    -Explain why you want/need coaching <br/>
+                    -Explain why you think im a good fit to be your coach
+                </p>
+            </div>
             <textarea onChange={(e)=>{setComment(e.target.value), setApplicationError(false)}} style={{width:"95%", height:"65%", overflowWrap:"break-word"}}/>
             <ApplicationError show={applicationError}/>
-            <button onClick={validateComment} style={{display:"flex", width:"95%", height:"10%", borderRadius:"5px", marginBottom:"10px", marginTop:"10px", color:"#ffffff", backgroundColor:"#2C2C2C", alignItems:"center", justifyContent:"center"}}> {applyButton} </button>
+            <button disabled={buttonOmmited} onClick={validateComment} style={{display:"flex", width:"95%", height:"10%", borderRadius:"5px", marginBottom:"10px", marginTop:"10px", color:"#ffffff", backgroundColor:"#2C2C2C", alignItems:"center", justifyContent:"center"}}> {applyButton} </button>
         </div>
     </div>
     )

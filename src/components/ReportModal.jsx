@@ -82,7 +82,10 @@ export default function ReportModal( {show, handleClose, id}){
                 message: report
             }
 
-            if( await postData(data)){setReportButton("Reported!")}
+            if( await postData(data)){
+                setReportButton("Reported!")
+                setButtonOmmited(true)
+            }
             else{alert("Error submitting report. Try again later")}
         }
         
@@ -126,7 +129,7 @@ export default function ReportModal( {show, handleClose, id}){
                 <div style={{display:"flex", height:"100%", minHeight:"100%", alignItems:"center", flexDirection:"column"}}>
                     <textarea onChange={(e) => {setReport(e.target.value), setReportError(false)}} style={{width:"95%", height:"55%", overflowWrap:"break-word"}}/>
                     <ReportError show={reportError}/>
-                    <button onClick={()=>validateReport()} style={{display:"flex", width:"95%", height:"10%", borderRadius:"5px", marginTop:"10px", color:"#ffffff", backgroundColor:"#2C2C2C", alignItems:"center", justifyContent:"center"}}> {reportButton} </button>
+                    <button disabled={buttonOmmited} onClick={()=>validateReport()} style={{display:"flex", width:"95%", height:"10%", borderRadius:"5px", marginTop:"10px", color:"#ffffff", backgroundColor:"#2C2C2C", alignItems:"center", justifyContent:"center"}}> {reportButton} </button>
                 </div>
             </div>
         </div>
