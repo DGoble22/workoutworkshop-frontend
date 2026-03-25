@@ -43,6 +43,7 @@ const Navbar = () => {
 
                 {/* Navbar center links */}
                 <div className="collapse navbar-collapse">
+                    {isAuthenticated && (
                     <ul className="navbar-nav mx-auto gap-2">
                         <li className="nav-item">
                             <Link to="/" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/' ? 'active' : ''}`}>
@@ -59,19 +60,22 @@ const Navbar = () => {
                                 Coach
                             </Link>
                         </li>
+                        {user.role === 'A' && (
                         <li className="nav-item">
                             <Link to="/admin" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname.startsWith('/admin') ? 'active' : ''}`}>
                                 Admin
                             </Link>
                         </li>
+                        )}
                     </ul>
+                    )}
 
                     {/* Conditional rendering of auth buttons */}
                     {!isAuthenticated ? (
-                        <>
+                        <div className="navbar-auth-right">
                             <button className="nav-button me-2" onClick={handleOpenLogin}>Login</button>
                             <button className="nav-button" onClick={handleOpenRegister}>Register</button>
-                        </>
+                        </div>
                     ) : (
                         <>
                             <div className="navbar-greeting" style={{ marginRight: '12px', color: '#fff', fontWeight: 600 }}>Hello, {name}</div>
@@ -79,7 +83,6 @@ const Navbar = () => {
                         </>
                     )}
                 </div>
-                <div style={{ width: "100px" }} className="d-none d-lg-block"></div>
 
             </div>
         </nav>
