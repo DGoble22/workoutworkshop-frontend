@@ -227,6 +227,15 @@ export default function CoachInfoModal( {show, handleClose, name, URL, price, ca
 
     const [availablility, setAvailability] = useState([])
 
+    const apiBase = import.meta.env.VITE_API_URL;
+    useEffect(() => {
+        axios.get(`${apiBase}/coach/coach-availibility/${id}`)
+        .then(res => {setAvailability(res.data["data"])})
+        .catch(err => console.log(err))
+    }, [])
+    
+    console.log(availablility.M)
+
     let imgURL = ""
     if (URL === "error: Field 'null' not found" || !URL){
         imgURL = DefaultProfilePic
@@ -234,7 +243,6 @@ export default function CoachInfoModal( {show, handleClose, name, URL, price, ca
     else{
         imgURL = URL;
     }
-
     const [openReviews, setOpenReviews] = useState(false)
     const [openApply, setOpenApply] = useState(false)
     const [openReport, setOpenReport] = useState(false)
@@ -294,13 +302,13 @@ export default function CoachInfoModal( {show, handleClose, name, URL, price, ca
                         </div>{/*Row2*/}
                         <div style={{display: "flex", backgroundColor:"#D9D9D9", borderRadius: "15px", width:"95%", height:"18%", marginTop:"5%", alignItems:"center", justifyContent:"center"}}> {/*Row3*/}
                             <div style={{display: "flex",width:"95%", height:"100%", alignItems:"center", justifyContent:"center"}}>
-                            <DOTWvailibility available={false} DOTW={"Sun"}/>
-                            <DOTWvailibility available={true} DOTW={"Mon"}/>
-                            <DOTWvailibility available={true} DOTW={"Tue"}/>
-                            <DOTWvailibility available={true} DOTW={"Wed"}/>
-                            <DOTWvailibility available={true} DOTW={"Thu"}/>
-                            <DOTWvailibility available={true} DOTW={"Fri"}/>
-                            <DOTWvailibility available={false} DOTW={"Sat"}/>
+                            <DOTWvailibility available={availablility["SUN"]} DOTW={"Sun"}/>
+                            <DOTWvailibility available={availablility["M"]} DOTW={"Mon"}/>
+                            <DOTWvailibility available={availablility["T"]} DOTW={"Tue"}/>
+                            <DOTWvailibility available={availablility["W"]} DOTW={"Wed"}/>
+                            <DOTWvailibility available={availablility["TH"]} DOTW={"Thu"}/>
+                            <DOTWvailibility available={availablility["F"]} DOTW={"Fri"}/>
+                            <DOTWvailibility available={availablility["SAT"]} DOTW={"Sat"}/>
                             </div>
                         </div> {/*Row3*/}
                     </div> {/*MAIN BODY*/}
