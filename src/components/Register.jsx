@@ -291,13 +291,12 @@ export default function Register({ onClose, onSwitchToLogin }) {
             goal_type: formData.goal_type,
             goal_text: formData.goal_text,
             // Optional
-            payment: anyPayment ? {
-                name: formData.cardName,
-                number: (formData.cardNumber || '').replace(/\s+/g, ''),
-                exp_month: formData.cardExpMonth,
-                exp_year: formData.cardExpYear,
-                cvc: formData.cardCVC,
-            } : undefined,
+            // payment
+            cardName: formData.cardName,
+            cardNumber: formData.cardNumber,
+            cardExpMonth: formData.cardExpMonth,
+            cardExpYear: formData.cardExpYear,
+            cardCVC: formData.cardCVC,
         };
 
         // Call Register API (expecting token and user in response for auto-login, but can work without)
