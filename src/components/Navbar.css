@@ -64,3 +64,82 @@
 .nav-button:active {
     transform: translateY(0);
 }
+
+/* Container to keep the dropdown positioned relative to the icon */
+.profile-menu-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+/* The Circular Profile Icon */
+.profile-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%; /* This makes it a circle */
+    object-fit: cover;  /* Ensures the image doesn't stretch */
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.profile-icon:hover {
+    border-color: #fff; /* Highlight ring on hover */
+    transform: scale(1.05);
+}
+
+/* The Dropdown Modal */
+.profile-dropdown {
+    position: absolute;
+    top: 60px; /* Pushes it just below the icon */
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2);
+    width: 220px;
+    z-index: 1050; /* Above Bootstrap's navbar elements */
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    overflow: hidden;
+}
+
+.dropdown-header {
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.profile-dropdown hr {
+    margin: 5px 0;
+    border: none;
+    border-top: 1px solid #eee;
+}
+
+.profile-dropdown button {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.profile-dropdown button:hover {
+    background-color: #f8f9fa;
+    color: #ff0000; /* Ties back into your theme */
+}
+
+.profile-dropdown .delete-btn {
+    color: #dc3545; /* Red text for dangerous action */
+}
+
+.profile-dropdown .delete-btn:hover {
+    background-color: #ffe6e6;
+    color: #c82333;
+}
