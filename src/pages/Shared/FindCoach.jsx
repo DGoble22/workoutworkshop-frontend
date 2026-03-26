@@ -42,7 +42,6 @@ const FilterButton_Styles={
     background: "none", 
     justifyContent: "center",
     border: "none",
-    background: "none",
     paddingLeft:"50px"
 }
 

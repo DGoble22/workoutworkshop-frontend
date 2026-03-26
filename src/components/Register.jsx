@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import "./AuthModal.css";
 import { AuthContext } from "../context/AuthContext";
 import CoachAvailabilityEditor from "./CoachAvailabilityEditor";
+import toast from "react-hot-toast";
 
 export default function Register({ onClose, onSwitchToLogin }) {
     const { setToken, setUser } = useContext(AuthContext);
@@ -135,26 +136,26 @@ export default function Register({ onClose, onSwitchToLogin }) {
         // basic validation on step 1
         if (step === 1) {
             if (!formData.username || !formData.password || !formData.confirmPassword) {
-                alert('Please complete username and password');
+                toast.error('Please complete username and password');
                 return;
             }
             if (formData.password !== formData.confirmPassword) {
-                alert('Passwords do not match');
+                toast.error('Passwords do not match');
                 return;
             }
             if (usernameAvailable === null && !checkingUsername) {
                 const avail = await checkUsernameAvailability(formData.username);
                 if (avail === false) {
-                    alert('Username is already taken');
+                    toast.error('Username is already taken');
                     return;
                 }
             }
             if (checkingUsername) {
-                alert('Checking username availability, please wait');
+                toast.error('Checking username availability, please wait');
                 return;
             }
             if (usernameAvailable === false) {
-                alert('Username is already taken');
+                toast.error('Username is already taken');
                 return;
             }
             setStep(2);
@@ -164,23 +165,23 @@ export default function Register({ onClose, onSwitchToLogin }) {
         // validation for step 2
         if (step === 2) {
             if (!formData.first_name || !formData.last_name || !formData.birthday) {
-                alert('Please fill first name, last name and birthday');
+                toast.error('Please fill first name, last name and birthday');
                 return;
             }
 
             if (formData.isCoach) {
                 // certifications: at least one
                 if (!formData.certifications || formData.certifications.length === 0) {
-                    alert('Please select at least one certification');
+                    toast.error('Please select at least one certification');
                     return;
                 }
                 if (formData.pricing === undefined || formData.pricing === null || formData.pricing === '') {
-                    alert('Please set your pricing');
+                    toast.error('Please set your pricing');
                     return;
                 }
                 // bio required for coach
                 if (!formData.bio || !formData.bio.trim()) {
-                    alert('Please enter a bio');
+                    toast.error('Please enter a bio');
                     return;
                 }
                 setStep(3);
@@ -193,7 +194,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
         // validation for step 3 (coach availability)
         if (step === 3) {
             if (formData.isCoach && hasInvalidAvailability(formData.availability)) {
-                alert('Please add at least one valid availability time slot');
+                toast.error('Please add at least one valid availability time slot');
                 return;
             }
             setStep(4);
@@ -203,17 +204,17 @@ export default function Register({ onClose, onSwitchToLogin }) {
         // validation for step 4 (goals)
         if (step === 4) {
             if (!formData.goal_type) {
-                alert('Please select a goal type before continuing.');
+                toast.error('Please select a goal type before continuing.');
                 return;
             }
             const current = Number(formData.current_weight);
             const goal = Number(formData.goal_weight);
             if (!current || isNaN(current)) {
-                alert('Please set your current weight');
+                toast.error('Please set your current weight');
                 return;
             }
             if (!goal || isNaN(goal)) {
-                alert('Please set your goal weight');
+                toast.error('Please set your goal weight');
                 return;
             }
             setStep(5);
@@ -248,28 +249,28 @@ export default function Register({ onClose, onSwitchToLogin }) {
         const anyPayment = (cardName || cardNumber || cardExpMonth || cardExpYear || cardCVC);
         if (anyPayment) {
             if (!cardName || !cardNumber || !cardExpMonth || !cardExpYear || !cardCVC) {
-                alert('Please complete all payment fields or leave all blank to skip payment');
+                toast.error('Please complete all payment fields or leave all blank to skip payment');
                 return;
             }
             // number checks
             const cleaned = (cardNumber || '').replace(/\s+/g, '');
             if (!/^\d{12,19}$/.test(cleaned)) {
-                alert('Please enter a valid card number (12-19 digits)');
+                toast.error('Please enter a valid card number (12-19 digits)');
                 return;
             }
             const month = parseInt(cardExpMonth, 10);
             if (isNaN(month) || month < 1 || month > 12) {
-                alert('Please enter a valid expiry month (1-12)');
+                toast.error('Please enter a valid expiry month (1-12)');
                 return;
             }
             const year = parseInt(cardExpYear, 10);
             const nowYear = new Date().getFullYear();
             if (isNaN(year) || year < nowYear) {
-                alert('Please enter a valid expiry year (current year or later)');
+                toast.error('Please enter a valid expiry year (current year or later)');
                 return;
             }
             if (!/^\d{3,4}$/.test(cardCVC)) {
-                alert('Please enter a valid CVC (3 or 4 digits)');
+                toast.error('Please enter a valid CVC (3 or 4 digits)');
                 return;
             }
         }
@@ -312,7 +313,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
             const result = await response.json();
             if (result.status === "success") {
-                alert("Registration successful!");
+                toast.success("Registration successful! You are now logged in.");
 
                 // Auto-login if register response includes token/user like login
                 if (result.token) {
@@ -357,12 +358,12 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 });
                 setStep(1);
             } else {
-                alert(result.message || "Registration failed");
+                toast.error(result.message || "Registration failed");
             }
 
         } catch (e) {
             console.error("Registration Failed: ", e);
-            alert("An error occurred during registration");
+            toast.error("An error occurred during registration");
         }
     };
 
@@ -512,7 +513,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
                         <button type="button" style={{ marginLeft: '8px' }} className="auth-submit-btn" onClick={() => {
                             if (!formData.goal_type) {
-                              alert('Please select a goal type before finishing.');
+                              toast.error('Please select a goal type before finishing.');
                               return;
                             }
                             handleSubmit();

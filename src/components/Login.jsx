@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import "./AuthModal.css";
 import { AuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function Login({ onClose, onSwitchToRegister }) {
     const { setToken, setUser } = useContext(AuthContext);
@@ -37,14 +38,14 @@ export default function Login({ onClose, onSwitchToRegister }) {
                     setUser(result.user);
                 }
 
-                alert("Login successful!");
+                toast.success("Login successful!");
                 onClose();
             } else {
-                alert(result.message || "Login failed");
+                toast.error(result.message || "Login failed");
             }
         } catch (e) {
             console.error("Login Failed: ", e);
-            alert("An error occurred during login");
+            toast.error("An error occurred during login");
         }
     };
 
