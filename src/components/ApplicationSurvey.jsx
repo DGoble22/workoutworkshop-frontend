@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../context/AuthContext"
+import { toast } from "react-hot-toast";
 
 const MODAL_STYLES={
   position: "fixed",
@@ -34,7 +35,6 @@ const CLOSEBUTTON_STYLES={
     height: "100%", 
     width:"100%",
     maxWidth:"25px",
-    background: "none", 
     justifyContent: "center",
     alignItems:"center",
     border: "none",
@@ -74,7 +74,6 @@ export default function ApplicationSurvey( {show, handleClose, id} ){
         let data ={}
         if(comment.length === 0 || comment.trim() === ""){
             setApplicationError(true)
-            valid = false
             return
         }
         else{
@@ -96,7 +95,7 @@ export default function ApplicationSurvey( {show, handleClose, id} ){
     }
 
     async function postData(data){
-        if(!data){alert("Error occured while applying to coach")}
+        if(!data){toast.error("Error occured while applying to coach")}
 
         try{
             const apiBase = import.meta.env.VITE_API_URL || '';
@@ -108,11 +107,17 @@ export default function ApplicationSurvey( {show, handleClose, id} ){
                 body: JSON.stringify(data)
             });
 
-            return response.ok
+            if (response.ok) {
+                toast.success("Application submitted successfully.");
+            } else {
+                const errorData = await response.json();
+                toast.error(errorData.message || "Error with application. Try again later");
+                return false
+            }
         }
-        catch{
-            alert("Error with application. Try again later")
-            return false
+        catch (error) {
+            console.error("Error during application submission:", error);
+            toast.error("An error occurred while submitting the application.");
         }
     }
 

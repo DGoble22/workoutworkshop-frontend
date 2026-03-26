@@ -1,5 +1,6 @@
 import React, {useContext, useState} from "react"
 import { AuthContext } from "../context/AuthContext"
+import { toast } from "react-hot-toast";
 
 const OVERLAY_STYLES={
   position: 'fixed',
@@ -55,11 +56,16 @@ export default function FireModal( {show, handleClose, name, id}){
             if(response.ok){
                 setConformation("Fired!")
                 setButtonOmmited(true)
+                toast.success("Coach has been successfully fired.");
+            }
+            else{
+                const errorData = await response.json();
+                toast.error(errorData.message || "Failed to fire the coach.");
             }
         }
-        catch{
-            alert("Error firing coach. Try again later")
-            return false
+        catch (error){
+            console.error("Error during firing:", error);
+            toast.error("An error occurred while trying to fire the coach.");
         }
     }
 

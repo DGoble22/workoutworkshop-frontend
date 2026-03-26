@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../context/AuthContext"
+import { toast } from "react-hot-toast";
 
 const OVERLAY_STYLES={
   position: 'fixed',
@@ -84,14 +85,17 @@ export default function ReportModal( {show, handleClose, id}){
             if( await postData(data)){
                 setReportButton("Reported!")
                 setButtonOmmited(true)
+                toast.success("Report submitted successfully.");
             }
-            else{alert("Error submitting report. Try again later")}
+            else{
+                toast.error("Error submitting report. Try again later");
+            }
         }
         
     }
 
     async function postData(data){
-        if(!data){alert("Error occured while applying to coach")}
+        if(!data){toast.error("Error occured while applying to coach")}
 
         try{
             const apiBase = import.meta.env.VITE_API_URL || '';
@@ -106,7 +110,7 @@ export default function ReportModal( {show, handleClose, id}){
             return response.ok
         }
         catch{
-            alert("Error with report. Try again later")
+            toast.error("Error with report. Try again later");
             return false
         }
     }

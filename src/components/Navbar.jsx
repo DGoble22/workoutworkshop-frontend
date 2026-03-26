@@ -62,7 +62,7 @@ const Navbar = () => {
                         </li>
                         {user.role === 'A' && (
                         <li className="nav-item">
-                            <Link to="/admin" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname.startsWith('/admin') ? 'active' : ''}`}>
+                            <Link to="/admin" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === ('/admin') ? 'active' : ''}`}>
                                 Admin
                             </Link>
                         </li>
