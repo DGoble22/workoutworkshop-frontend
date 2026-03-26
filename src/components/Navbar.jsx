@@ -1,15 +1,27 @@
-import {React, useState, useContext} from "react";
+import React, {useState, useContext, useRef, useEffect} from "react";
 import {Link, useLocation} from 'react-router-dom';
 import './Navbar.css';
 import Login from './Login.jsx';
 import Register from './Register.jsx';
 import { AuthContext } from '../context/AuthContext';
+import UploadProfileModal from './UploadProfileModal.jsx';
+import EditUsernameModal from './EditUsernameModal.jsx';
+import EditGoalsModal from './EditGoalsModal.jsx';
+import DeleteAccountModal from './DeleteAccountModal.jsx';
 
 const Navbar = () => {
     const location = useLocation();
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
     const { isAuthenticated, logout, user } = useContext(AuthContext);
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [showUsernameModal, setShowUsernameModal] = useState(false);
+    const [showGoalsModal, setShowGoalsModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    //Profile Dropdown
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef(null);
 
     const handleOpenLogin = () => {
         setShowLogin(true);
@@ -32,6 +44,46 @@ const Navbar = () => {
     };
 
     const name = (user && (user.first_name))
+
+    // Profile image will default to a placeholder if user doesn't have one
+    const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+    const profileImage = user?.profile_picture_url || defaultAvatar;
+
+    //Closes menu if the user clicks outside menu
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setIsMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    //Handles clicks within the menu
+    const handleMenuClick = (action) => {
+        setIsMenuOpen(false);
+
+        switch(action) {
+            case 'upload':
+                setShowUploadModal(true);
+                break;
+            case 'username':
+                setShowUsernameModal(true); // Open the modal
+                break;
+            case 'goals':
+                setShowGoalsModal(true); // <--- Open the modal
+                break;
+            case 'delete':
+                setShowDeleteModal(true); // <--- Open the modal
+                break;
+            case 'logout':
+                handleLogout();
+                break;
+            default:
+                break;
+        }
+    };
 
     return (
         <>
@@ -70,17 +122,36 @@ const Navbar = () => {
                     </ul>
                     )}
 
-                    {/* Conditional rendering of auth buttons */}
+                    {/* Conditional rendering of auth buttons / profile icon */}
                     {!isAuthenticated ? (
                         <div className="navbar-auth-right">
                             <button className="nav-button me-2" onClick={handleOpenLogin}>Login</button>
                             <button className="nav-button" onClick={handleOpenRegister}>Register</button>
                         </div>
                     ) : (
-                        <>
-                            <div className="navbar-greeting" style={{ marginRight: '12px', color: '#fff', fontWeight: 600 }}>Hello, {name}</div>
-                            <button className="nav-button" onClick={handleLogout}>Logout</button>
-                        </>
+                        <div className="profile-menu-container ms-auto" ref={menuRef}>
+                            <img
+                                src={profileImage}
+                                alt="Profile"
+                                className="profile-icon shadow"
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            />
+
+                            {isMenuOpen && (
+                                <div className="profile-dropdown">
+                                    <div className="dropdown-header">
+                                        Hi, {name}!
+                                    </div>
+                                    <hr />
+                                    <button onClick={() => handleMenuClick('upload')}>Upload Profile Picture</button>
+                                    <button onClick={() => handleMenuClick('username')}>Edit Username</button>
+                                    <button onClick={() => handleMenuClick('goals')}>Edit Goals</button>
+                                    <hr />
+                                    <button onClick={() => handleMenuClick('logout')}>Sign Out</button>
+                                    <button onClick={() => handleMenuClick('delete')} className="delete-btn">Delete Account</button>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
 
@@ -92,8 +163,21 @@ const Navbar = () => {
             {showRegister && (
                 <Register onClose={handleCloseModals} onSwitchToLogin={handleOpenLogin}/>
             )}
+            {showUploadModal && (
+                <UploadProfileModal onClose={() => setShowUploadModal(false)} />
+            )}
+            {showUsernameModal && (
+                <EditUsernameModal onClose={() => setShowUsernameModal(false)} />
+            )}
+            {showGoalsModal && (
+                <EditGoalsModal onClose={() => setShowGoalsModal(false)} />
+            )}
+            {showDeleteModal && (
+                <DeleteAccountModal onClose={() => setShowDeleteModal(false)} />
+            )}
         </>
     );
 };
+
 
 export default Navbar
