@@ -48,7 +48,6 @@ const CLOSEBUTTON_STYLES={
     justifyContent: "center",
     alignItems:"center",
     border: "none",
-    background: "none",
     color:"#ff0000"
 }
 

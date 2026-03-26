@@ -141,7 +141,6 @@ const TEMPButton_Styles={
     justifyContent: "center",
     alignItems:"center",
     border: "none",
-    background: "none",
     color:"#ff0000"
 }
 
