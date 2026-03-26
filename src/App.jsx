@@ -2,7 +2,6 @@ import React from "react";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import {Toaster} from "react-hot-toast";
-import "./app.css";
 
 //Page Imports
 import Home from "./pages/Shared/Home.jsx";
