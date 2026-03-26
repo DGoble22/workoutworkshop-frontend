@@ -92,28 +92,32 @@ export default function EditGoalsModal({ onClose }) {
                 {errorMsg && <div style={{ color: '#dc3545', marginBottom: '15px', textAlign: 'center', fontWeight: 'bold' }}>{errorMsg}</div>}
 
                 <form onSubmit={handleSubmit} className="auth-form">
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <div className="auth-field" style={{ flex: 1 }}>
-                            <label>Current Weight (lbs)</label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                name="current_weight"
-                                value={formData.current_weight}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="auth-field" style={{ flex: 1 }}>
-                            <label>Goal Weight (lbs)</label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                name="goal_weight"
-                                value={formData.goal_weight}
-                                onChange={handleChange}
-                                required
-                            />
+                    <div className="modal-body">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                            <div style={{ flex: 1 }}>
+                                <label htmlFor="currentWeight">Current Weight</label>
+                                <input
+                                    type="number"
+                                    id="currentWeight"
+                                    name="current_weight"
+                                    value={formData.current_weight}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                    required
+                                />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <label htmlFor="goalWeight">Goal Weight</label>
+                                <input
+                                    type="number"
+                                    id="goalWeight"
+                                    name="goal_weight"
+                                    value={formData.goal_weight}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                    required
+                                />
+                            </div>
                         </div>
                     </div>
 
