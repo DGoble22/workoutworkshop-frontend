@@ -1,0 +1,117 @@
+.admin-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.admin-dashboard-header {
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.admin-dashboard-title {
+    margin: 0;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    color: #111;
+    font-weight: 800;
+    text-align: center;
+}
+
+.admin-dashboard-subtitle {
+    margin-top: 8px;
+    color: #666;
+    font-weight: 500;
+    text-align: center;
+}
+
+.admin-dashboard-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.admin-dashboard-card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.admin-dashboard-card p {
+  color: #666;
+  font-size: 1rem;
+}
+
+.admin-dashboard-card button {
+    background: #ff0000;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.admin-dashboard-card button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    background: #dd0000;
+}
+
+.admin-dashboard-card-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.user-table th, .user-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  background-color: #ff0000;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
