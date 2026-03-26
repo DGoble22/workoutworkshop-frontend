@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../context/AuthContext"
 import {FaStar} from "react-icons/fa"
+import toast from "react-hot-toast";
 
 const OVERLAY_STYLES={
   position: 'fixed',
@@ -49,7 +50,6 @@ const CLOSEBUTTON_STYLES={
     justifyContent: "center",
     alignItems:"center",
     border: "none",
-    background: "none",
     color:"#ff0000"
 }
 
@@ -134,7 +134,7 @@ export default function LeaveReview( {show, handleClose, id} ){
             return response.ok
         }
         catch{
-            alert("Error with report. Try again later")
+            toast.error("Error with report. Try again later");
             return false
         }
     }

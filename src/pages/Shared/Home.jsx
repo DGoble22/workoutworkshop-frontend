@@ -93,6 +93,10 @@ export default function Home() {
         return stars;
     };
 
+    const handleFindCoach = () => {
+        window.location.href = "/FindCoach";
+    };
+
     const firstName = user?.first_name;
 
     return (
@@ -127,7 +131,7 @@ export default function Home() {
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
                                 <button>Create a Plan</button>
-                                <button>Hire a Coach</button>
+                                <button onClick={handleFindCoach}>Hire a Coach</button>
                             </div>
                         </div>
 

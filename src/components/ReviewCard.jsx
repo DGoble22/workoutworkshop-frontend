@@ -37,16 +37,16 @@ const REVIEWTEXT_STYLES={
     width:"99%",
     height:"90%",
     maxHeight:"90%",
-    marginBottom:"20px", 
-    paddingTop: "5px", 
-    paddingLeft:"15px", 
-    paddingRight:"5px", 
+    marginBottom:"20px",
+    paddingTop: "5px",
+    paddingLeft:"15px",
+    paddingRight:"5px",
     overflowWrap:"breakWord",
     overflowY:"auto"
 }
 
 export default function ReviewCard( {name, rating, comment}){
-    
+
     let stars
     if(rating){
         if (rating >= 4.5){stars = fivestars}
