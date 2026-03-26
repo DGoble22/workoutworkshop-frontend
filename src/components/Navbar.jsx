@@ -41,6 +41,7 @@ const Navbar = () => {
     const handleLogout = () => {
         handleCloseModals();
         logout();
+        window.location.href = '/'; // Redirect to home page after logout
     };
 
     const name = (user && (user.first_name))
