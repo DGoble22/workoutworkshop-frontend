@@ -6,6 +6,7 @@ import Register from './Register.jsx';
 import { AuthContext } from '../context/AuthContext';
 import UploadProfileModal from './UploadProfileModal.jsx';
 import EditUsernameModal from './EditUsernameModal.jsx';
+import EditGoalsModal from './EditGoalsModal.jsx';
 
 const Navbar = () => {
     const location = useLocation();
@@ -14,6 +15,7 @@ const Navbar = () => {
     const { isAuthenticated, logout, user } = useContext(AuthContext);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [showUsernameModal, setShowUsernameModal] = useState(false);
+    const [showGoalsModal, setShowGoalsModal] = useState(false);
 
     //Profile Dropdown
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -68,7 +70,7 @@ const Navbar = () => {
                 setShowUsernameModal(true); // Open the modal
                 break;
             case 'goals':
-                console.log("Open Edit Goals Modal");
+                setShowGoalsModal(true); // <--- Open the modal
                 break;
             case 'delete':
                 console.log("Trigger Delete Account");
@@ -164,6 +166,9 @@ const Navbar = () => {
             )}
             {showUsernameModal && (
                 <EditUsernameModal onClose={() => setShowUsernameModal(false)} />
+            )}
+            {showGoalsModal && (
+                <EditGoalsModal onClose={() => setShowGoalsModal(false)} />
             )}
         </>
     );
