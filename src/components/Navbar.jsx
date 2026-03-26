@@ -5,6 +5,7 @@ import Login from './Login.jsx';
 import Register from './Register.jsx';
 import { AuthContext } from '../context/AuthContext';
 import UploadProfileModal from './UploadProfileModal.jsx';
+import EditUsernameModal from './EditUsernameModal.jsx';
 
 const Navbar = () => {
     const location = useLocation();
@@ -12,6 +13,7 @@ const Navbar = () => {
     const [showRegister, setShowRegister] = useState(false);
     const { isAuthenticated, logout, user } = useContext(AuthContext);
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [showUsernameModal, setShowUsernameModal] = useState(false);
 
     //Profile Dropdown
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -63,7 +65,7 @@ const Navbar = () => {
                 setShowUploadModal(true);
                 break;
             case 'username':
-                console.log("Open Edit Username Modal");
+                setShowUsernameModal(true); // Open the modal
                 break;
             case 'goals':
                 console.log("Open Edit Goals Modal");
@@ -159,6 +161,9 @@ const Navbar = () => {
             )}
             {showUploadModal && (
                 <UploadProfileModal onClose={() => setShowUploadModal(false)} />
+            )}
+            {showUsernameModal && (
+                <EditUsernameModal onClose={() => setShowUsernameModal(false)} />
             )}
         </>
     );
