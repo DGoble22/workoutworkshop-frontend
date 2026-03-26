@@ -4,12 +4,14 @@ import './Navbar.css';
 import Login from './Login.jsx';
 import Register from './Register.jsx';
 import { AuthContext } from '../context/AuthContext';
+import UploadProfileModal from './UploadProfileModal.jsx';
 
 const Navbar = () => {
     const location = useLocation();
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
     const { isAuthenticated, logout, user } = useContext(AuthContext);
+    const [showUploadModal, setShowUploadModal] = useState(false);
 
     //Profile Dropdown
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,7 +60,7 @@ const Navbar = () => {
 
         switch(action) {
             case 'upload':
-                console.log("Open Upload Modal");
+                setShowUploadModal(true);
                 break;
             case 'username':
                 console.log("Open Edit Username Modal");
@@ -154,6 +156,9 @@ const Navbar = () => {
             )}
             {showRegister && (
                 <Register onClose={handleCloseModals} onSwitchToLogin={handleOpenLogin}/>
+            )}
+            {showUploadModal && (
+                <UploadProfileModal onClose={() => setShowUploadModal(false)} />
             )}
         </>
     );
