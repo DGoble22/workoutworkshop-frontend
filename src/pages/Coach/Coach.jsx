@@ -201,6 +201,10 @@ export default function Coach() {
         setShowChat(true)
     }
 
+    const handleFindCoach = () => {
+        window.location.href = "/FindCoach";
+    };
+
     // if (!user || user.role !== 'C') {
     //     return (
     //         <div className="container mt-4">
@@ -229,6 +233,8 @@ export default function Coach() {
     }
 
     return (
+        <>
+        {user.role === 'C' &&(
         <div className="container mt-4">
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
                 <div style={{ position: "relative", width: "100%", maxWidth: "700px", textAlign: "center", marginBottom: "28px" }}>
@@ -278,5 +284,11 @@ export default function Coach() {
                 client={clients.find(c => c.user_id === chatClient)}
             />
         </div>
+            )}
+            {/* Needs to replaced and needs an api call to see if a user has a coach */}
+            {user.role === 'U' && (
+                handleFindCoach()
+            )}
+        </>
     )
 }
