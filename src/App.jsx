@@ -9,6 +9,7 @@ import WorkoutBuilder from "./pages/Shared/WorkoutBuilder.jsx";
 import Coach from "./pages/Coach/Coach.jsx";
 import Admin from "./pages/Admin/Admin.jsx";
 import FindCoach from "./pages/Shared/FindCoach.jsx";
+import WorkoutDashboard from "./pages/Shared/WorkoutDashboard.jsx";
 
 function App() {
 
@@ -22,7 +23,8 @@ function App() {
                 <main style={{ padding: '20px' }}>
                     <Routes>
                         <Route path="/" element={<Home/>} />
-                        <Route path="/workoutbuilder" element={<WorkoutBuilder/>} />
+                        <Route path="/workouts" element={<WorkoutDashboard />} />
+                        <Route path="/workout-builder/:day" element={<WorkoutBuilder />} />
                         <Route path="/coach" element={<Coach/>} />
                         <Route path="/admin" element={<Admin/>} />
                         <Route path="/FindCoach" element={<FindCoach/>}/>

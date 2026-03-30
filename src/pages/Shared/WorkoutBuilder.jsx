@@ -1,165 +1,131 @@
 import React from "react";
-import filter from "../../images/FilterButton.png"
+import filter from "../../images/FilterButton.png";
 import Image from 'react-bootstrap/Image';
-import axios from 'axios'
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const DOTWCARD_STYLES={
-    border: "solid #ffffff5a",
-    display:"flex",
-    height:"75%",
-    width:"12%",
-    maxWidth:"12%",
-    minWidth:"12%",
-    minHeight:"75%",
-    backgroundColor:"#2C2C2C",
-    borderRadius:"5px",
-    alignItems:"center",
-    justifyContent:"center",
-    color:"#ffffff"
-}
-
-const FilterButton_Styles={
-    display: "flex", 
-    height: "45px", 
-    width:"45px",
+const DOTWCARD_STYLES = {
+    border: "1px solid #ffffff5a",
+    flex: 1,
+    margin: "0 5px",
+    height: "75%",
+    backgroundColor: "#2C2C2C",
+    borderRadius: "5px",
+    display: "flex",
+    alignItems: "center",
     justifyContent: "center",
-    border: "none",
-    background: "none",
-    paddingLeft:"50px"
-}
+    color: "#ffffff",
+    cursor: "pointer"
+};
 
-const SEARCHBAR_STYLES={
-    display:"flex",
+const SEARCHBAR_STYLES = {
+    flex: 1,
     border: "none",
-    background: "none",
-    width: "75%", 
-    maxWidth:"75%",
-    outline:"none",
-    PaddingBottom: "10%",
+    outline: "none",
+    height: "45px",
     borderRadius: "50px",
     backgroundColor: "#d9d9d99b",
     paddingLeft: "15px",
-    alignItems:"center"
-}
+};
 
-const HEADERBUTTON_STYLES={
-    display:"flex", 
-    border:"none", 
-    height:"60%", 
-    minHeight:"60%",
-    maxHeight:"60%",
-    width: "20%",
-    minWidth:"20%",
-    maxWidth:"20%",
-    backgroundColor:"#D9D9D9", 
-    alignItems:"center", 
-    justifyContent:"center",
-    borderRadius:"15px",
-    marginRight:"35px"
-}
+const FilterButton_Styles = {
+    display: "flex",
+    height: "45px",
+    width: "45px",
+    justifyContent: "center",
+    alignItems: "center",
+    border: "none",
+    background: "none",
+    padding: 0,
+    marginLeft: "10px"
+};
 
-const EXERCISECATEGORY_STYLES={
-    display:"flex",
-    width:"90%",
-    minWidth:"90%",
-    maxWidth:"90%",
-    Height:"45px",
-    minHeight:"45px",
-    maxHeight:"45px",
-    backgroundColor:"#4D4343",
-    borderRadius:"25px",
-    alignItems:"center",
-    justifyContent:"space-between",
-    marginTop:"20px",
-    paddingLeft:"25px",
-    paddingRight:"25px",
-    color:"#ffffff"
-}
+const HEADERBUTTON_STYLES = {
+    border: "none",
+    height: "40px",
+    padding: "0 20px",
+    backgroundColor: "#D9D9D9",
+    borderRadius: "15px",
+    fontWeight: "bold",
+    cursor: "pointer"
+};
 
+const EXERCISECATEGORY_STYLES = {
+    display: "flex",
+    width: "90%",
+    minHeight: "45px",
+    backgroundColor: "#4D4343",
+    borderRadius: "25px",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: "15px",
+    padding: "0 20px",
+    color: "#ffffff",
+    cursor: "pointer"
+};
+
+//Main interface
 export default function WorkoutBuilder() {
-    return (
-        <div style={{display:"flex", width:"100vw", height:"100vh", flexDirection:"column", justifyContent:"center", overFlowX:"hidden", marginTop: "80px"}}>
-            <div style={{display:"flex", paddingLeft:"10px", paddingRight:"10px", width:"100%", height:"20%", minWidth:"100%", minHeight:"20%", maxheight:"20%", backgroundColor:"#a3a1a1", alignItems:"center", justifyContent:"space-evenly", flexDirection:"row"}}> {/*header*/}
-                <button style={DOTWCARD_STYLES}>Sun</button>
-                <button style={DOTWCARD_STYLES}>Mon</button>
-                <button style={DOTWCARD_STYLES}>Tue</button>
-                <button style={DOTWCARD_STYLES}>Wed</button>
-                <button style={DOTWCARD_STYLES}>Thu</button>
-                <button style={DOTWCARD_STYLES}>Fri</button>
-                <button style={DOTWCARD_STYLES}>Sat</button>
-            </div> {/* end of header*/}
-            <div style={{display:"flex", width:"97vw", height:"100vh", flexDirection:"row"}}>
-                <div style={{display:"flex", height:"100%", minHeight:"100%", maxHeight:"100%", width:"35%", minWidth:"35%", maxWidth: "35%", backgroundColor:"#a3a1a1", flexDirection:"column"}}> {/*find workouts*/}
+    const handleSearch = (e) => {
+        console.log("Searching for:", e.target.value);
+    };
 
-                    <div style={{display:"flex", width:"100%", minWidth:"100%", maxWidth:"100%", marginTop:"10px", justifyContent:"center", flexDirection:"row"}}>
-                        <input type="text" placeholder="Search..." style={SEARCHBAR_STYLES} onChange={(e)=>{handleSearch(e)}}/>
+    return (
+        <div style={{ display: "flex", width: "100%", height: "calc(100vh - 80px)", flexDirection: "column", marginTop: "80px", overflow: "hidden" }}>
+
+            {/* Days of the week */}
+            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px" }}>
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
+                    <button key={day} style={DOTWCARD_STYLES}>{day}</button>
+                ))}
+            </div>
+
+            <div style={{ display: "flex", flex: 1, width: "100%", overflow: "hidden" }}>
+
+                {/* Find Workouts */}
+                <div style={{ display: "flex", width: "35%", backgroundColor: "#a3a1a1", flexDirection: "column", padding: "10px 0" }}>
+
+                    {/* Search Bar */}
+                    <div style={{ display: "flex", width: "90%", margin: "0 auto 10px auto", alignItems: "center" }}>
+                        <input type="text" placeholder="Search..." style={SEARCHBAR_STYLES} onChange={handleSearch}/>
                         <Dropdown>
                             <Dropdown.Toggle style={FilterButton_Styles} variant="success" id="dropdown-basic">
-                                <Image src={filter}/>
+                                <Image src={filter} alt="filter" style={{height: "100%", width: "100%", objectFit: "contain"}}/>
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                <Dropdown.Item>Arms</Dropdown.Item>
-                                <Dropdown.Item>Chest</Dropdown.Item>
-                                <Dropdown.Item>Back</Dropdown.Item>
-                                <Dropdown.Item>Core</Dropdown.Item>
-                                <Dropdown.Item>Legs</Dropdown.Item>
-                                <Dropdown.Item>Cardio</Dropdown.Item>
+                                {["Arms", "Chest", "Back", "Core", "Legs", "Cardio"].map(group => (
+                                    <Dropdown.Item key={group}>{group}</Dropdown.Item>
+                                ))}
                             </Dropdown.Menu>
                         </Dropdown>
-                    </div>{/*find workout header*/}
-                    <div style={{display:"flex", width:"100%", minWidth:"100%", maxWidth:"100", height:"100%", minHeight:"100%", maxheight:"100%", overFlowY:"auto", alignItems:"center", flexDirection:"column"}}>
-                        <div style={EXERCISECATEGORY_STYLES}>
-                            <div>Chest</div>
-                            <div>V</div>
-                            {/* extend exercise cards for this category using a function call and mapping*/}
-                        </div>
-
-                        <div style={EXERCISECATEGORY_STYLES}>
-                            <div>Legs</div>
-                            <div>V</div>
-                            {/* extend exercise cards for this category using a function call and mapping*/}
-                        </div>
-
-                        <div style={EXERCISECATEGORY_STYLES}>
-                            <div>Arms</div>
-                            <div>V</div>
-                            {/* extend exercise cards for this category using a function call and mapping*/}
-                        </div>
-
-                        <div style={EXERCISECATEGORY_STYLES}>
-                            <div>Back</div>
-                            <div>V</div>
-                            {/* extend exercise cards for this category using a function call and mapping*/}
-                        </div>
-
-                        <div style={EXERCISECATEGORY_STYLES}>
-                            <div>Cardio</div>
-                            <div>V</div>
-                            {/* extend exercise cards for this category using a function call and mapping*/}
-                        </div>
-
-                        <div style={EXERCISECATEGORY_STYLES}>
-                            <div>Core</div>
-                            <div>V</div>
-                            {/* extend exercise cards for this category using a function call and mapping*/}
-                        </div>
-
                     </div>
-  
-                </div> {/* end of find workouts*/}
 
-                <div style={{display:"flex", width:"80%", minWidth:"65%", maxWidth:"65%", height:"100%", minHeight:"100%", maxHeight:"100%", overflowY:"auto", alignItems:"center", flexDirection:"column"}}> {/* manager workouts*/}
-                    <div style={{display:"flex", width:"100%", maxWidth:"100%", minWidth:"100%", height:"10%", minHeight:"10%", maxHeight:"10%", backgroundColor:"#711A19", alignItems:"center", justifyContent:"flex-end"}}>
+                    {/* Categories Scroll */}
+                    <div style={{ display: "flex", flex: 1, width: "100%", flexDirection: "column", alignItems: "center", overflowY: "auto", paddingBottom: "20px" }}>
+                        {["Chest", "Legs", "Arms", "Back", "Cardio", "Core"].map(category => (
+                            <div key={category} style={EXERCISECATEGORY_STYLES}>
+                                <div>{category}</div>
+                                <div>V</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Manage Workouts */}
+                <div style={{ display: "flex", flex: 1, flexDirection: "column", overflow: "hidden" }}>
+                    {/* Right Side Header */}
+                    <div style={{ display: "flex", width: "100%", height: "10%", backgroundColor: "#711A19", alignItems: "center", justifyContent: "flex-end", paddingRight: "20px", gap: "15px" }}>
                         <button style={HEADERBUTTON_STYLES}>Manage</button>
                         <button style={HEADERBUTTON_STYLES}>Add Group</button>
                     </div>
+
+                    {/* Built Workout */}
+                    <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+                        {/* Selected exercises */}
+                    </div>
                 </div>
+
             </div>
         </div>
     );
 }
-
-
-
