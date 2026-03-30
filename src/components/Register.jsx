@@ -17,6 +17,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
         birthday: "",
         // coach fields
         certifications: [],
+        certificationFiles: [], // Add field for certification files
         pricing: 50,
         bio: "",
         availability: [],
@@ -175,6 +176,10 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     toast.error('Please select at least one certification');
                     return;
                 }
+                if (formData.certifications.some((_, index) => !formData.certificationFiles[index])) {
+                    toast.error('Please upload proof for all selected certifications');
+                    return;
+                }
                 if (formData.pricing === undefined || formData.pricing === null || formData.pricing === '') {
                     toast.error('Please set your pricing');
                     return;
@@ -241,6 +246,22 @@ export default function Register({ onClose, onSwitchToLogin }) {
         setStep(1);
     };
 
+    const handleFileUploadChange = (index, file) => {
+        setFormData((prev) => {
+            const updatedFiles = [...prev.certificationFiles];
+            updatedFiles[index] = file;
+            return { ...prev, certificationFiles: updatedFiles };
+        });
+    };
+
+    const normalizeAvailability = (availability) => {
+        return availability.map(({ dow, start_time, end_time }) => ({
+            dow,
+            start_time: `${start_time}:00`, // Ensure time format includes seconds
+            end_time: `${end_time}:00`,
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e && e.preventDefault();
 
@@ -275,6 +296,8 @@ export default function Register({ onClose, onSwitchToLogin }) {
             }
         }
 
+        const normalizedAvailability = normalizeAvailability(formData.availability);
+
         // build payload
         const payload = {
             username: formData.username,
@@ -283,10 +306,11 @@ export default function Register({ onClose, onSwitchToLogin }) {
             first_name: formData.first_name,
             last_name: formData.last_name,
             birthday: formData.birthday,
-            certifications: formData.isCoach ? formData.certifications : undefined,
+            certifications: formData.certifications,
+            certificationFiles: formData.certificationFiles.map((file) => file ? file.name : null), // Include file names
             pricing: formData.isCoach ? formData.pricing : undefined,
             bio: formData.isCoach ? formData.bio : undefined,
-            availability: formData.isCoach ? formData.availability : undefined,
+            availability: normalizedAvailability,
             current_weight: formData.current_weight,
             goal_weight: formData.goal_weight,
             goal_type: formData.goal_type,
@@ -300,6 +324,23 @@ export default function Register({ onClose, onSwitchToLogin }) {
             cardCVC: formData.cardCVC,
         };
 
+        const formDataToSend = new FormData();
+        Object.keys(payload).forEach((key) => {
+            if (key === "availability") {
+                formDataToSend.append(key, JSON.stringify(payload[key]));
+            } else if (Array.isArray(payload[key])) {
+                payload[key].forEach((item) => formDataToSend.append(key, item));
+            } else if (payload[key] !== undefined) {
+                formDataToSend.append(key, payload[key]);
+            }
+        });
+
+        formData.certificationFiles.forEach((file, index) => {
+            if (file) {
+                formDataToSend.append(`certificationFile_${index}`, file);
+            }
+        });
+
         // Call Register API (expecting token and user in response for auto-login, but can work without)
         try {
             const apiBase = import.meta.env.VITE_API_URL || '';
@@ -307,8 +348,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
             const response = await fetch(endpoint, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+                body: formDataToSend,
             });
 
             const result = await response.json();
@@ -343,6 +383,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     last_name: "",
                     birthday: "",
                     certifications: [],
+                    certificationFiles: [],
                     pricing: 50,
                     bio: "",
                     availability: [],
@@ -438,6 +479,31 @@ export default function Register({ onClose, onSwitchToLogin }) {
                               ))}
                             </div>
                         </div>
+
+                        {formData.certifications.map((cert, index) => (
+                          <div key={index} className="auth-field">
+                            <label htmlFor={`cert-upload-${index}`}>Upload proof for {cert}</label>
+                            <input
+                              type="file"
+                              id={`cert-upload-${index}`}
+                              onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                  // Validate file type and size
+                                  if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+                                    toast.error("Invalid file format. Please upload a JPEG or PNG.");
+                                    return;
+                                  }
+                                  if (file.size > 5 * 1024 * 1024) {
+                                    toast.error("File is too large. Maximum size is 5MB.");
+                                    return;
+                                  }
+                                  handleFileUploadChange(index, file);
+                                }
+                              }}
+                            />
+                          </div>
+                        ))}
 
                         <div className="auth-field">
                             <label htmlFor="pricing">Pricing (${formData.pricing} / wk)</label>

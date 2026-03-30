@@ -3,6 +3,8 @@ import { AuthContext } from "../../context/AuthContext";
 import "./Admin.css";
 import toast from "react-hot-toast";
 import ViewCoachApplicationModal from "../../components/ViewCoachApplicationModal.jsx";
+import ViewCoachReportModal from "../../components/ViewCoachReportModal.jsx";
+import {Button} from "react-bootstrap";
 
 export default function Admin() {
     const { isAuthenticated, user , token} = useContext(AuthContext);
@@ -69,12 +71,12 @@ export default function Admin() {
         setCurrentPageUsers(newPage);
     };
 
-    // States for CoachApplications / Pagination
+    // States for Coach Applications / Pagination
     const [coachApplications, setCoachApplications] = useState([]);
-    const [currentPageCoachApplications, setCurrentPageCoachApplications] = useState(1);
+    const [currentPageCoachApplications, setCurrentPageCoachApplications] = useState(1); // Default to page 1
     const [totalPagesCoachApplications, setTotalPagesCoachApplications] = useState(1);
     const [loadingCoachApplications, setLoadingCoachApplications] = useState(false);
-    const coachApplicationsPerPage = 10;
+    const coachApplicationsPerPage = 10; // Default to 10 applications per page
 
     useEffect(() => {
         // Fetch coach applications from the API
@@ -95,7 +97,7 @@ export default function Admin() {
                 }
                 const data = await response.json();
                 setCoachApplications(data.applications);
-                setTotalPagesCoachApplications(data.totalPagesCoachApplications);
+                setTotalPagesCoachApplications(data.totalPages);
             } catch (error) {
                 toast.error(error.message);
             } finally {
@@ -136,7 +138,7 @@ export default function Admin() {
                 }
                 const data = await response.json();
                 setCoachReports(data.reports);
-                setTotalPagesCoachReports(data.totalPagesCoachReports);
+                setTotalPagesCoachReports(data.totalPages);
             } catch (error) {
                 toast.error(error.message);
             } finally {
@@ -149,6 +151,20 @@ export default function Admin() {
 
     const handlePageChangeCoachReports = (newPage) => {
         setCurrentPageCoachReports(newPage);
+    };
+
+    // Add state for ViewCoachReportModal
+    const [showViewCoachReportModal, setShowViewCoachReportModal] = useState(false);
+    const [selectedReportID, setSelectedReportID] = useState(null);
+
+    const handleOpenViewCoachReportModal = (reportID) => {
+        setSelectedReportID(reportID);
+        setShowViewCoachReportModal(true);
+    };
+
+    const handleCloseViewCoachReportModal = () => {
+        setShowViewCoachReportModal(false);
+        setSelectedReportID(null);
     };
 
     return (
@@ -280,7 +296,7 @@ export default function Admin() {
                                         <td>{report.report_id}</td>
                                         <td>{report.name}</td>
                                         <td>{report.status}</td>
-                                        <td><Button></Button></td>
+                                        <td><Button onClick={() => handleOpenViewCoachReportModal(report.report_id)}>View</Button></td>
                                     </tr>
                                 ))
                             ) : (
@@ -290,7 +306,7 @@ export default function Admin() {
                             )}
                             </tbody>
                         </table>
-                    )}
+                    )} 
                     <div className="pagination">
                         <button
                             onClick={() => handlePageChangeCoachReports(currentPageCoachReports - 1)}
@@ -314,11 +330,21 @@ export default function Admin() {
                 </div>
             </div>
 
-            <ViewCoachApplicationModal
-                show={showViewCoachApplicationModal}
-                handleClose={handleCloseViewCoachApplicationModal}
-                coachApplication={selectedCoachApplication}
-            />
+            {selectedCoachApplication && (
+                <ViewCoachApplicationModal
+                    show={showViewCoachApplicationModal}
+                    handleClose={handleCloseViewCoachApplicationModal}
+                    coachId={selectedCoachApplication?.coach_id}
+                />
+            )}
+
+            {selectedReportID && (
+                <ViewCoachReportModal
+                    show={showViewCoachReportModal}
+                    handleClose={handleCloseViewCoachReportModal}
+                    reportID={selectedReportID}
+                />
+            )}
         </section>
         )}
         {user.role !== "A" && <h1>Access to this page is forbidden</h1>}
