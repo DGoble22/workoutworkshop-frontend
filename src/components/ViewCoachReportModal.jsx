@@ -4,6 +4,15 @@ import toast from "react-hot-toast";
 import React, { useState, useContext } from "react";
 import CoachInfoModal from "./CoachInfoModal";
 import { AuthContext } from '../context/AuthContext';
+import ReactDOM from "react-dom";
+
+//star images for ratings
+import onestars from "../images/1_star_NOBG.png"
+import twostars from "../images/2_star_NOBG.png"
+import threestars from "../images/3_star_NOBG.png"
+import fourstars from "../images/4_star_NOBG.png"
+import fivestars from "../images/5_star_NOBG.png"
+
 
 export default function ViewCoachReportModal({show, handleClose, reportID}) {
     const { user , token} = useContext(AuthContext);
@@ -16,6 +25,8 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
     const [disableReason, setDisableReason] = useState("");
     const [disableDuration, setDisableDuration] = useState({ day: "", month: "", year: "" });
     const [banReason, setBanReason] = useState("");
+    const [category, setCategory] = useState("");
+    const [stars, setStars] = useState([]);
 
     useEffect(() => {
         // Fetch specific coach report from the API
@@ -32,20 +43,23 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                     },
                 });
                 if (!response.ok) {
-                    throw new Error("Failed to fetch coach report");
+                    console.error("Failed to fetch coach report");
+                    return;
                 }
                 const data = await response.json();
                 setReport(data);
                 setCoach(data.coach);
             } catch (error) {
-                toast.error(error.message);
+                console.error(error.message);
             } finally {
                 setLoading(false);
             }
-    }
+        }
 
-        fetchCoachReport();
-    }, [reportID]);
+        if (show) {
+            fetchCoachReport();
+        }
+    }, [reportID, show]);
 
     function handleDismissReport() {
         const dismissReport = async () => {
@@ -60,7 +74,8 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                     },
                 });
                 if (!response.ok) {
-                    throw new Error("Failed to dismiss coach report");
+                    console.error("Failed to dismiss coach report");
+                    return;
                 }
                 toast.success("Coach report dismissed successfully!");
                 handleClose();
@@ -73,6 +88,20 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
     }
 
     const handleViewCoachInfo = () => {
+        let categoryValue = "Strength";
+        if (coach.is_nutritionist) {
+            categoryValue = "Strength, Nutrition";
+        }
+        setCategory(categoryValue);
+        let stars
+        if(coach.rating){
+            if (coach.rating >= 4.5){stars = fivestars}
+            else if (coach.rating >= 3.5){stars = fourstars}
+            else if (coach.rating >= 2.5){stars = threestars}
+            else if (coach.rating >= 1.5){stars = twostars}
+            else{stars = onestars}
+        }
+        setStars(stars);
         setShowCoachInfoModal(true);
     };
 
@@ -106,10 +135,11 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                         "Content-Type": "application/json",
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ reason: disableReason, day: disableDuration.day, month: disableDuration.month, year: disableDuration.year }),
+                    body: JSON.stringify({user_id: user.id ,reason: disableReason, day: disableDuration.day, month: disableDuration.month, year: disableDuration.year }),
                 });
                 if (!response.ok) {
-                    throw new Error("Failed to disable coach");
+                    console.error("Failed to disable coach");
+                    return;
                 }
                 toast.success("Coach disabled successfully!");
                 handleClose();
@@ -139,10 +169,11 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({admin_id: user.id, reason: banReason }),
+                    body: JSON.stringify({user_id: user.id, reason: banReason }),
                 });
                 if (!response.ok) {
-                    throw new Error("Failed to ban coach");
+                    console.error("Failed to ban coach");
+                    return;
                 }
                 toast.success("Coach banned successfully!");
                 handleClose();
@@ -160,29 +191,63 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
         setShowBanModal(false);
     };
 
-    return(
-        <>
-            {/* Main modal */}
+
+    if (loading || !report || !coach) {
+        return (
             <Modal show={show} onHide={handleClose} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Coach Report: {coach.name} Report ID: ${report.id})</Modal.Title>
-                    <Button onClick={handleClose}>x</Button>
-                </Modal.Header>
                 <Modal.Body>
-                    <p><strong>Report ID:</strong> {report.report_id}</p>
-                    <Button onClick={handleViewCoachInfo}>View Profile</Button>
+                    <p>Loading...</p>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={handleDismissReport}>
-                        Dismiss Report
-                    </Button>
-                    <Button variant="danger" onClick={handleDisableModal}>
-                        Disable Coach
-                    </Button>
-                    <Button variant="danger" onClick={handleBanModal}>
-                        Ban Coach
-                    </Button>
-                </Modal.Footer>
+            </Modal>
+        );
+    }
+
+    return (
+        <>
+            {showCoachInfoModal &&
+                ReactDOM.createPortal(
+                    <CoachInfoModal
+                        show={showCoachInfoModal}
+                        handleClose={handleCloseCoachInfoModal}
+                        name={coach?.name}
+                        URL={coach?.profile_picture}
+                        price={coach?.pricing}
+                        category={category}
+                        id={coach?.coach_id}
+                        bio={coach?.bio}
+                        rating={stars}
+                        adminView={true}
+                        style={{ zIndex: 2000, position: 'relative' }}
+                    />, 
+                    document.body
+                )
+            }
+
+            {/* Main modal */}
+            <Modal show={show} onHide={handleClose} centered style={{ zIndex: 1050 }} keyboard={false} >
+                <div onClick={(e) => e.stopPropagation()}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{coach?.name}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Button onClick={handleViewCoachInfo} style={{ display: 'block', margin: '0 auto' ,backgroundColor: "#ff0000", borderColor: "#ff0000"}}>View Profile</Button>
+                        <h3 style={{textAlign: "center", marginTop: "10px"}}>Report Details</h3>
+                        <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '16px', marginTop: '16px' }}>
+                            <p>"{report?.reason}"</p>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button style={{backgroundColor: "#14AE5C", borderColor: "#14AE5C"}} onClick={handleDismissReport}>
+                            Dismiss Report
+                        </Button>
+                        <Button style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleDisableModal}>
+                            Disable Coach
+                        </Button>
+                        <Button style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleBanModal}>
+                            Ban Coach
+                        </Button>
+                    </Modal.Footer>
+                </div>
             </Modal>
 
             {/* disable account modal */}
@@ -204,7 +269,7 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                     <Button variant="secondary" onClick={handleModalClose}>
                         Cancel
                     </Button>
-                    <Button variant="warning" onClick={handleDisableConfirm}>
+                    <Button style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleDisableConfirm}>
                         Confirm Disable
                     </Button>
                 </Modal.Footer>
@@ -223,25 +288,11 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                     <Button variant="secondary" onClick={handleModalClose}>
                         Cancel
                     </Button>
-                    <Button variant="danger" onClick={handleBanConfirm}>
+                    <Button style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleBanConfirm}>
                         Confirm Ban
                     </Button>
                 </Modal.Footer>
             </Modal>
-
-            {showCoachInfoModal && (
-                <CoachInfoModal
-                    show={showCoachInfoModal}
-                    handleClose={handleCloseCoachInfoModal}
-                    name={coach.name}
-                    URL={coach.URL}
-                    price={coach.price}
-                    category={coach.category}
-                    id={coach.id}
-                    bio={coach.bio}
-                    rating={coach.rating}
-                />
-            )}
         </>
     )
 }

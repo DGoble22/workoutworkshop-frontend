@@ -26,7 +26,7 @@ const MODAL_STYLES={
   borderRadius:"3%",
   alignItems:"center",
   flexDirection: "column",
-  zIndex:1000,
+  zIndex:2000,
 }
 
 const OVERLAY_STYLES={
@@ -39,7 +39,7 @@ const OVERLAY_STYLES={
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex:1000,
+  zIndex:2000,
 }
 
 const HEADER_STYLES={
@@ -180,48 +180,56 @@ const FIREBUTTON_STYLES={display:"flex",
 
 /*handle edgr case where user is hired so they cannot apply to another coach*/
 
-function Header( { id, handleClose, handleOpenApply, handleOpenReport, handleOpenFire} ){
+function Header( { id, handleClose, handleOpenApply, handleOpenReport, handleOpenFire, adminView} ){
     const [isHired, setIsHired] = useState(false)
     const [hasCoach, setHasCoach] = useState (true) //use to track if the user already has a coach, not implemented
     const {user} = useContext(AuthContext)
 
-
-    const apiBase = import.meta.env.VITE_API_URL;
-    useEffect(() => {
-            axios.get(`${apiBase}/coach/user-coach-sub/${user.id}/${id}`) 
-            .then(res => {setIsHired(res.data["hired"]), setHasCoach(res.data["hasCoach"])})
-            .catch(err => console.log(err))
+    if(!adminView) {
+        const apiBase = import.meta.env.VITE_API_URL;
+        useEffect(() => {
+            axios.get(`${apiBase}/coach/user-coach-sub/${user.id}/${id}`)
+                .then(res => {
+                    setIsHired(res.data["hired"]), setHasCoach(res.data["hasCoach"])
+                })
+                .catch(err => console.log(err))
         }, [])
 
-    if(isHired){
-        return(
-        <>   
-            <button onClick={handleOpenReport} style={REPORTBUTTON_STYLES}>Report</button>
-            <button onClick={handleOpenFire} style={FIREBUTTON_STYLES}>Fire</button>
-            <button onClick={handleClose} style={TEMPButton_Styles}> X </button>
-        </>
+        if (isHired) {
+            return (
+                <>
+                    <button onClick={handleOpenReport} style={REPORTBUTTON_STYLES}>Report</button>
+                    <button onClick={handleOpenFire} style={FIREBUTTON_STYLES}>Fire</button>
+                    <button onClick={handleClose} style={TEMPButton_Styles}> X</button>
+                </>
+            )
+        } else {
+            if (!hasCoach) {
+                return (
+                    <>
+                        <button onClick={handleOpenApply} style={APPLYBUTTON_STYLES}>Apply</button>
+                        <button onClick={handleClose} style={TEMPButton_Styles}> X</button>
+                    </>
+                )
+            } else {
+                return (
+                    <>
+                        <button onClick={handleClose} style={TEMPButton_Styles}> X</button>
+                    </>
+                )
+            }
+        }
+    }else {
+        return (
+            <>
+                <button onClick={handleClose} style={TEMPButton_Styles}> X</button>
+            </>
         )
     }
-    else{
-        if(!hasCoach){
-            return(
-            <>   
-                <button onClick={handleOpenApply} style={APPLYBUTTON_STYLES}>Apply</button>
-                <button onClick={handleClose} style={TEMPButton_Styles}> X </button>
-            </>
-            )
-        }
-        else{
-            return(
-            <>   
-                <button onClick={handleClose} style={TEMPButton_Styles}> X </button>
-            </>
-            )
-        }
-    }
+
 }
 
-export default function CoachInfoModal( {show, handleClose, name, URL, price, category, id, bio, rating} ){
+export default function CoachInfoModal( {show, handleClose, name, URL, price, category, id, bio, rating, adminView} ){
     if(!show){return null;}
 
     const [availablility, setAvailability] = useState([])
@@ -267,7 +275,7 @@ export default function CoachInfoModal( {show, handleClose, name, URL, price, ca
                     <div style={HEADER_STYLES}>
                         {name}
                         <div style={{display:"flex", maxWidth:"60%", width:"100%", height:"75%", marginLeft:"10%", alignItems:"center", flexDirection:"row", justifyContent:"flex-end"}}>
-                            <Header id={id} handleClose={handleClose} handleOpenApply={handleOpenApply} handleOpenReport={handleOpenReport} handleOpenFire={handleOpenFire}/>
+                            <Header id={id} handleClose={handleClose} handleOpenApply={handleOpenApply} handleOpenReport={handleOpenReport} handleOpenFire={handleOpenFire} adminView={adminView}/>
                         </div>
                     </div>
                     <div style={{width:"100%", height:"95%", display:"flex", flexDirection:"column", marginLeft:"5%"}}>{/*MAIN body*/}
