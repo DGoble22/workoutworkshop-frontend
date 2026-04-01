@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import ViewCoachApplicationModal from "../../components/ViewCoachApplicationModal.jsx";
 import ViewCoachReportModal from "../../components/ViewCoachReportModal.jsx";
 import {Button} from "react-bootstrap";
+import AdminExerciseModal from '../../components/AdminExerciseModal';
 
 export default function Admin() {
     const { isAuthenticated, user , token} = useContext(AuthContext);
@@ -47,7 +48,7 @@ export default function Admin() {
                     },
                 });
                 if (!response.ok) {
-                    throw new Error("Failed to fetch users");
+                    console.error("Failed to fetch users");
                 }
                 const data = await response.json();
                 setUsers(data.users);
@@ -93,7 +94,7 @@ export default function Admin() {
                     },
                 });
                 if (!response.ok) {
-                    throw new Error("Failed to fetch coach applications");
+                    console.error("Failed to fetch coach applications");
                 }
                 const data = await response.json();
                 setCoachApplications(data.applications);
@@ -134,7 +135,7 @@ export default function Admin() {
                     },
                 });
                 if (!response.ok) {
-                    throw new Error("Failed to fetch coach reports");
+                    console.error("Failed to fetch coach reports");
                 }
                 const data = await response.json();
                 setCoachReports(data.reports);
@@ -165,6 +166,86 @@ export default function Admin() {
     const handleCloseViewCoachReportModal = () => {
         setShowViewCoachReportModal(false);
         setSelectedReportID(null);
+    };
+
+    //States and hook for exercises library management
+    const [Arms, setArms] = useState([]);
+    const [Legs, setLegs] = useState([]);
+    const [Chest, setChest] = useState([]);
+    const [Back, setBack] = useState([])
+    const [Cardio, setCardio] = useState([])
+    const [Core, setCore] = useState([])
+
+    const fetchWorkouts = async () => {
+        try {
+            const apiBase = import.meta.env.VITE_API_URL;
+            const url = `${apiBase}/admin/exercises`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+            if (!response.ok) {
+                console.error("Failed to fetch exercises");
+            }
+            const data = await response.json();
+
+            const grouped = data.data || {};
+            setArms(grouped.Arms || []);
+            setLegs(grouped.Legs || []);
+            setChest(grouped.Chest || []);
+            setBack(grouped.Back || []);
+            setCardio(grouped.Cardio || []);
+            setCore(grouped.Core || []);
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchWorkouts();
+    }, [token]);
+
+    const [collapsedTables, setCollapsedTables] = useState({
+        Back: true,
+        Cardio: true,
+        Chest: true,
+        Core: true,
+        Legs: true,
+        Arms: true,
+    });
+
+    const toggleTable = (muscleGroup) => {
+        setCollapsedTables((prevState) => ({
+            ...prevState,
+            [muscleGroup]: !prevState[muscleGroup],
+        }));
+    };
+
+    // Add state to manage the modal visibility and selected exercise
+    const [showExerciseModal, setShowExerciseModal] = useState(false);
+    const [selectedExercise, setSelectedExercise] = useState(null);
+
+    // Function to handle opening the modal
+    const handleOpenExerciseModal = (exercise = null) => {
+        if (exercise) {
+            const transformedExercise = {
+                ...exercise,
+                muscleGroup: exercise.muscle_group, // manual mapping because it wouldent work without
+            };
+            setSelectedExercise(transformedExercise);
+        } else {
+            setSelectedExercise(null);
+        }
+        setShowExerciseModal(true);
+    };
+
+    // Function to handle closing the modal
+    const handleCloseExerciseModal = () => {
+        setShowExerciseModal(false);
+        setSelectedExercise(null);
     };
 
     return (
@@ -327,6 +408,186 @@ export default function Admin() {
                 <div className="admin-dashboard-card">
                     <h3>Edit exercise library</h3>
                     <p>Add or remove workouts</p>
+
+                    <div className="exercise-table">
+                        <h3 onClick={() => toggleTable('Chest')} style={{ cursor: 'pointer' }}>
+                            Chest Exercises {collapsedTables.Chest ? '▼' : '▲'}
+                        </h3>
+                        {!collapsedTables.Chest && (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exercise Name</th>
+                                        <th>Equipment</th>
+                                        <th>Muscle Group</th>
+                                        <th>Video</th>
+                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Chest.map((exercise) => (
+                                        <tr key={exercise.exercise_id}>
+                                            <td>{exercise.name}</td>
+                                            <td>{exercise.equipment}</td>
+                                            <td>{exercise.muscle_group}</td>
+                                            <td>{exercise.video_url}</td>
+                                            <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    <div className="exercise-table">
+                        <h3 onClick={() => toggleTable('Arms')} style={{ cursor: 'pointer' }}>
+                            Arms Exercises {collapsedTables.Arms ? '▼' : '▲'}
+                        </h3>
+                        {!collapsedTables.Arms && (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exercise Name</th>
+                                        <th>Equipment</th>
+                                        <th>Muscle Group</th>
+                                        <th>Video</th>
+                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Arms.map((exercise) => (
+                                        <tr key={exercise.exercise_id}>
+                                            <td>{exercise.name}</td>
+                                            <td>{exercise.equipment}</td>
+                                            <td>{exercise.muscle_group}</td>
+                                            <td>{exercise.video_url}</td>
+                                            <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    <div className="exercise-table">
+                        <h3 onClick={() => toggleTable('Legs')} style={{ cursor: 'pointer' }}>
+                            Legs Exercises {collapsedTables.Legs ? '▼' : '▲'}
+                        </h3>
+                        {!collapsedTables.Legs && (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exercise Name</th>
+                                        <th>Equipment</th>
+                                        <th>Muscle Group</th>
+                                        <th>Video</th>
+                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Legs.map((exercise) => (
+                                        <tr key={exercise.exercise_id}>
+                                            <td>{exercise.name}</td>
+                                            <td>{exercise.equipment}</td>
+                                            <td>{exercise.muscle_group}</td>
+                                            <td>{exercise.video_url}</td>
+                                            <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    <div className="exercise-table">
+                        <h3 onClick={() => toggleTable('Back')} style={{ cursor: 'pointer' }}>
+                            Back Exercises {collapsedTables.Back ? '▼' : '▲'}
+                        </h3>
+                        {!collapsedTables.Back && (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exercise Name</th>
+                                        <th>Equipment</th>
+                                        <th>Muscle Group</th>
+                                        <th>Video</th>
+                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Back.map((exercise) => (
+                                        <tr key={exercise.exercise_id}>
+                                            <td>{exercise.name}</td>
+                                            <td>{exercise.equipment}</td>
+                                            <td>{exercise.muscle_group}</td>
+                                            <td>{exercise.video_url}</td>
+                                            <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    <div className="exercise-table">
+                        <h3 onClick={() => toggleTable('Cardio')} style={{ cursor: 'pointer' }}>
+                            Cardio Exercises {collapsedTables.Cardio ? '▼' : '▲'}
+                        </h3>
+                        {!collapsedTables.Cardio && (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exercise Name</th>
+                                        <th>Equipment</th>
+                                        <th>Muscle Group</th>
+                                        <th>Video</th>
+                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Cardio.map((exercise) => (
+                                        <tr key={exercise.exercise_id}>
+                                            <td>{exercise.name}</td>
+                                            <td>{exercise.equipment}</td>
+                                            <td>{exercise.muscle_group}</td>
+                                            <td>{exercise.video_url}</td>
+                                            <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    <div className="exercise-table">
+                        <h3 onClick={() => toggleTable('Core')} style={{ cursor: 'pointer' }}>
+                            Core Exercises {collapsedTables.Core ? '▼' : '▲'}
+                        </h3>
+                        {!collapsedTables.Core && (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exercise Name</th>
+                                        <th>Equipment</th>
+                                        <th>Muscle Group</th>
+                                        <th>Video</th>
+                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Core.map((exercise) => (
+                                        <tr key={exercise.exercise_id}>
+                                            <td>{exercise.name}</td>
+                                            <td>{exercise.equipment}</td>
+                                            <td>{exercise.muscle_group}</td>
+                                            <td>{exercise.video_url}</td>
+                                            <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -345,9 +606,18 @@ export default function Admin() {
                     reportID={selectedReportID}
                 />
             )}
+
+            {showExerciseModal && (
+                <AdminExerciseModal
+                    show={showExerciseModal}
+                    handleClose={handleCloseExerciseModal}
+                    exercise={selectedExercise}
+                    onExerciseChange={fetchWorkouts}
+                />
+            )}
         </section>
         )}
-        {user.role !== "A" && <h1>Access to this page is forbidden</h1>}
+        {user?.role !== "A" && <h1>Access to this page is forbidden</h1>}
         </>
     );
 }
