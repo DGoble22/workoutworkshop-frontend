@@ -41,6 +41,7 @@ const Navbar = () => {
     const handleLogout = () => {
         handleCloseModals();
         logout();
+        window.location.href = '/'; // Redirect to home page after logout
     };
 
     const name = (user && (user.first_name))
@@ -103,7 +104,7 @@ const Navbar = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/workoutbuilder" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/workoutbuilder' ? 'active' : ''}`}>
+                            <Link to="/workouts" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/workoutbuilder' ? 'active' : ''}`}>
                                 Workout Builder
                             </Link>
                         </li>

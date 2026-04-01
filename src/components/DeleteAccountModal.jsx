@@ -1,10 +1,12 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import './AuthModal.css';
 
 export default function DeleteAccountModal({ onClose }) {
-    const { token, setUser } = useContext(AuthContext);
+    const { token, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [isDeleting, setIsDeleting] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -26,15 +28,12 @@ export default function DeleteAccountModal({ onClose }) {
             if (response.ok && result.status === 'success') {
                 toast.success("Your account has been successfully deleted.");
 
-                // get rid of token in localStorage
+                // Clear all auth state before navigation.
                 localStorage.removeItem('token');
+                logout();
 
-                // Delete user in react state
-                setUser(null);
-
-                // Close modal and redirect to homepage
                 onClose();
-                window.location.href = '/';
+                navigate('/');
             } else {
                 setErrorMsg(result.message || "Failed to delete account.");
                 setIsDeleting(false);

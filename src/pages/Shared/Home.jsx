@@ -14,32 +14,34 @@ export default function Home() {
     const todayDate = new Date().toISOString().split('T')[0];
 
     useEffect(() => {
-        // Fetch the daily rating if it exists for today
-        const fetchDailyRating = async () => {
-            try {
-                const apiBase = import.meta.env.VITE_API_URL;
-                const url = `${apiBase}/user/check-survey`;
-                const response = await fetch(`${url}?date=${todayDate}`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: token // Include user token for backend to identify user
+        if (isAuthenticated) {
+            // Fetch the daily rating if it exists for today
+            const fetchDailyRating = async () => {
+                try {
+                    const apiBase = import.meta.env.VITE_API_URL;
+                    const url = `${apiBase}/user/check-survey`;
+                    const response = await fetch(`${url}?date=${todayDate}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: token // Include user token for backend to identify user
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && data.rating) {
+                            setDailyRating(data.rating);
+                        }
+                    } else {
+                        console.error("Failed to fetch daily rating.");
                     }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.rating) {
-                        setDailyRating(data.rating);
-                    }
-                } else {
-                    console.error("Failed to fetch daily rating.");
+                } catch (error) {
+                    console.error("Error fetching daily rating:", error);
                 }
-            } catch (error) {
-                console.error("Error fetching daily rating:", error);
-            }
-        };
+            };
 
-        fetchDailyRating();
-    }, [selectedDate]);
+            fetchDailyRating();
+        }
+    }, [isAuthenticated, selectedDate]);
 
     const handleOpenLogin = () => {
         setShowLogin(true);

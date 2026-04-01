@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import YouTube from 'react-youtube'; //npm i react-youtube <- used to download library
+import benchPress from '../videos/benchPress.mp4'
+import benchPressThumbnail from '../images/benchPress Thumbnail.png'
 
 const CARD_STYLE={
-    diplay:"flex",
+    display:"flex",
     width:"55%",
     maxWidth:"55%",
     minWidth:"55%",
@@ -34,41 +35,90 @@ const HEADER_STYLES={
     paddingLeft:"15px"
 }
 
-const ADDBUTTON_STYLES={
+const REMOVEBUTTON_STYLES={
     display:"flex",
-    border:"none",
-    backgroundColor:"#000000",
-    color: "#ffffff",
+    border:"solid #ff0000",
+    background:"none",
+    color: "#ff0000",
     borderRadius:"100%",
     height:"35px",
     width:"35px",
     alignItems:"center",
     justifyContent:"center",
-    fontSize:"150%"
+    fontSize:"30px",
+    fontWeight: "bold",
+    paddingBottom: "7px"
 }
 
-const OPTS={
-    height:"95px",
-    width:"214",
-    playerVars: {
-      autoplay: 0, // This explicitly disables autoplay
-    },
+const WORKOUTDATA_BARS={
+    display:"flex",
+    width:"100%", 
+    minWidth:"100%", 
+    maxWidth:"100%", 
+    height:"20%",
+    alignItems:"center",
+    justifyContent:"space-between",
+    color:"#ffffff"
+
 }
 
-export default function ExerciseCard({show, handleClose, URL, name}){
-    if(!show){return null}
+const INPUTBAR_STYlES={
+    border:"none",
+    width:"70%",
+    backgroundColor:"#D9D9D9",
+    borderRadius:"10px",
+    textAlign:"center"
+
+}
+
+export default function ExerciseCard({ URL, name, manage, handleDelete, exerciseID, planID}){
+
+    const [showControls, setShowControls] = useState(false)
+
+    const [reps, setReps] = useState("10")
+    const [sets, setSets] = useState("3")
+    const [weight, setWeight] = useState("135")
+
+
+    //updateReps = () => { /*handle updating the number of reps on the exercise with the exerciseID & planID*/}
+    //updateSets = () => { /*handle updating the number of sets on the exercise with the exerciseID & planID*/}
+    //updateWeight = () => { /*handle updating theweight of the exercise with the exerciseID & planID*/}
+    
+    const deleteWorkout = () => {
+        /*handle deleting exercise from planned workout in DB*/
+        console.log("WIP")
+        handleDelete() // delete using removeFromWorkout(index) in workoutbuilder
+    }
 
     return(
         <div style={CARD_STYLE}>
-            <div style={HEADER_STYLES}>
+            <div style={HEADER_STYLES}> {/* Header */}
                 {name}
-                <button style={ADDBUTTON_STYLES}>+</button>
+                {manage &&
+                    <button onClick={()=>deleteWorkout()} style={REMOVEBUTTON_STYLES}>-</button>
+                }
             </div>
-            <div style={{width:"100%", height:"10px", backgroundColor:"#0000"}}/> {/*separator*/}
-            <div style={{width:"100%", height:"214px"}}>
-                <YouTube videoID={URL} opts={OPTS}/>
+
+            <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>{/*main body*/}
+                <div style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
+                    <video src={benchPress} style={{width:"100%", height:"100%", objectFit:"cover"}} onClick={()=>setShowControls(true)} controls={showControls} poster={benchPressThumbnail}/>
+                </div>
+                <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
+                    <div style={WORKOUTDATA_BARS}>
+                        Reps:
+                        <input onChange={(e)=>setReps(e.target.value)} style={INPUTBAR_STYlES} defaultValue={reps} disabled={!manage}/>
+                    </div>
+
+                    <div style={WORKOUTDATA_BARS}>
+                        Sets:
+                        <input onChange={(e)=>setSets(e.target.value)} style={INPUTBAR_STYlES} defaultValue={sets} disabled={!manage}/>
+                    </div>
+                    <div style={WORKOUTDATA_BARS}>
+                        Weight:
+                        <input onChange={(e)=>setWeight(e.target.value)} style={INPUTBAR_STYlES} defaultValue={weight} disabled={!manage}/>
+                    </div>
+                </div>
             </div>
-            
         </div>  
     )
 

@@ -17,6 +17,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
         birthday: "",
         // coach fields
         certifications: [],
+        certificationFiles: [], // Add field for certification files
         pricing: 50,
         bio: "",
         availability: [],
@@ -75,8 +76,8 @@ export default function Register({ onClose, onSwitchToLogin }) {
     };
 
     // Determine total steps and display step number based on whether user is registering as a coach
-    const totalSteps = formData.isCoach ? 5 : 4;
-    const displayStep = formData.isCoach ? step : (step >= 4 ? step - 1 : step);
+    const totalSteps = formData.isCoach ? 6 : 4;
+    const displayStep = formData.isCoach ? step : (step >= 5 ? step - 2 : step);
 
     // Check username availability (POST to /auth/check-username expecting { available: true/false })
     const checkUsernameAvailability = async (username) => {
@@ -170,15 +171,6 @@ export default function Register({ onClose, onSwitchToLogin }) {
             }
 
             if (formData.isCoach) {
-                // certifications: at least one
-                if (!formData.certifications || formData.certifications.length === 0) {
-                    toast.error('Please select at least one certification');
-                    return;
-                }
-                if (formData.pricing === undefined || formData.pricing === null || formData.pricing === '') {
-                    toast.error('Please set your pricing');
-                    return;
-                }
                 // bio required for coach
                 if (!formData.bio || !formData.bio.trim()) {
                     toast.error('Please enter a bio');
@@ -187,22 +179,50 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 setStep(3);
                 return;
             }
-            setStep(4);
+            // Skip step 4 for non-coach users
+            setStep(5);
             return;
         }
 
-        // validation for step 3 (coach availability)
+        // validation for step 3 (certifications)
         if (step === 3) {
-            if (formData.isCoach && hasInvalidAvailability(formData.availability)) {
-                toast.error('Please add at least one valid availability time slot');
-                return;
+            if (formData.isCoach) {
+                // certifications: at least one
+                if (!formData.certifications || formData.certifications.length === 0) {
+                    toast.error('Please select at least one certification');
+                    return;
+                }
+                if (formData.certifications.some((_, index) => !formData.certificationFiles[index])) {
+                    toast.error('Please upload proof for all selected certifications');
+                    return;
+                }
             }
             setStep(4);
             return;
         }
 
-        // validation for step 4 (goals)
+        // validation for step 4 (availability and pricing)
         if (step === 4) {
+            if (formData.isCoach) {
+                if (hasInvalidAvailability(formData.availability)) {
+                    toast.error('Please add at least one valid availability time slot');
+                    return;
+                }
+                if (formData.pricing === undefined || formData.pricing === null || formData.pricing === '') {
+                    toast.error('Please set your pricing');
+                    return;
+                }
+            } else {
+                // Skip step 4 for non-coach users
+                setStep(5);
+                return;
+            }
+            setStep(5);
+            return;
+        }
+
+        // validation for step 5 (goals)
+        if (step === 5) {
             if (!formData.goal_type) {
                 toast.error('Please select a goal type before continuing.');
                 return;
@@ -217,17 +237,21 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 toast.error('Please set your goal weight');
                 return;
             }
-            setStep(5);
+            setStep(6);
         }
     };
 
     const goBack = () => {
+        if (step === 6) {
+            setStep(5);
+            return;
+        }
         if (step === 5) {
-            setStep(4);
+            setStep(formData.isCoach ? 4 : 3);
             return;
         }
         if (step === 4) {
-            setStep(formData.isCoach ? 3 : 2);
+            setStep(3);
             return;
         }
         if (step === 3) {
@@ -239,6 +263,22 @@ export default function Register({ onClose, onSwitchToLogin }) {
             return;
         }
         setStep(1);
+    };
+
+    const handleFileUploadChange = (index, file) => {
+        setFormData((prev) => {
+            const updatedFiles = [...prev.certificationFiles];
+            updatedFiles[index] = file;
+            return { ...prev, certificationFiles: updatedFiles };
+        });
+    };
+
+    const normalizeAvailability = (availability) => {
+        return availability.map(({ dow, start_time, end_time }) => ({
+            dow,
+            start_time: `${start_time}:00`, // Ensure time format includes seconds
+            end_time: `${end_time}:00`,
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -275,6 +315,8 @@ export default function Register({ onClose, onSwitchToLogin }) {
             }
         }
 
+        const normalizedAvailability = normalizeAvailability(formData.availability);
+
         // build payload
         const payload = {
             username: formData.username,
@@ -283,10 +325,11 @@ export default function Register({ onClose, onSwitchToLogin }) {
             first_name: formData.first_name,
             last_name: formData.last_name,
             birthday: formData.birthday,
-            certifications: formData.isCoach ? formData.certifications : undefined,
+            certifications: formData.certifications,
+            certificationFiles: formData.certificationFiles.map((file) => file ? file.name : null), // Include file names
             pricing: formData.isCoach ? formData.pricing : undefined,
             bio: formData.isCoach ? formData.bio : undefined,
-            availability: formData.isCoach ? formData.availability : undefined,
+            availability: normalizedAvailability,
             current_weight: formData.current_weight,
             goal_weight: formData.goal_weight,
             goal_type: formData.goal_type,
@@ -300,6 +343,23 @@ export default function Register({ onClose, onSwitchToLogin }) {
             cardCVC: formData.cardCVC,
         };
 
+        const formDataToSend = new FormData();
+        Object.keys(payload).forEach((key) => {
+            if (key === "availability") {
+                formDataToSend.append(key, JSON.stringify(payload[key]));
+            } else if (Array.isArray(payload[key])) {
+                payload[key].forEach((item) => formDataToSend.append(key, item));
+            } else if (payload[key] !== undefined) {
+                formDataToSend.append(key, payload[key]);
+            }
+        });
+
+        formData.certificationFiles.forEach((file, index) => {
+            if (file) {
+                formDataToSend.append(`certificationFile_${index}`, file);
+            }
+        });
+
         // Call Register API (expecting token and user in response for auto-login, but can work without)
         try {
             const apiBase = import.meta.env.VITE_API_URL || '';
@@ -307,8 +367,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
             const response = await fetch(endpoint, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+                body: formDataToSend,
             });
 
             const result = await response.json();
@@ -343,6 +402,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     last_name: "",
                     birthday: "",
                     certifications: [],
+                    certificationFiles: [],
                     pricing: 50,
                     bio: "",
                     availability: [],
@@ -381,11 +441,13 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     <div className="auth-field">
                         <label htmlFor="username">Username</label>
                         <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} required placeholder="Enter a username"/>
+                        {formData.username !== "" && (
                         <div style={{ height: '20px', marginTop: '6px' }}>
                           {checkingUsername && <span style={{ color: '#666' }}>Checking availability...</span>}
                           {!checkingUsername && usernameAvailable === true && <span style={{ color: 'green' }}>Username available</span>}
                           {!checkingUsername && usernameAvailable === false && <span style={{ color: 'red' }}>Username already taken</span>}
                         </div>
+                        )}
                     </div>
 
                     <div className="auth-field">
@@ -429,22 +491,6 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     {formData.isCoach && (
                       <>
                         <div className="auth-field">
-                            <label>Certifications</label>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                              {certificationOptions.map(opt => (
-                                <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <input type="checkbox" name="certifications" value={opt} checked={formData.certifications.includes(opt)} onChange={handleChange} /> {opt}
-                                </label>
-                              ))}
-                            </div>
-                        </div>
-
-                        <div className="auth-field">
-                            <label htmlFor="pricing">Pricing (${formData.pricing} / wk)</label>
-                            <input type="range" id="pricing" name="pricing" min="0" max="500" value={formData.pricing} onChange={handleChange} />
-                        </div>
-
-                        <div className="auth-field">
                             <label htmlFor="bio">Bio</label>
                             <textarea id="bio" name="bio" value={formData.bio} onChange={handleChange} placeholder="Tell users about yourself" />
                         </div>
@@ -458,8 +504,54 @@ export default function Register({ onClose, onSwitchToLogin }) {
                   </form>
                 )}
 
-                {/* Step 3 Coach Availability */}
+                {/* Step 3 Coach Certifications */}
                 {step === 3 && formData.isCoach && (
+                  <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
+                    <div className="auth-field">
+                        <label>Certifications</label>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            {certificationOptions.map(opt => (
+                                <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <input type="checkbox" name="certifications" value={opt} checked={formData.certifications.includes(opt)} onChange={handleChange} /> {opt}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {formData.certifications.map((cert, index) => (
+                      <div key={index} className="auth-field">
+                        <label htmlFor={`cert-upload-${index}`}>Upload proof for {cert}</label>
+                        <input
+                          type="file"
+                          id={`cert-upload-${index}`}
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              // Validate file type and size
+                              if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+                                toast.error("Invalid file format. Please upload a JPEG or PNG.");
+                                return;
+                              }
+                              if (file.size > 5 * 1024 * 1024) {
+                                toast.error("File is too large. Maximum size is 5MB.");
+                                return;
+                              }
+                              handleFileUploadChange(index, file);
+                            }
+                          }}
+                        />
+                      </div>
+                    ))}
+
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
+                      <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
+                      <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Step 4 Coach Availability and Pricing */}
+                {step === 4 && formData.isCoach && (
                   <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
                     <div className="auth-field">
                         <label>Availability</label>
@@ -469,15 +561,20 @@ export default function Register({ onClose, onSwitchToLogin }) {
                         />
                     </div>
 
+                    <div className="auth-field">
+                        <label htmlFor="pricing">Pricing (${formData.pricing} / wk)</label>
+                        <input type="range" id="pricing" name="pricing" min="0" max="500" value={formData.pricing} onChange={handleChange} />
+                    </div>
+
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
-                      <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
-                      <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+                        <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
+                        <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
                     </div>
                   </form>
                 )}
 
-                {/* Step 4 Current Weight, Goal Weight, Goal */}
-                {step === 4 && (
+                {/* Step 5 Current Weight, Goal Weight, Goal */}
+                {step === 5 && (
                   <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="current_weight">Current Weight: {formData.current_weight} lbs</label>
@@ -525,7 +622,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 )}
 
                 {/* Optional Payment details */}
-                {step === 5 && (
+                {step === 6 && (
                   <form onSubmit={handleSubmit} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="cardName">Name on Card</label>
