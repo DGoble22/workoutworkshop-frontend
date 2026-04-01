@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import filter from "../../images/FilterButton.png";
 import Image from 'react-bootstrap/Image';
 import Dropdown from 'react-bootstrap/Dropdown';
 
+// Styling
 const DOTWCARD_STYLES = {
     border: "1px solid #ffffff5a",
     flex: 1,
@@ -63,10 +65,106 @@ const EXERCISECATEGORY_STYLES = {
     cursor: "pointer"
 };
 
-//Main interface
+const EXERCISE_CARD_WRAPPER = {
+    display: "flex",
+    flexDirection: "column",
+    width: "90%",
+    backgroundColor: "#4D4343",
+    borderRadius: "15px",
+    marginTop: "10px",
+    overflow: "hidden",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+};
+
+const EXERCISE_CARD_HEADER = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#BBAEAC",
+    color: "#000000",
+    padding: "8px 15px",
+    fontWeight: "bold",
+    fontSize: "1.1rem"
+};
+
+const ADD_BUTTON_STYLES = {
+    backgroundColor: "#000000",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "50%",
+    width: "25px",
+    height: "25px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "1.2rem",
+    paddingBottom: "2px"
+};
+
+const EXERCISE_CARD_BODY = {
+    padding: "15px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "0.9rem",
+    color: "#d9d9d9"
+};
+
+// Main Component
 export default function WorkoutBuilder() {
+    //State variables
+    const [exercises, setExercises] = useState([]);
+    const [expandedCategory, setExpandedCategory] = useState(null);
+    const [workoutPlan, setWorkoutPlan] = useState([]);
+
+    // Grab exercises from the Flask backend when component mounts
+    useEffect(() => {
+        const fetchExercises = async () => {
+            try {
+                const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+                const response = await axios.get(`${apiBase}/api/workouts/exercises`);
+
+                if (response.data && response.data.data) {
+                    setExercises(response.data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching exercises.", error);
+            }
+        };
+
+        fetchExercises();
+    }, []);
+
+    //Group exercises by muscle group
+    const groupedExercises = exercises.reduce((groups, exercise) => {
+        const group = exercise.muscle_group;
+        if (!groups[group]) {
+            groups[group] = [];
+        }
+        groups[group].push(exercise);
+        return groups;
+    }, {});
+
+    //Expand category, close if same category is clicked again
+    const toggleCategory = (category) => {
+        setExpandedCategory(expandedCategory === category ? null : category);
+    };
+
+    //Search bar, doesn't work yet
     const handleSearch = (e) => {
         console.log("Searching for:", e.target.value);
+    };
+
+    //Add exercise to work out
+    const addToWorkout = (exercise) => {
+        setWorkoutPlan([...workoutPlan, exercise]);
+    };
+
+    //Remove exercise from workout
+    const removeFromWorkout = (indexToRemove) => {
+        setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));
     };
 
     return (
@@ -93,7 +191,8 @@ export default function WorkoutBuilder() {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                {["Arms", "Chest", "Back", "Core", "Legs", "Cardio"].map(group => (
+                                {/* Adds exercises from database */}
+                                {Object.keys(groupedExercises).map(group => (
                                     <Dropdown.Item key={group}>{group}</Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -102,17 +201,53 @@ export default function WorkoutBuilder() {
 
                     {/* Categories Scroll */}
                     <div style={{ display: "flex", flex: 1, width: "100%", flexDirection: "column", alignItems: "center", overflowY: "auto", paddingBottom: "20px" }}>
-                        {["Chest", "Legs", "Arms", "Back", "Cardio", "Core"].map(category => (
-                            <div key={category} style={EXERCISECATEGORY_STYLES}>
-                                <div>{category}</div>
-                                <div>V</div>
-                            </div>
+
+                        {Object.keys(groupedExercises).map(category => (
+                            <React.Fragment key={category}>
+                                {/* Category Header */}
+                                <div style={EXERCISECATEGORY_STYLES} onClick={() => toggleCategory(category)}>
+                                    <div style={{ fontWeight: "bold" }}>{category}</div>
+                                    <div>{expandedCategory === category ? "Λ" : "V"}</div>
+                                </div>
+
+                                {/* Exercises in category */}
+                                {expandedCategory === category && groupedExercises[category]?.map(exercise => (
+                                    <div key={exercise.exercise_id} style={EXERCISE_CARD_WRAPPER}>
+
+                                        {/* Card Header: Name and + Button */}
+                                        <div style={EXERCISE_CARD_HEADER}>
+                                            <span>{exercise.name}</span>
+                                            <button
+                                                style={ADD_BUTTON_STYLES}
+                                                onClick={() => addToWorkout(exercise)}
+                                                title="Add to workout"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+
+                                        {/* Equipment Needed */}
+                                        <div style={EXERCISE_CARD_BODY}>
+                                            <span>Equipment: {exercise.equipment_needed || "None"}</span>
+                                        </div>
+
+                                    </div>
+                                ))}
+                            </React.Fragment>
                         ))}
+
+                        {/* While exercises are being queried */}
+                        {Object.keys(groupedExercises).length === 0 && (
+                            <div style={{ color: "#4D4343", marginTop: "20px", textAlign: "center", width: "80%" }}>
+                                Loading exercises
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Manage Workouts */}
                 <div style={{ display: "flex", flex: 1, flexDirection: "column", overflow: "hidden" }}>
+
                     {/* Right Side Header */}
                     <div style={{ display: "flex", width: "100%", height: "10%", backgroundColor: "#711A19", alignItems: "center", justifyContent: "flex-end", paddingRight: "20px", gap: "15px" }}>
                         <button style={HEADERBUTTON_STYLES}>Manage</button>
@@ -120,8 +255,27 @@ export default function WorkoutBuilder() {
                     </div>
 
                     {/* Built Workout */}
-                    <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
-                        {/* Selected exercises */}
+                    <div style={{ flex: 1, overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+
+                        {workoutPlan.length === 0 ? (
+                            <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
+                        ) : (
+                            workoutPlan.map((exercise, index) => (
+                                <div key={index} style={{ display: "flex", justifyContent: "space-between", backgroundColor: "#D9D9D9", padding: "15px", borderRadius: "10px", alignItems: "center" }}>
+                                    <div>
+                                        <strong style={{ fontSize: "1.2rem" }}>{exercise.name}</strong>
+                                        <div style={{ fontSize: "0.9rem", color: "#555" }}>{exercise.muscle_group} | {exercise.equipment_needed}</div>
+                                    </div>
+                                    <button
+                                        onClick={() => removeFromWorkout(index)}
+                                        style={{ backgroundColor: "#711A19", color: "white", border: "none", borderRadius: "5px", padding: "8px 15px", cursor: "pointer" }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            ))
+                        )}
+
                     </div>
                 </div>
 
