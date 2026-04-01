@@ -70,7 +70,7 @@ export default function WorkoutBuilder() {
     };
 
     return (
-        <div style={{ display: "flex", width: "100%", height: "calc(100vh - 80px)", flexDirection: "column", marginTop: "80px", overflow: "hidden" }}>
+        <div style={{ display: "flex", width: "100%", height: "calc(100vh - 65px)", flexDirection: "column", overflow: "hidden" }}>
 
             {/* Days of the week */}
             <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px" }}>
