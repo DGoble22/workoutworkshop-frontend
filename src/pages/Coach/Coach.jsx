@@ -4,7 +4,7 @@ import EditCoachProfile from "./EditCoachProfile"
 import CreateMealPlan from "./CreateMealPlan"
 import ChatModal from "../../components/ChatModal"
 import Image from "react-bootstrap/Image"
-import DefaultProfilePic from "../../images/DefaultProfile.jpg"
+import DefaultProfilePic from "../../images/defaultProfile.jpg"
 
 const VIEWS = {
     DASHBOARD: "dashboard",
@@ -109,7 +109,7 @@ const TD_STYLES = {
     fontSize: "0.95rem"
 }
 
-function RequestCard({ request, onAccept, onReject }) {
+export default function RequestCard({ request, onAccept, onReject }) {
     const imgURL = request.profile_picture_url || DefaultProfilePic
     return (
         <div style={REQUEST_CARD_STYLES}>

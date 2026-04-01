@@ -3,6 +3,7 @@ import filter from "../../images/FilterButton.png"
 import Image from 'react-bootstrap/Image';
 import axios from 'axios'
 import Dropdown from 'react-bootstrap/Dropdown';
+import ExerciseCard from "../../components/ExerciseCard";
 
 const DOTWCARD_STYLES={
     border: "solid #ffffff5a",
@@ -149,7 +150,7 @@ export default function WorkoutBuilder() {
                         </div>
 
                     </div>
-  
+                
                 </div> {/* end of find workouts*/}
 
                 <div style={{display:"flex", width:"65%", minWidth:"65%", maxWidth:"65%", height:"100%", minHeight:"100%", maxHeight:"100%", overflowY:"auto", alignItems:"center", flexDirection:"column"}}> {/* manager workouts*/}
@@ -157,6 +158,7 @@ export default function WorkoutBuilder() {
                         <button style={HEADERBUTTON_STYLES}>Manage</button>
                         <button style={HEADERBUTTON_STYLES}>Add Group</button>
                     </div>
+                    <ExerciseCard show={true} URL={"K4TOrB7at0Y"} name={"Test"}/>
                 </div>
             </div>
         </div>
