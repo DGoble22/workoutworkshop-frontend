@@ -4,6 +4,7 @@ import filter from "../../images/FilterButton.png";
 import Image from 'react-bootstrap/Image';
 import Dropdown from 'react-bootstrap/Dropdown';
 import ExerciseCard from "../../components/ExerciseCard";
+import { addDays, format } from 'date-fns' //npm i date-fns
 
 // Styling
 const DOTWCARD_STYLES = {
@@ -119,9 +120,10 @@ export default function WorkoutBuilder() {
     const [exercises, setExercises] = useState([]);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [workoutPlan, setWorkoutPlan] = useState([]);
-    const [workoutDate, setWorkoutDate] = useState("")
 
-    const [manage, setManage] = useState(false);
+    const [workoutDate, setWorkoutDate] = useState("") //stores date in MM/dd/yyyy format
+
+    const [manage, setManage] = useState(false); //handles if user can change exercise data
 
     // Grab exercises from the Flask backend when component mounts
     useEffect(() => {
@@ -171,16 +173,40 @@ export default function WorkoutBuilder() {
         setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));
     };
 
+    //enable management options for workout in workout builder
     const handleManage = () =>{
         if(manage){setManage(false)}
         else {setManage(true)}
     }
 
-    const getDate= (selectedDate) =>{
-        let today = new Date()
-        let DOW = today.getDay() // gets index value for day in week 0 for sun, 1 for mon, ..., 6 for sat
+    //find the date for the weekly builder: gives value in MM/dd/yyyy format
+    const findDate = (day) => {
 
-        
+        //get the index of the date
+        let index = -1
+        switch(day){
+            case 'Sun': index =0; break;
+            case 'Mon': index =1; break;
+            case 'Tue': index =2; break;
+            case 'Wed': index =3; break;
+            case 'Thu': index =4; break;
+            case 'Fri': index =5; break;
+            case 'Sat': index =6; break;
+            default: console.log("error with retrieving index");
+        }
+
+        //create date object and get todays date as integer
+        let today = new Date()
+        let dayofweek = today.getDay()
+
+        //find how many days we need to go forward to find next "date"
+        let difference = (index - dayofweek+7)%7
+
+        // calculate date "difference" days from now
+        let wDay = addDays(today, difference)
+        wDay = format(wDay, "MM/dd/yyyy")
+        //console.log(wDay)
+        setWorkoutDate(wDay)
     }
 
     return (
@@ -189,7 +215,7 @@ export default function WorkoutBuilder() {
             {/* Days of the week */}
             <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px" }}>
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-                    <button key={day} style={DOTWCARD_STYLES}>{day}</button>
+                    <button onClick={()=>findDate(day)} key={day} style={DOTWCARD_STYLES}>{day}</button>
                 ))}
             </div>
 
@@ -277,7 +303,7 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <ExerciseCard key={index} equipement={exercise.equipment_needed} name={exercise.name} manage={manage} handleDelete={()=>removeFromWorkout(index)}/>
+                                <ExerciseCard key={index} name={exercise.name} equipement={exercise.equipment_needed} manage={manage} handleDelete={()=>removeFromWorkout(index)}/>
                             ))
                         )}
 

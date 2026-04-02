@@ -23,7 +23,7 @@ const HEADER_STYLES={
     width:"100%",
     minWidth:"100%",
     maxWidth:"100%",
-    height:"25%", 
+    height:"25%",
     minHeight:"25%",
     maxHeight:"25%",
     borderTopLeftRadius:"10px",
@@ -52,9 +52,9 @@ const REMOVEBUTTON_STYLES={
 
 const WORKOUTDATA_BARS={
     display:"flex",
-    width:"100%", 
-    minWidth:"100%", 
-    maxWidth:"100%", 
+    width:"100%",
+    minWidth:"100%",
+    maxWidth:"100%",
     height:"20%",
     alignItems:"center",
     justifyContent:"space-between",
@@ -71,7 +71,7 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, equipement, exerciseID, planID}){
+export default function ExerciseCard({ URL, name, manage, handleDelete, exerciseID, equipement, planID}){
 
     const [showControls, setShowControls] = useState(false)
 
@@ -80,10 +80,10 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, equipeme
     const [weight, setWeight] = useState("135")
 
 
-    //updateReps = () => {/*handle updating the number of reps on the exercise with the exerciseID & planID*/}
-    //updateSets = () => {/*handle updating the number of sets on the exercise with the exerciseID & planID*/}
-    //updateWeight = () => {/*handle updating theweight of the exercise with the exerciseID & planID*/}
-    
+    //updateReps = () => { /*handle updating the number of reps on the exercise with the exerciseID & planID*/}
+    //updateSets = () => { /*handle updating the number of sets on the exercise with the exerciseID & planID*/}
+    //updateWeight = () => { /*handle updating theweight of the exercise with the exerciseID & planID*/}
+
     const deleteWorkout = () => {
         /*handle deleting exercise from planned workout in DB*/
         console.log("WIP")
@@ -119,7 +119,7 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, equipeme
                     </div>
                 </div>
             </div>
-        </div>  
+        </div>
     )
 
 }
