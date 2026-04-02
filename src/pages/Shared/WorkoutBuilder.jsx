@@ -56,6 +56,16 @@ const HEADERBUTTON_STYLES = {
     cursor: "pointer"
 };
 
+const APPLYBUTTON_STYLES = {
+    border: "none",
+    height: "40px",
+    padding: "0 20px",
+    backgroundColor: "#64E46C",
+    borderRadius: "15px",
+    fontWeight: "bold",
+    cursor: "pointer"
+};
+
 const EXERCISECATEGORY_STYLES = {
     display: "flex",
     width: "90%",
@@ -141,6 +151,11 @@ export default function WorkoutBuilder() {
 
     const [manage, setManage] = useState(false); //handles if user can change exercise data
 
+    const [showModal, setShowModal] = useState(false);
+    const [workoutName, setWorkoutName] = useState("");
+    const [selectedDate, setSelectedDate] = useState(null);
+
+
     let initialdate = useLocation(); //get date initally clicked on dashboard
     // Grab exercises from the Flask backend when component mounts
     useEffect(() => {
@@ -189,13 +204,26 @@ export default function WorkoutBuilder() {
     };
 
     //Remove exercise from workout
-    const removeFromWorkout = (indexToRemove, exercise_id, plan_id) => {
+    const removeFromWorkout = async (indexToRemove, exercise_id, plan_id) => {
+        console.log(plan_id)
         let data ={
             "plan_id": plan_id,
             "exercise_id": exercise_id
         }
-        {/* delete from planned_exercises using plan_id and exercise_id for the plan with the resulting date*/}
-        setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));
+        
+        const apiBase = import.meta.env.VITE_API_URL;
+        const url = `${apiBase}/api/workouts/remove`;
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        if(response.ok){setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));}
+        else{toast.error(response.message || "Failed to remove workout");}
+
+        
     };
 
     //enable management options for workout in workout builder
@@ -237,7 +265,7 @@ export default function WorkoutBuilder() {
 
         const apiBase = import.meta.env.VITE_API_URL;
         axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${wDay}`)
-        .then(res => {setWorkoutPlan(res.data["data"])})
+        .then(res => {setWorkoutPlan(res.data["data"]);})
         .catch(err => console.log(err))
 
     }
@@ -359,7 +387,7 @@ export default function WorkoutBuilder() {
 
                     {/* Right Side Header */}
                     <div style={{ display: "flex", width: "100%", height: "10%", backgroundColor: "#711A19", alignItems: "center", justifyContent: "flex-end", paddingRight: "20px", gap: "15px" }}>
-                        <button onClick={()=>handleManage()}style={HEADERBUTTON_STYLES}>Manage</button>
+                        {!manage ? <button onClick={()=>handleManage()}style={HEADERBUTTON_STYLES}>Manage</button> : <button onClick={()=>handleManage()} style={APPLYBUTTON_STYLES}>Apply</button>}
                         <button style={HEADERBUTTON_STYLES}>Add Group</button>
                     </div>
 
@@ -370,7 +398,7 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <ExerciseCard key={index} name={exercise.name} equipement={exercise.equipment_needed} manage={manage} handleDelete={()=>removeFromWorkout(index, exercise_id, plan_id)}/>
+                                <ExerciseCard key={index} name={exercise.name} equipment={exercise.equipment_needed} URL={exercise.video_url} manage={manage} handleDelete={()=>removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}/>
                             ))
                         )}
                     </div>

@@ -71,7 +71,7 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, exerciseID, equipment, planID}){
+export default function ExerciseCard({ URL, name, manage, handleDelete, equipment}){
 
     const [showControls, setShowControls] = useState(false)
 
@@ -79,23 +79,16 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, exercise
     const [sets, setSets] = useState("3")
     const [weight, setWeight] = useState("135")
 
-
     //updateReps = () => { /*handle updating the number of reps on the exercise with the exerciseID & planID*/}
     //updateSets = () => { /*handle updating the number of sets on the exercise with the exerciseID & planID*/}
     //updateWeight = () => { /*handle updating theweight of the exercise with the exerciseID & planID*/}
-
-    const deleteWorkout = () => {
-        /*handle deleting exercise from planned workout in DB*/
-        console.log("WIP")
-        handleDelete() // delete using removeFromWorkout(index) in workoutbuilder
-    }
 
     return(
         <div style={CARD_STYLE}>
             <div style={HEADER_STYLES}> {/* Header */}
                 {name} | {equipment}
                 {manage &&
-                    <button onClick={()=>deleteWorkout()} style={REMOVEBUTTON_STYLES}>-</button>
+                    <button onClick={()=>handleDelete()} style={REMOVEBUTTON_STYLES}>-</button>
                 }
             </div>
 
@@ -109,16 +102,16 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, exercise
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
                     <div style={WORKOUTDATA_BARS}>
                         Reps:
-                        <input onChange={(e)=>setReps(e.target.value)} style={INPUTBAR_STYlES} defaultValue={reps} disabled={!manage}/>
+                        <input onChange={(e)=>setReps(e.target.value)} style={INPUTBAR_STYlES} defaultValue={reps} disabled={!manage} inputMode='numeric'/>
                     </div>
 
                     <div style={WORKOUTDATA_BARS}>
                         Sets:
-                        <input onChange={(e)=>setSets(e.target.value)} style={INPUTBAR_STYlES} defaultValue={sets} disabled={!manage}/>
+                        <input onChange={(e)=>setSets(e.target.value)} style={INPUTBAR_STYlES} defaultValue={sets} disabled={!manage} inputMode='numeric'/>
                     </div>
                     <div style={WORKOUTDATA_BARS}>
                         Weight:
-                        <input onChange={(e)=>setWeight(e.target.value)} style={INPUTBAR_STYlES} defaultValue={weight} disabled={!manage}/>
+                        <input onChange={(e)=>setWeight(e.target.value)} style={INPUTBAR_STYlES} defaultValue={weight} disabled={!manage} inputMode='numeric'/>
                     </div>
                 </div>
             </div>
