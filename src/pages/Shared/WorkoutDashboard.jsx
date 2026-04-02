@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-// --- STYLES ---
+// Styles
 const PAGE_WRAPPER = {
     display: "flex",
     flexDirection: "column",
@@ -59,7 +59,7 @@ const MENU_BUTTON_STYLES = {
 };
 
 export default function WorkoutDashboard() {
-    const navigate = useNavigate(); // 2. Initialize the hook
+    const navigate = useNavigate();
 
     const handleDayClick = (day) => {
         //Navigate to the builder with day
@@ -67,8 +67,7 @@ export default function WorkoutDashboard() {
     };
 
     const handleMenuClick = (menuItem) => {
-        console.log(`Navigating to ${menuItem}`);
-        //navigate(`/${menuItem.toLowerCase()}`)
+        navigate(`/${menuItem.toLowerCase()}`)
     };
 
     return (
@@ -92,7 +91,7 @@ export default function WorkoutDashboard() {
             {/* Main Menu Buttons */}
             <div style={MAIN_CONTAINER}>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("Calendar")}>
+                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/calendar")}>
                     {/* Calendar Icon */}
                     <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -109,11 +108,11 @@ export default function WorkoutDashboard() {
                     </div>
                 </button>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("Coaching")}>
+                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/coaching")}>
                     GET COACHING
                 </button>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("WorkoutLog")}>
+                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/workout-log")}>
                     WORKOUT LOG
                 </button>
 
