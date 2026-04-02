@@ -237,7 +237,7 @@ export default function WorkoutBuilder() {
 
         const apiBase = import.meta.env.VITE_API_URL;
         axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${wDay}`)
-        .then(res => {/*store data*/})
+        .then(res => {setWorkoutPlan(res.data["data"])})
         .catch(err => console.log(err))
 
     }

@@ -39,7 +39,7 @@ const OVERLAY_STYLES={
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex:2000,
+  zIndex:500,
 }
 
 const HEADER_STYLES={
