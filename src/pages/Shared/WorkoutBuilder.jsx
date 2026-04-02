@@ -7,6 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ExerciseCard from "../../components/ExerciseCard";
 import { addDays, format } from 'date-fns' //npm i date-fns
 import { AuthContext } from '../../context/AuthContext';
+import toast from "react-hot-toast";
 
 // Styling
 const DOTWCARD_STYLES = {
@@ -66,7 +67,8 @@ const EXERCISECATEGORY_STYLES = {
     marginTop: "15px",
     padding: "0 20px",
     color: "#ffffff",
-    cursor: "pointer"
+    cursor: "pointer",
+    flexShrink: 0
 };
 
 const EXERCISE_CARD_WRAPPER = {
@@ -77,7 +79,8 @@ const EXERCISE_CARD_WRAPPER = {
     borderRadius: "15px",
     marginTop: "10px",
     overflow: "hidden",
-    boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+    boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+    flexShrink: 0
 };
 
 const EXERCISE_CARD_HEADER = {
@@ -114,6 +117,18 @@ const EXERCISE_CARD_BODY = {
     alignItems: "center",
     fontSize: "0.9rem",
     color: "#d9d9d9"
+};
+
+const CREATE_WORKOUT_BTN = {
+    backgroundColor: "#2C2C2C",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "12px 24px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    width: "fit-content",
+    marginTop: "auto"
 };
 
 // Main Component
@@ -205,7 +220,7 @@ export default function WorkoutBuilder() {
             default: console.log("error with retrieving index");
         }
 
-        //create date object and get todays date as integer
+        //create date object and get today's date as integer
         let today = new Date()
         let dayofweek = today.getDay()
 
@@ -217,12 +232,49 @@ export default function WorkoutBuilder() {
         wDay = format(wDay, "MM-dd-yyyy") //gets date in MM-dd-yyyy format
         console.log(wDay)
 
+        // save date to the state
+        setSelectedDate(wDay);
+
         const apiBase = import.meta.env.VITE_API_URL;
         axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${wDay}`)
         .then(res => {/*store data*/})
         .catch(err => console.log(err))
 
     }
+
+    // Handle saving workout
+    const handleSaveWorkout = async () => {
+        if (!selectedDate) {
+            toast.error("Please select a day of the week first!");
+            return;
+        }
+        if (workoutPlan.length === 0) {
+            toast.error("Please add some exercises to your workout!");
+            return;
+        }
+
+        // data to send to the backend
+        const payload = {
+            user_id: user.id,
+            date: selectedDate,
+            workout_name: workoutName,
+            exercises: workoutPlan
+        };
+
+        console.log("Ready to send to Flask:", payload);
+
+        try {
+             const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+             await axios.post(`${apiBase}/api/workouts/save`, payload);
+             toast.success("Workout saved successfully!");
+         } catch (error) {
+             console.error("Error saving workout", error);
+         }
+
+        // Close modal and reset workout name
+        setShowModal(false);
+        setWorkoutName("");
+    };
 
     return (
         <div style={{ display: "flex", width: "100%", height: "calc(100vh - 65px)", flexDirection: "column", overflow: "hidden" }}>
@@ -321,10 +373,38 @@ export default function WorkoutBuilder() {
                                 <ExerciseCard key={index} name={exercise.name} equipement={exercise.equipment_needed} manage={manage} handleDelete={()=>removeFromWorkout(index, exercise_id, plan_id)}/>
                             ))
                         )}
+                    </div>
 
+                    {/* Create Workout Button */}
+                    <div style={{ padding: "20px", display: "flex", justifyContent: "flex-start", backgroundColor: "#D9D9D9" }}>
+                        <button style={CREATE_WORKOUT_BTN} onClick={() => setShowModal(true)}>Create Workout</button>
                     </div>
                 </div>
 
+                {/* Name workout modal */}
+                {showModal && (
+                    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+                        <div style={{ backgroundColor: "#514E4A", padding: "30px", borderRadius: "15px", width: "350px", color: "#fff", display: "flex", flexDirection: "column", gap: "20px", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}>
+
+                            <h3 style={{ margin: 0, textAlign: "center" }}>Name Your Workout</h3>
+
+                            <input
+                                type="text"
+                                maxLength="15" // Limits input to 15 characters
+                                value={workoutName}
+                                onChange={(e) => setWorkoutName(e.target.value)}
+                                placeholder="e.g., Upper Body"
+                                style={{ padding: "12px", borderRadius: "8px", border: "none", outline: "none", backgroundColor: "#D9D9D9", color: "#000", fontSize: "1rem" }}
+                            />
+
+                            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+                                <button onClick={() => setShowModal(false)} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#a3a1a1", fontWeight: "bold" }}>Cancel</button>
+                                <button onClick={handleSaveWorkout} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#711A19", color: "#fff", fontWeight: "bold" }}>Save Workout</button>
+                            </div>
+
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

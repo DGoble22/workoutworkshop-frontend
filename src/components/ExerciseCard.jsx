@@ -71,7 +71,7 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, exerciseID, equipement, planID}){
+export default function ExerciseCard({ URL, name, manage, handleDelete, exerciseID, equipment, planID}){
 
     const [showControls, setShowControls] = useState(false)
 
@@ -93,7 +93,7 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, exercise
     return(
         <div style={CARD_STYLE}>
             <div style={HEADER_STYLES}> {/* Header */}
-                {name} | {equipement}
+                {name} | {equipment}
                 {manage &&
                     <button onClick={()=>deleteWorkout()} style={REMOVEBUTTON_STYLES}>-</button>
                 }
