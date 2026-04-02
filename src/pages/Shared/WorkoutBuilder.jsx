@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from 'axios';
 import filter from "../../images/FilterButton.png";
 import Image from 'react-bootstrap/Image';
 import Dropdown from 'react-bootstrap/Dropdown';
 import ExerciseCard from "../../components/ExerciseCard";
 import { addDays, format } from 'date-fns' //npm i date-fns
+import { AuthContext } from '../../context/AuthContext';
 
 // Styling
 const DOTWCARD_STYLES = {
@@ -116,12 +117,11 @@ const EXERCISE_CARD_BODY = {
 
 // Main Component
 export default function WorkoutBuilder() {
+    const {user} = useContext(AuthContext)
     //State variables
     const [exercises, setExercises] = useState([]);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [workoutPlan, setWorkoutPlan] = useState([]);
-
-    const [workoutDate, setWorkoutDate] = useState("") //stores date in MM/dd/yyyy format
 
     const [manage, setManage] = useState(false); //handles if user can change exercise data
 
@@ -204,9 +204,14 @@ export default function WorkoutBuilder() {
 
         // calculate date "difference" days from now
         let wDay = addDays(today, difference)
-        wDay = format(wDay, "MM/dd/yyyy")
-        //console.log(wDay)
-        setWorkoutDate(wDay)
+        wDay = format(wDay, "MM-dd-yyyy") //gets date in MM-dd-yyyy format
+        console.log(wDay)
+
+        const apiBase = import.meta.env.VITE_API_URL;
+        axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${wDay}`)
+        .then(res => {/*store data*/})
+        .catch(err => console.log(err))
+
     }
 
     return (
