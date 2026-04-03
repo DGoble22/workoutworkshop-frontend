@@ -6,6 +6,7 @@ import Register from './Register.jsx';
 import { AuthContext } from '../context/AuthContext';
 import UploadProfileModal from './UploadProfileModal.jsx';
 import EditUsernameModal from './EditUsernameModal.jsx';
+import ChangePasswordModal from './ChangePasswordModal.jsx';
 import EditGoalsModal from './EditGoalsModal.jsx';
 import DeleteAccountModal from './DeleteAccountModal.jsx';
 
@@ -16,6 +17,7 @@ const Navbar = () => {
     const { isAuthenticated, logout, user } = useContext(AuthContext);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [showUsernameModal, setShowUsernameModal] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showGoalsModal, setShowGoalsModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -71,6 +73,9 @@ const Navbar = () => {
                 break;
             case 'username':
                 setShowUsernameModal(true); // Open the modal
+                break;
+            case 'password':
+                setShowPasswordModal(true); // <--- Open the modal
                 break;
             case 'goals':
                 setShowGoalsModal(true); // <--- Open the modal
@@ -146,6 +151,7 @@ const Navbar = () => {
                                     <hr />
                                     <button onClick={() => handleMenuClick('upload')}>Upload Profile Picture</button>
                                     <button onClick={() => handleMenuClick('username')}>Edit Username</button>
+                                    <button onClick={() => handleMenuClick('password')}>Change Password</button>
                                     <button onClick={() => handleMenuClick('goals')}>Edit Goals</button>
                                     <hr />
                                     <button onClick={() => handleMenuClick('logout')}>Sign Out</button>
@@ -169,6 +175,9 @@ const Navbar = () => {
             )}
             {showUsernameModal && (
                 <EditUsernameModal onClose={() => setShowUsernameModal(false)} />
+            )}
+            {showPasswordModal && (
+                <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
             )}
             {showGoalsModal && (
                 <EditGoalsModal onClose={() => setShowGoalsModal(false)} />

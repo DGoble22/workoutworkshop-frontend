@@ -4,6 +4,10 @@ import { AuthContext } from "../context/AuthContext";
 import CoachAvailabilityEditor from "./CoachAvailabilityEditor";
 import toast from "react-hot-toast";
 
+const certificationOptions = ['Coach', 'Nutritionist'];
+const goalType = ["Strength", "Stamina", "WeightLoss"];
+
+
 export default function Register({ onClose, onSwitchToLogin }) {
     const { setToken, setUser } = useContext(AuthContext);
     const [step, setStep] = useState(1);
@@ -33,9 +37,6 @@ export default function Register({ onClose, onSwitchToLogin }) {
         cardExpYear: "",
         cardCVC: "",
     });
-
-    const certificationOptions = ['Coach', 'Nutritionist'];
-    const goalType = ["Strength", "Stamina", "WeightLoss"];
 
     // Username availability states
     const [usernameAvailable, setUsernameAvailable] = useState(null);
@@ -115,7 +116,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
         if (usernameDebounceRef.current) clearTimeout(usernameDebounceRef.current);
 
         const username = formData.username && formData.username.trim();
-        if (!username) {
+        if (!username || username.length <= 3) {
             setUsernameAvailable(null);
             setCheckingUsername(false);
             return;
@@ -133,138 +134,126 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
     // Modal navigation handlers
     const goNext = async () => {
-
-        // basic validation on step 1
-        if (step === 1) {
-            if (!formData.username || !formData.password || !formData.confirmPassword) {
-                toast.error('Please complete username and password');
-                return;
-            }
-            if (formData.password !== formData.confirmPassword) {
-                toast.error('Passwords do not match');
-                return;
-            }
-            if (usernameAvailable === null && !checkingUsername) {
-                const avail = await checkUsernameAvailability(formData.username);
-                if (avail === false) {
+        switch (step) {
+            // Step 1: Account Info & Username Check
+            case 1:
+                if (!formData.username || !formData.password || !formData.confirmPassword) {
+                    toast.error('Please complete username and password');
+                    return;
+                }
+                if (formData.username.trim().length <= 3) {
+                    toast.error('Username must be at least 4 characters');
+                    return;
+                }
+                //Password integrity checks : At least 8 characters, 1 uppercase, 1 lowercase, 1 number
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+                if (!passwordRegex.test(formData.password)) {
+                    toast.error('Password must be at least 8 characters, include an uppercase, lowercase and a number');
+                    return;
+                }
+                if (formData.password !== formData.confirmPassword) {
+                    toast.error('Passwords do not match');
+                    return;
+                }
+                if (checkingUsername) {
+                    toast.error('Checking username availability, please wait');
+                    return;
+                }
+                if (usernameAvailable === null) {
+                    const avail = await checkUsernameAvailability(formData.username);
+                    if (avail === false) {
+                        toast.error('Username is already taken');
+                        return;
+                    }
+                } else if (usernameAvailable === false) {
                     toast.error('Username is already taken');
                     return;
                 }
-            }
-            if (checkingUsername) {
-                toast.error('Checking username availability, please wait');
-                return;
-            }
-            if (usernameAvailable === false) {
-                toast.error('Username is already taken');
-                return;
-            }
-            setStep(2);
-            return;
-        }
+                setStep(2);
+                break;
 
-        // validation for step 2
-        if (step === 2) {
-            if (!formData.first_name || !formData.last_name || !formData.birthday) {
-                toast.error('Please fill first name, last name and birthday');
-                return;
-            }
+            // Step 2: Personal Info & Bio
+            case 2:
+                if (!formData.first_name || !formData.last_name || !formData.birthday) {
+                    toast.error('Please fill first name, last name and birthday');
+                    return;
+                }
+                if (formData.isCoach) {
+                    if (!formData.bio || !formData.bio.trim()) {
+                        toast.error('Please enter a bio');
+                        return;
+                    }
+                    setStep(3); // Go to Coach Certifications
+                } else {
+                    setStep(5); // Skip to Goals for normal users
+                }
+                break;
 
-            if (formData.isCoach) {
-                // bio required for coach
-                if (!formData.bio || !formData.bio.trim()) {
-                    toast.error('Please enter a bio');
-                    return;
+            // Step 3: Coach Certifications
+            case 3:
+                if (formData.isCoach) {
+                    if (!formData.certifications || formData.certifications.length === 0) {
+                        toast.error('Please select at least one certification');
+                        return;
+                    }
+                    if (formData.certifications.some((_, index) => !formData.certificationFiles[index])) {
+                        toast.error('Please upload proof for all selected certifications');
+                        return;
+                    }
                 }
-                setStep(3);
-                return;
-            }
-            // Skip step 4 for non-coach users
-            setStep(5);
-            return;
-        }
+                setStep(4);
+                break;
 
-        // validation for step 3 (certifications)
-        if (step === 3) {
-            if (formData.isCoach) {
-                // certifications: at least one
-                if (!formData.certifications || formData.certifications.length === 0) {
-                    toast.error('Please select at least one certification');
-                    return;
+            // Step 4: Coach Availability & Pricing
+            case 4:
+                if (formData.isCoach) {
+                    if (hasInvalidAvailability(formData.availability)) {
+                        toast.error('Please add at least one valid availability time slot');
+                        return;
+                    }
+                    if (formData.pricing === undefined || formData.pricing === null || formData.pricing === '') {
+                        toast.error('Please set your pricing');
+                        return;
+                    }
                 }
-                if (formData.certifications.some((_, index) => !formData.certificationFiles[index])) {
-                    toast.error('Please upload proof for all selected certifications');
-                    return;
-                }
-            }
-            setStep(4);
-            return;
-        }
-
-        // validation for step 4 (availability and pricing)
-        if (step === 4) {
-            if (formData.isCoach) {
-                if (hasInvalidAvailability(formData.availability)) {
-                    toast.error('Please add at least one valid availability time slot');
-                    return;
-                }
-                if (formData.pricing === undefined || formData.pricing === null || formData.pricing === '') {
-                    toast.error('Please set your pricing');
-                    return;
-                }
-            } else {
-                // Skip step 4 for non-coach users
                 setStep(5);
-                return;
-            }
-            setStep(5);
-            return;
-        }
+                break;
 
-        // validation for step 5 (goals)
-        if (step === 5) {
-            if (!formData.goal_type) {
-                toast.error('Please select a goal type before continuing.');
-                return;
-            }
-            const current = Number(formData.current_weight);
-            const goal = Number(formData.goal_weight);
-            if (!current || isNaN(current)) {
-                toast.error('Please set your current weight');
-                return;
-            }
-            if (!goal || isNaN(goal)) {
-                toast.error('Please set your goal weight');
-                return;
-            }
-            setStep(6);
+            // Step 5: User Goals
+            case 5:
+                if (!formData.goal_type) {
+                    toast.error('Please select a goal type before continuing.');
+                    return;
+                }
+                const current = Number(formData.current_weight);
+                const goal = Number(formData.goal_weight);
+
+                if (!current || isNaN(current)) {
+                    toast.error('Please set your current weight');
+                    return;
+                }
+                if (!goal || isNaN(goal)) {
+                    toast.error('Please set your goal weight');
+                    return;
+                }
+
+                setStep(6);
+                break;
+
+            default:
+                break;
         }
     };
 
     const goBack = () => {
-        if (step === 6) {
-            setStep(5);
-            return;
-        }
-        if (step === 5) {
-            setStep(formData.isCoach ? 4 : 3);
-            return;
-        }
-        if (step === 4) {
-            setStep(3);
-            return;
-        }
-        if (step === 3) {
+        if (step === 5 && !formData.isCoach) {
             setStep(2);
-            return;
+        } else if (step > 1) {
+            setStep(step - 1);
         }
-        if (step === 2) {
-            setStep(1);
-            return;
-        }
-        setStep(1);
     };
 
+    // handler for certification files
     const handleFileUploadChange = (index, file) => {
         setFormData((prev) => {
             const updatedFiles = [...prev.certificationFiles];
@@ -427,6 +416,13 @@ export default function Register({ onClose, onSwitchToLogin }) {
         }
     };
 
+    // Password integrity checks
+    const pwd = formData.password;
+    const reqLength = pwd.length >= 8;
+    const reqUpper = /[A-Z]/.test(pwd);
+    const reqLower = /[a-z]/.test(pwd);
+    const reqNum = /\d/.test(pwd);
+
     // Render per-step UI
     return (
         <div className="auth-modal-overlay" onClick={onClose}>
@@ -438,9 +434,9 @@ export default function Register({ onClose, onSwitchToLogin }) {
                 {/* Step 1 Username, password, coach? */}
                 {step === 1 && (
                   <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
-                    <div className="auth-field">
-                        <label htmlFor="username">Username</label>
-                        <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} required placeholder="Enter a username"/>
+                      <div className="auth-field">
+                          <label htmlFor="username">Username</label>
+                          <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} required placeholder="Enter a username"/>
                         {formData.username !== "" && (
                         <div style={{ height: '20px', marginTop: '6px' }}>
                           {checkingUsername && <span style={{ color: '#666' }}>Checking availability...</span>}
@@ -448,12 +444,27 @@ export default function Register({ onClose, onSwitchToLogin }) {
                           {!checkingUsername && usernameAvailable === false && <span style={{ color: 'red' }}>Username already taken</span>}
                         </div>
                         )}
-                    </div>
+                      </div>
+                      <div className="auth-field">
+                          <label htmlFor="password">Password</label>
+                          <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Enter your password"/>
+                      </div>
 
-                    <div className="auth-field">
-                        <label htmlFor="password">Password</label>
-                        <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Enter your password"/>
-                    </div>
+                      {/* Real-time Password Checklist */}
+                      <div style={{ marginTop: '8px', fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ color: reqLength ? 'green' : '#666' }}>
+                                {reqLength ? '✓' : '○'} At least 8 characters
+                            </span>
+                            <span style={{ color: reqUpper ? 'green' : '#666' }}>
+                                {reqUpper ? '✓' : '○'} One uppercase letter
+                            </span>
+                            <span style={{ color: reqLower ? 'green' : '#666' }}>
+                                {reqLower ? '✓' : '○'} One lowercase letter
+                            </span>
+                            <span style={{ color: reqNum ? 'green' : '#666' }}>
+                                {reqNum ? '✓' : '○'} One number
+                            </span>
+                      </div>
 
                     <div className="auth-field">
                         <label htmlFor="confirmPassword">Confirm Password</label>
