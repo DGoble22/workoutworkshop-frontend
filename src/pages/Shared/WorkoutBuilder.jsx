@@ -8,6 +8,7 @@ import ExerciseCard from "../../components/ExerciseCard";
 import { addDays, format } from 'date-fns' //npm i date-fns
 import { AuthContext } from '../../context/AuthContext';
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 // Styling
 const DOTWCARD_STYLES = {
@@ -144,6 +145,7 @@ const CREATE_WORKOUT_BTN = {
 // Main Component
 export default function WorkoutBuilder() {
     const {user} = useContext(AuthContext)
+    const navigate = useNavigate();
     //State variables
     const [exercises, setExercises] = useState([]);
     const [expandedCategory, setExpandedCategory] = useState(null);
@@ -199,8 +201,27 @@ export default function WorkoutBuilder() {
     };
 
     //Add exercise to work out
-    const addToWorkout = (exercise) => {
-        setWorkoutPlan([...workoutPlan, exercise]);
+    const addToWorkout = async (exercise) => {
+
+        const payload = {
+                user_id: user.id,
+                planned_date: selectedDate,
+                exercise_id: exercise.exercise_id
+            };
+
+        console.log("Ready to send to Flask:", payload);
+
+        try{
+            
+            const apiBase = import.meta.env.VITE_API_URL;
+            await axios.post(`${apiBase}/api/workouts/add-workout`, payload);
+            
+            setWorkoutPlan([...workoutPlan, exercise]);
+            toast.success("Workout saved successfully!");
+            navigate(0) // reload page so rep and set count show, maybe change later
+
+
+        } catch (error){ console.error("Error saving workout", error);}
     };
 
     //Remove exercise from workout
@@ -267,7 +288,6 @@ export default function WorkoutBuilder() {
         axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${wDay}`)
         .then(res => {setWorkoutPlan(res.data["data"]);})
         .catch(err => console.log(err))
-
     }
 
     // Handle saving workout
@@ -398,7 +418,7 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <ExerciseCard key={index} name={exercise.name} equipment={exercise.equipment_needed} URL={exercise.video_url} manage={manage} handleDelete={()=>removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}/>
+                                <ExerciseCard key={index} name={exercise.name} equipment={exercise.equipment_needed} URL={exercise.video_url} manage={manage} reps={exercise.reps} sets={exercise.sets} weight={exercise.weight} handleDelete={()=>removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}/>
                             ))
                         )}
                     </div>

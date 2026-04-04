@@ -71,13 +71,11 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, equipment}){
+export default function ExerciseCard({ URL, name, manage, handleDelete, equipment, reps, sets, weight}){
 
-    const [showControls, setShowControls] = useState(false)
-
-    const [reps, setReps] = useState("10")
-    const [sets, setSets] = useState("3")
-    const [weight, setWeight] = useState("135")
+    const [numReps, setReps] = useState(reps)
+    const [numSets, setSets] = useState(sets)
+    const [numWeight, setWeight] = useState(weight)
 
     //updateReps = () => { /*handle updating the number of reps on the exercise with the exerciseID & planID*/}
     //updateSets = () => { /*handle updating the number of sets on the exercise with the exerciseID & planID*/}
@@ -102,16 +100,16 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, equipmen
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
                     <div style={WORKOUTDATA_BARS}>
                         Reps:
-                        <input onChange={(e)=>setReps(e.target.value)} style={INPUTBAR_STYlES} defaultValue={reps} disabled={!manage} inputMode='numeric'/>
+                        <input onChange={(e)=>setReps(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numReps} disabled={!manage} inputMode='numeric'/>
                     </div>
 
                     <div style={WORKOUTDATA_BARS}>
                         Sets:
-                        <input onChange={(e)=>setSets(e.target.value)} style={INPUTBAR_STYlES} defaultValue={sets} disabled={!manage} inputMode='numeric'/>
+                        <input onChange={(e)=>setSets(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numSets} disabled={!manage} inputMode='numeric'/>
                     </div>
                     <div style={WORKOUTDATA_BARS}>
                         Weight:
-                        <input onChange={(e)=>setWeight(e.target.value)} style={INPUTBAR_STYlES} defaultValue={weight} disabled={!manage} inputMode='numeric'/>
+                        <input onChange={(e)=>setWeight(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numWeight} disabled={!manage} inputMode='numeric'/>
                     </div>
                 </div>
             </div>
