@@ -104,8 +104,8 @@ export default function WorkoutLog() {
         fetchWorkouts();
     }, [user]);
 
-    const handleEdit = (id) => {
-        console.log("Editing workout:", id);
+    const handleEdit = (id, date, title) => {
+        navigate(`/workout-edit/${id}`, { state: { date, title } });
     };
 
     const handleRemove = async (id) => {
@@ -146,10 +146,10 @@ export default function WorkoutLog() {
                         <div key={workout.id} style={ROW_STYLE}>
                             {/* "Date - Workout Title" */}
                             <div style={LOG_BOX}>
-                                {workout.date} - {workout.title}
+                                {workout.date} | {workout.title}
                             </div>
 
-                            <button style={EDIT_BTN} onClick={() => handleEdit(workout.id)}>
+                            <button style={EDIT_BTN} onClick={() => handleEdit(workout.id, workout.date, workout.title)}>
                                 Edit
                             </button>
                             <button style={REMOVE_BTN} onClick={() => handleRemove(workout.id)}>

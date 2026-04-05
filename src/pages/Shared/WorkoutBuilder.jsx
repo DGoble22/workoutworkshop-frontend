@@ -5,7 +5,7 @@ import filter from "../../images/FilterButton.png";
 import Image from 'react-bootstrap/Image';
 import Dropdown from 'react-bootstrap/Dropdown';
 import ExerciseCard from "../../components/ExerciseCard";
-import { addDays, format } from 'date-fns' //npm i date-fns
+import { addDays, format } from 'date-fns'
 import { AuthContext } from '../../context/AuthContext';
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -161,6 +161,7 @@ export default function WorkoutBuilder() {
     let initialdate = useLocation(); //get date initally clicked on dashboard
     // Grab exercises from the Flask backend when component mounts
     useEffect(() => {
+        if (!user || !user.id) return;
         const fetchExercises = async () => {
             try {
                 const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
@@ -178,7 +179,7 @@ export default function WorkoutBuilder() {
         // load the exercises for the intial date
         findDate(initialdate.state.day);
         
-    }, []);
+    }, [user, initialdate.state.day]);
 
     //Group exercises by muscle group
     const groupedExercises = exercises.reduce((groups, exercise) => {
