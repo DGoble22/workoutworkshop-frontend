@@ -643,7 +643,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
                     <div className="auth-field">
                         <label htmlFor="cardNumber">Card Number</label>
-                        <input type="text" id="cardNumber" name="cardNumber" value={formData.cardNumber} onChange={handleChange} placeholder="4111 1111 1111 1111" />
+                        <input type="text" id="cardNumber" name="cardNumber" value={formData.cardNumber} onChange={handleChange} placeholder="1234 5678 9123 4567" />
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px' }}>

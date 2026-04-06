@@ -9,6 +9,7 @@ import EditUsernameModal from './EditUsernameModal.jsx';
 import ChangePasswordModal from './ChangePasswordModal.jsx';
 import EditGoalsModal from './EditGoalsModal.jsx';
 import DeleteAccountModal from './DeleteAccountModal.jsx';
+import EditPaymentDetailsModal from './EditPaymentDetailsModal.jsx';
 
 const Navbar = () => {
     const location = useLocation();
@@ -20,6 +21,7 @@ const Navbar = () => {
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showGoalsModal, setShowGoalsModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showPaymentDetailsModal, setShowPaymentDetailsModal] = useState(false);
 
     //Profile Dropdown
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -79,6 +81,9 @@ const Navbar = () => {
                 break;
             case 'goals':
                 setShowGoalsModal(true); // <--- Open the modal
+                break;
+            case 'payment':
+                setShowPaymentDetailsModal(true);
                 break;
             case 'delete':
                 setShowDeleteModal(true); // <--- Open the modal
@@ -153,6 +158,7 @@ const Navbar = () => {
                                     <button onClick={() => handleMenuClick('username')}>Edit Username</button>
                                     <button onClick={() => handleMenuClick('password')}>Change Password</button>
                                     <button onClick={() => handleMenuClick('goals')}>Edit Goals</button>
+                                    <button onClick={() => handleMenuClick('payment')}>Change Payment Details</button>
                                     <hr />
                                     <button onClick={() => handleMenuClick('logout')}>Sign Out</button>
                                     <button onClick={() => handleMenuClick('delete')} className="delete-btn">Delete Account</button>
@@ -184,6 +190,9 @@ const Navbar = () => {
             )}
             {showDeleteModal && (
                 <DeleteAccountModal onClose={() => setShowDeleteModal(false)} />
+            )}
+            {showPaymentDetailsModal && (
+                <EditPaymentDetailsModal onClose={() => setShowPaymentDetailsModal(false)} />
             )}
         </>
     );
