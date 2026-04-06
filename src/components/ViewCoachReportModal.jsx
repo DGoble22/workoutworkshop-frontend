@@ -204,27 +204,16 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
 
     return (
         <>
-            {showCoachInfoModal &&
-                ReactDOM.createPortal(
-                    <CoachInfoModal
-                        show={showCoachInfoModal}
-                        handleClose={handleCloseCoachInfoModal}
-                        name={coach?.name}
-                        URL={coach?.profile_picture}
-                        price={coach?.pricing}
-                        category={category}
-                        id={coach?.coach_id}
-                        bio={coach?.bio}
-                        rating={stars}
-                        adminView={true}
-                        style={{ zIndex: 2000, position: 'relative' }}
-                    />, 
-                    document.body
-                )
-            }
+
+            <style>
+                {`
+                    .report-modal-backdrop { z-index: 440 !important; }
+                    .report-modal-window { z-index: 450 !important; }
+                `}
+            </style>
 
             {/* Main modal */}
-            <Modal show={show} onHide={handleClose} centered style={{ zIndex: 1050 }} keyboard={false} >
+            <Modal show={show} onHide={handleClose} centered keyboard={false} className="report-modal-window" backdropClassName="report-modal-backdrop">
                 <div onClick={(e) => e.stopPropagation()}>
                     <Modal.Header closeButton>
                         <Modal.Title>{coach?.name}</Modal.Title>
@@ -293,6 +282,22 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {showCoachInfoModal && (
+                <CoachInfoModal
+                    show={showCoachInfoModal}
+                    handleClose={handleCloseCoachInfoModal}
+                    name={coach?.name}
+                    URL={coach?.profile_picture}
+                    price={coach?.pricing}
+                    category={category}
+                    id={coach?.coach_id}
+                    bio={coach?.bio}
+                    rating={stars}
+                    adminView={true}
+                    style={{ zIndex: 2000, position: 'relative' }}
+                />
+            )}
         </>
     )
 }
