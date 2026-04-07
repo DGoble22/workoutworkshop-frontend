@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import benchPressThumbnail from '../images/benchPress Thumbnail.png'
 import Image from 'react-bootstrap/Image';
+import toast from "react-hot-toast";
 
 const CARD_STYLE={
     display:"flex",
@@ -71,15 +72,58 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, equipment, reps, sets, weight}){
+export default function ExerciseCard({ URL, name, manage, handleDelete, equipment, reps, sets, weight, apply, exercise_id, plan_id}){
 
     const [numReps, setReps] = useState(reps)
     const [numSets, setSets] = useState(sets)
     const [numWeight, setWeight] = useState(weight)
 
-    //updateReps = () => { /*handle updating the number of reps on the exercise with the exerciseID & planID*/}
-    //updateSets = () => { /*handle updating the number of sets on the exercise with the exerciseID & planID*/}
-    //updateWeight = () => { /*handle updating theweight of the exercise with the exerciseID & planID*/}
+    const [oldReps, setOldReps] = useState(reps)
+    const [oldSets, setOldSets] = useState(sets)
+    const [oldWeight, setOldWeight] = useState(weight)
+
+    //check for flag changes in real-time
+    useEffect(()=>{
+        //apply is the flag used to check if the apply button is pressed, it will ideal turn off after a set value of time, i.e. 1s so that it doesnt keep trying to write to db
+        const update = async () =>{
+            if(apply){
+                // change was made, write to db
+                if (numReps !== oldReps || numSets !== oldSets || oldWeight !== numWeight){
+                    let data = {
+                        exercise_id: exercise_id,
+                        plan_id: plan_id,
+                        reps: numReps,
+                        sets: numSets,
+                        weight: numWeight
+                    }
+
+                    try{
+                        const apiBase = import.meta.env.VITE_API_URL;
+                        let response = await axios.post(`${apiBase}/api/workouts/update-planned-exercise`, data);
+                        if(response.ok){
+                            //update old values
+                            setOldReps(numReps)
+                            setOldSets(numSets)
+                            setOldWeight(numWeight)
+                            toast.success("Changes Applied!");
+                        }
+                        
+                    }
+
+                    catch{
+                        // if there is an error, revert the changes back
+                        setReps(oldReps)
+                        setSets(oldSets)
+                        setWeight(oldWeight)  
+                        toast.error("Error editing exercises. Try again later!");  
+                    }
+                }
+            }
+        }
+        update();
+    }, [apply])
+
+    
 
     return(
         <div style={CARD_STYLE}>

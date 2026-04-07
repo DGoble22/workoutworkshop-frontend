@@ -152,11 +152,11 @@ export default function WorkoutBuilder() {
     const [workoutPlan, setWorkoutPlan] = useState([]);
 
     const [manage, setManage] = useState(false); //handles if user can change exercise data
+    const [apply, setApply] = useState(false); //handle if users applies exercise changes
 
     const [showModal, setShowModal] = useState(false);
     const [workoutName, setWorkoutName] = useState("");
     const [selectedDate, setSelectedDate] = useState(null);
-
 
     let initialdate = useLocation(); //get date initally clicked on dashboard
     // Grab exercises from the Flask backend when component mounts
@@ -250,7 +250,12 @@ export default function WorkoutBuilder() {
 
     //enable management options for workout in workout builder
     const handleManage = () =>{
-        if(manage){setManage(false)}
+        if(manage){
+            setApply(true)
+            setTimeout(()=>{setApply(false)}, 1500) //sets apply flag to false after 1.5s
+            setManage(false)
+        }
+
         else {setManage(true)}
     }
 
@@ -419,7 +424,7 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <ExerciseCard key={index} name={exercise.name} equipment={exercise.equipment_needed} URL={exercise.video_url} manage={manage} reps={exercise.reps} sets={exercise.sets} weight={exercise.weight} handleDelete={()=>removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}/>
+                                <ExerciseCard key={index} name={exercise.name} equipment={exercise.equipment_needed} URL={exercise.video_url} manage={manage} reps={exercise.reps} sets={exercise.sets} weight={exercise.weight} plan_id={exercise.plan_id} exercise_id={exercise.exercise_id} apply={apply} handleDelete={()=>removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}/>
                             ))
                         )}
                     </div>
