@@ -1,6 +1,8 @@
 import {BrowserRouter, Routes, Route, useLocation} from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
+import ChatModal from "./components/ChatModal.jsx";
 import {Toaster} from "react-hot-toast";
+import {AuthContext} from "./context/authContext";
 
 //Page Imports
 import Home from "./pages/Shared/Home.jsx";
@@ -12,9 +14,10 @@ import WorkoutDashboard from "./pages/Shared/WorkoutDashboard.jsx";
 import WorkoutLog from "./pages/Shared/WorkoutLog.jsx";
 import WorkoutEdit from "./pages/Shared/WorkoutEdit.jsx";
 import WorkoutLibrary from "./pages/Shared/WorkoutLibrary.jsx"
+import {useContext, useState} from "react";
+
 
 function App() {
-
     return (
         <BrowserRouter>
             <AppLayout />
@@ -25,6 +28,8 @@ function App() {
 function AppLayout() {
     const { pathname } = useLocation();
     const isWorkoutBuilderRoute = pathname.startsWith("/workout-builder/");
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const { isAuthenticated } = useContext(AuthContext);
 
     return (
         <div className="App">
@@ -32,6 +37,8 @@ function AppLayout() {
                 style: {zIndex: 9999, background: "#333", color: "#fff", fontSize: "16px", padding: "10px 20px", borderRadius: "8px",},
             }} />
             <Navbar />
+            {isAuthenticated && <button className="floating-chat-btn" onClick={() => setIsChatOpen(true)}>💬</button>}
+            <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
             <main style={{ padding: isWorkoutBuilderRoute ? 0 : "20px" }}>
                 <Routes>
                     <Route path="/" element={<Home/>} />
