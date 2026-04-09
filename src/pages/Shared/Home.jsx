@@ -222,6 +222,31 @@ export default function Home() {
         
     }
 
+    const handleStarClick = async (rating) => {
+        const today = new Date().toISOString().split('T')[0];
+        try {
+            const apiBase = import.meta.env.VITE_API_URL;
+            const url = `${apiBase}/user/daily-survey`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+                body: JSON.stringify({ date: today, rating }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setDailyRating(data.rating); // Update the daily rating with the response data
+            } else {
+                console.error("Failed to update daily rating.");
+        }
+        } catch (error) {
+            console.error("Error updating daily rating:", error);
+        }
+    };
+
     const renderStars = () => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
