@@ -17,7 +17,7 @@ const DOTWCARD_STYLES = {
     margin: "0 5px",
     height: "75%",
     backgroundColor: "#2C2C2C",
-    borderRadius: "5px",
+    borderradius: "14px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -152,11 +152,11 @@ export default function WorkoutBuilder() {
     const [workoutPlan, setWorkoutPlan] = useState([]);
 
     const [manage, setManage] = useState(false); //handles if user can change exercise data
+    const [apply, setApply] = useState(false); //handle if users applies exercise changes
 
     const [showModal, setShowModal] = useState(false);
     const [workoutName, setWorkoutName] = useState("");
     const [selectedDate, setSelectedDate] = useState(null);
-
 
     let initialdate = useLocation(); //get date initally clicked on dashboard
     // Grab exercises from the Flask backend when component mounts
@@ -255,7 +255,12 @@ export default function WorkoutBuilder() {
 
     //enable management options for workout in workout builder
     const handleManage = () =>{
-        if(manage){setManage(false)}
+        if(manage){
+            setApply(true)
+            setTimeout(()=>{setApply(false)}, 1500) //sets apply flag to false after 1.5s
+            setManage(false)
+        }
+
         else {setManage(true)}
     }
 
@@ -334,9 +339,9 @@ export default function WorkoutBuilder() {
         <div style={{ display: "flex", width: "100%", height: "calc(100vh - 65px)", flexDirection: "column", overflow: "hidden" }}>
 
             {/* Days of the week */}
-            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px" }}>
+            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px", borderRadius: "14px"}}>
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-                    <button onClick={()=>findDate(day)} key={day} style={DOTWCARD_STYLES}>{day}</button>
+                    <button onClick={()=>{navigate(`/workout-builder/${day}`, {state:{"day": day}})}} key={day} style={DOTWCARD_STYLES}>{day}</button>
                 ))}
             </div>
 
@@ -433,6 +438,10 @@ export default function WorkoutBuilder() {
                                     reps={exercise.reps}
                                     sets={exercise.sets}
                                     weight={exercise.weight}
+                                    plan_id={exercise.plan_id}
+                                    exercise_id={exercise.exercise_id}
+                                    apply={apply}
+                                    thumbnail={exercise.thumbnail}
                                     handleDelete={() => removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}
                                     handleUpdate={(field, value) => handleUpdateExercise(index, field, value)}
                                 />

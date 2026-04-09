@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
+import {io} from 'socket.io-client';
 
 export const AuthContext = createContext({
   token: null,
@@ -7,6 +8,7 @@ export const AuthContext = createContext({
   user: null,
   setUser: () => {},
   isAuthenticated: false,
+  socket: null,
 });
 
 // manual JWT parsing to avoid extra dependencies; returns null if invalid
@@ -31,7 +33,7 @@ function parseJwt(token) {
 // AuthProvider component to wrap the app and provide persistent auth state
 export function AuthProvider({ children }) {
   //Token state
-  const [token, setTokenState] = useState(() => {
+  const [token, setToken] = useState(() => {
     try {
       return localStorage.getItem('authToken');
     } catch (e) {
@@ -40,7 +42,7 @@ export function AuthProvider({ children }) {
   });
 
   //User state
-  const [user, setUserState] = useState(() => {
+  const [user, setUser] = useState(() => {
     try {
       const raw = localStorage.getItem('authUser');
       return raw ? JSON.parse(raw) : null;
@@ -49,8 +51,47 @@ export function AuthProvider({ children }) {
     }
   });
 
+  // socket state
+  const [socket, setSocket] = useState(null);
+
   // Ref to hold the auto-logout timer id
   const logoutTimerRef = useRef(null);
+
+  // Socket Lifecycle
+  useEffect(() => {
+    let newSocket = null;
+
+    if (token) {
+      const payload = parseJwt(token);
+      const currentUserId = payload?.sub;
+
+      if(!currentUserId) {console.error("Socket failed: No user ID found in token.");}
+      if (currentUserId) {
+        newSocket = io(import.meta.env.VITE_API_URL, {
+          query: { user_id: currentUserId },
+        });
+
+        setSocket(newSocket);
+
+        newSocket.on("connect", () => {
+          console.log(` Socket connected: User ${currentUserId}`);
+        });
+
+        newSocket.on("connect_error", (err) => {
+          console.error(" Socket connection error:", err.message);
+        });
+      }
+    }
+
+    // Cleanup: Disconnect the socket when user logs out or token changes
+    return () => {
+      if (newSocket) {
+        console.log("Disconnecting socket...");
+        newSocket.disconnect();
+        setSocket(null);
+      }
+    };
+  }, [token, user]);
 
   // Persist token to localStorage whenever it changes
   useEffect(() => {
@@ -84,7 +125,6 @@ export function AuthProvider({ children }) {
 
     const payload = parseJwt(token);
     if (!payload || !payload.exp) {
-      // If token doesn't have exp, we can't auto-logout reliably
       return;
     }
 
@@ -95,33 +135,31 @@ export function AuthProvider({ children }) {
 
     //token expired
     if (msUntilExp <= 0) {
-      setTokenState(null);
-      setUserState(null);
+      logout();
       return;
     }
 
     // Set timer to logout when token expires
     logoutTimerRef.current = setTimeout(() => {
-      setTokenState(null);
-      setUserState(null);
-      logoutTimerRef.current = null;
+      logout();
     }, msUntilExp);
 
     // logout or token change
     return () => {
       if (logoutTimerRef.current) {
         clearTimeout(logoutTimerRef.current);
-        logoutTimerRef.current = null;
       }
     };
   }, [token]);
 
-  // Context functions
-  const setToken = (t) => setTokenState(t);
-  const setUser = (u) => setUserState(u);
   const logout = () => {
-    setTokenState(null);
-    setUserState(null);
+    setToken(null);
+    setUser(null);
+    // Socket will be cleaned up by the useEffect above, but explicit disconnect is safer
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
     if (logoutTimerRef.current) {
       clearTimeout(logoutTimerRef.current);
       logoutTimerRef.current = null;
@@ -133,7 +171,7 @@ export function AuthProvider({ children }) {
   const isAuthenticated = !!token;
 
   return (
-    <AuthContext.Provider value={{ token, setToken, logout, user: effectiveUser, setUser, isAuthenticated }}>
+    <AuthContext.Provider value={{ token, setToken, logout, user: effectiveUser, setUser, isAuthenticated, socket}}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,182 +1,142 @@
-import React, { useState } from "react"
-import DefaultProfilePic from "../images/DefaultProfile.jpg"
-import Image from "react-bootstrap/Image"
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import ReactDOM from 'react-dom';
+import { AuthContext } from '../context/AuthContext';
+import './ChatModal.css';
 
-const OVERLAY_STYLES = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-}
+const ChatModal = ({ isOpen, onClose }) => {
+    const { socket, user, isAuthenticated } = useContext(AuthContext);
+    const [contacts, setContacts] = useState([]);
+    const [selectedContact, setSelectedContact] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState("");
+    const messagesEndRef = useRef(null);
 
-const MODAL_STYLES = {
-    position: "fixed",
-    display: "flex",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "#FFF",
-    width: "55vw",
-    height: "70vh",
-    borderRadius: "3%",
-    flexDirection: "column",
-    zIndex: 1000,
-    overflow: "hidden"
-}
+    // Auto-scroll to bottom when messages change
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
-const CHAT_HEADER_STYLES = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "12px 16px",
-    borderBottom: "1px solid #ccc",
-    backgroundColor: "#ffffff"
-}
-
-const MESSAGES_STYLES = {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-    overflowY: "auto",
-    padding: "16px",
-    gap: "10px"
-}
-
-const INPUT_ROW_STYLES = {
-    display: "flex",
-    alignItems: "center",
-    padding: "12px 16px",
-    borderTop: "1px solid #ccc",
-    gap: "10px"
-}
-
-const CLOSE_BUTTON_STYLES = {
-    background: "none",
-    border: "none",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-    color: "#999"
-}
-
-const DUMMY_MESSAGES = {
-    1: [
-        { id: 1, sender: "coach", content: "How's the workout split working out for you?" },
-        { id: 2, sender: "client", content: "Lovin' it!" },
-        { id: 3, sender: "coach", content: "Good to hear!" }
-    ],
-    2: [
-        { id: 1, sender: "coach", content: "How are you feeling after today's session?" },
-        { id: 2, sender: "client", content: "Pretty sore but good!" }
-    ],
-    3: [
-        { id: 1, sender: "coach", content: "Keep up the great work!" }
-    ]
-}
-
-export default function ChatModal({ show, handleClose, client }) {
-    const [messages, setMessages] = useState(DUMMY_MESSAGES)
-    const [newMessage, setNewMessage] = useState("")
-
-    function handleSend() {
-        if (!newMessage.trim()) return
-        const clientId = client.user_id
-        const msg = {
-            id: Date.now(),
-            sender: "coach",
-            content: newMessage.trim()
+    // Fetch Contact List
+    useEffect(() => {
+        if (isOpen && user?.id) {
+            const apiBase = import.meta.env.VITE_API_URL;
+            const url = `${apiBase}/api/contacts/${user.id}`;
+            fetch(url)
+                .then(res => res.json())
+                .then(data => setContacts(data))
+                .catch(err => console.error("Error fetching contacts:", err));
         }
-        setMessages(prev => ({
-            ...prev,
-            [clientId]: [...(prev[clientId] || []), msg]
-        }))
-        setNewMessage("")
-    }
+    }, [isOpen, user?.id]);
 
-    function handleKeyDown(e) {
-        if (e.key === "Enter") handleSend()
-    }
+    // Fetch History when a contact is selected
+    useEffect(() => {
+        if (selectedContact && user?.id) {
+            const apiBase = import.meta.env.VITE_API_URL;
+            const url = `${apiBase}/chat/history/${user.id}/${selectedContact.user_id}`;
+            fetch(url)
+                .then(res => res.json())
+                .then(data => setMessages(data))
+                .catch(err => console.error("Error fetching history:", err));
+        }
+    }, [selectedContact, user?.id]);
 
-    if (!show || !client) { return null }
+    // live messages
+    useEffect(() => {
+        if (!socket) return;
+        socket.on("receive_message", (data) => {
+            if (data.sender_id === selectedContact?.user_id || data.sender_id === user?.id) {
+                setMessages((prev) => [...prev, data]);
+            } else {
+                console.log("New message from another user:", data.sender_id);
+            }
+        });
+        socket.on("admin_announcement", (data) => {
+            alert(`SYSTEM ALERT: ${data.message}`);
+        });
+        return () => {
+            socket.off("receive_message");
+            socket.off("admin_announcement");
+        };
+    }, [socket, selectedContact, user?.id]);
 
-    const currentMessages = messages[client.user_id] || []
+    const sendMessage = (e) => {
+        e.preventDefault();
+        if (!newMessage.trim() || !selectedContact) return;
+        if (!socket || !socket.connected) return;
+        const messageData = {
+            sender_id: user.id,
+            receiver_id: selectedContact.user_id,
+            text: newMessage
+        };
+        socket.emit("send_message", messageData);
 
-    return (
-        <div style={OVERLAY_STYLES}>
-            <div style={MODAL_STYLES}>
-                <div style={CHAT_HEADER_STYLES}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <Image
-                            src={client.profile_picture_url || DefaultProfilePic}
-                            roundedCircle
-                            style={{ width: "36px", height: "36px", objectFit: "cover" }}
-                        />
-                        <strong>{client.first_name} {client.last_name}</strong>
-                    </div>
-                    <button style={CLOSE_BUTTON_STYLES} onClick={handleClose}>✕</button>
-                </div>
+        // Update UI
+        setMessages((prev) => [...prev, messageData]);
+        setNewMessage("");
+    };
 
-                <div style={MESSAGES_STYLES}>
-                    {currentMessages.map(msg => (
-                        <div
-                            key={msg.id}
-                            style={{
-                                display: "flex",
-                                justifyContent: msg.sender === "coach" ? "flex-end" : "flex-start"
-                            }}
-                        >
-                            <div style={{
-                                backgroundColor: msg.sender === "coach" ? "#4a90d9" : "#e8e8e8",
-                                color: msg.sender === "coach" ? "#ffffff" : "#2C2C2C",
-                                padding: "10px 14px",
-                                borderRadius: "18px",
-                                maxWidth: "65%",
-                                fontSize: "0.95rem"
-                            }}>
-                                {msg.content}
+    // Logic to stop background scrolling when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
+    if (!isOpen || !isAuthenticated) return null;
+
+    return ReactDOM.createPortal(
+        <div className="chat-overlay" onClick={onClose}>
+            <div className="chat-container" onClick={(e) => e.stopPropagation()}>
+
+                {/* Contact Sidebar */}
+                <div className="chat-sidebar">
+                    <h3>Messages</h3>
+                    <div className="contact-list">
+                        {contacts.map(c => (
+                            <div key={c.user_id} className={`contact-item ${selectedContact?.user_id === c.user_id ? 'active' : ''}`} onClick={() => setSelectedContact(c)}>
+                                {c.role === "C" && "Coach: "}
+                                {c.role === "U" && user.role === "C" && `Client: `}
+                                {c.full_name}
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
-                <div style={INPUT_ROW_STYLES}>
-                    <input
-                        type="text"
-                        placeholder="Message"
-                        value={newMessage}
-                        onChange={e => setNewMessage(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        style={{
-                            flex: 1,
-                            padding: "10px 14px",
-                            border: "1px solid #ccc",
-                            borderRadius: "20px",
-                            outline: "none",
-                            fontSize: "0.95rem"
-                        }}
-                    />
-                    <button
-                        onClick={handleSend}
-                        style={{
-                            backgroundColor: "#2C2C2C",
-                            color: "#ffffff",
-                            border: "none",
-                            borderRadius: "50%",
-                            width: "36px",
-                            height: "36px",
-                            cursor: "pointer",
-                            fontSize: "1rem"
-                        }}
-                    >
-                        ↑
-                    </button>
+                {/* Chat Window */}
+                <div className="chat-main">
+                    <div className="chat-header">
+                        {selectedContact ? `Chat with ${selectedContact.full_name}` : "Select a contact"}
+                        <button className="close-btn" onClick={onClose}>&times;</button>
+                    </div>
+                    <div className="chat-messages">
+                        {messages.length === 0 && selectedContact && (
+                            <p className="no-messages">No messages yet. Say hello!</p>
+                        )}
+                        {messages.map((m, i) => (
+                            <div key={i} className={`message-bubble ${m.sender_id === user.id ? 'me' : 'them'}`}>
+                                {m.text}
+                            </div>
+                        ))}
+                        <div ref={messagesEndRef} />
+                    </div>
+                    <form className="chat-input" onSubmit={sendMessage}>
+                        <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={!selectedContact}/>
+                        <button type="submit" disabled={!selectedContact || !socket}>{socket ? "Send" : "Connecting..."}</button>
+                    </form>
                 </div>
             </div>
-        </div>
-    )
-}
+        </div>,
+        document.body
+    );
+};
+
+export default ChatModal;
+
