@@ -336,7 +336,7 @@ export default function WorkoutBuilder() {
             {/* Days of the week */}
             <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px" }}>
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-                    <button onClick={()=>findDate(day)} key={day} style={DOTWCARD_STYLES}>{day}</button>
+                    <button onClick={()=>{navigate(`/workout-builder/${day}`, {state:{"day": day}})}} key={day} style={DOTWCARD_STYLES}>{day}</button>
                 ))}
             </div>
 
