@@ -182,7 +182,7 @@ const FIREBUTTON_STYLES={display:"flex",
 
 function Header( { id, handleClose, handleOpenApply, handleOpenReport, handleOpenFire, adminView} ){
     const [isHired, setIsHired] = useState(false)
-    const [hasCoach, setHasCoach] = useState (true) //use to track if the user already has a coach, not implemented
+    const [hasCoach, setHasCoach] = useState (true) //use to track if the user already has a coach
     const {user} = useContext(AuthContext)
 
     if(!adminView) {

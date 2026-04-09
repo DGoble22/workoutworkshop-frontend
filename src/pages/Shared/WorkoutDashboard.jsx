@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+
 // Styles
 const PAGE_WRAPPER = {
     display: "flex",
