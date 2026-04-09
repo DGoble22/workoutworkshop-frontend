@@ -1,5 +1,4 @@
-import React, { useState, useContext } from "react"
-import { AuthContext } from "../../context/AuthContext"
+import React, { useState, useEffect } from "react"
 import CoachAvailabilityEditor from "../../components/CoachAvailabilityEditor"
 
 const PAGE_STYLES = {
@@ -96,17 +95,35 @@ const SAVE_BUTTON_STYLES = {
     marginTop: "10px"
 }
 
-export default function EditCoachProfile({ onBack }) {
-    const { token } = useContext(AuthContext)
-
+export default function EditCoachProfile({ onBack, coachId }) {
     const [availability, setAvailability] = useState([])
     const [bio, setBio] = useState("")
     const [pricing, setPricing] = useState("")
+    const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [saveMessage, setSaveMessage] = useState("")
     const [error, setError] = useState("")
 
     const apiBase = import.meta.env.VITE_API_URL || ""
+
+    useEffect(() => {
+        async function fetchProfile() {
+            try {
+                const res = await fetch(`${apiBase}/coach/profile/${coachId}`)
+                const data = await res.json()
+                if (data.status === "success") {
+                    setAvailability(data.data.availability || [])
+                    setBio(data.data.bio || "")
+                    setPricing(data.data.pricing || "")
+                }
+            } catch (e) {
+                console.error("Failed to load coach profile:", e)
+            } finally {
+                setLoading(false)
+            }
+        }
+        if (coachId) fetchProfile()
+    }, [coachId])
 
     async function handleSave() {
         setError("")
@@ -132,12 +149,9 @@ export default function EditCoachProfile({ onBack }) {
 
         setSaving(true)
         try {
-            const res = await fetch(`${apiBase}/coach/profile`, {
+            const res = await fetch(`${apiBase}/coach/profile/${coachId}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: token
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             })
             const data = await res.json()
@@ -151,6 +165,10 @@ export default function EditCoachProfile({ onBack }) {
         } finally {
             setSaving(false)
         }
+    }
+
+    if (loading) {
+        return <div style={{ textAlign: "center", padding: "40px" }}>Loading profile...</div>
     }
 
     return (

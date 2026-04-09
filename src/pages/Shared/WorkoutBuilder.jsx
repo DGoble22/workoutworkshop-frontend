@@ -17,7 +17,7 @@ const DOTWCARD_STYLES = {
     margin: "0 5px",
     height: "75%",
     backgroundColor: "#2C2C2C",
-    borderRadius: "5px",
+    borderradius: "14px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -339,7 +339,7 @@ export default function WorkoutBuilder() {
         <div style={{ display: "flex", width: "100%", height: "calc(100vh - 65px)", flexDirection: "column", overflow: "hidden" }}>
 
             {/* Days of the week */}
-            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px" }}>
+            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px", borderRadius: "14px"}}>
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
                     <button onClick={()=>{navigate(`/workout-builder/${day}`, {state:{"day": day}})}} key={day} style={DOTWCARD_STYLES}>{day}</button>
                 ))}
