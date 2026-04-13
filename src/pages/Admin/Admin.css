@@ -151,3 +151,13 @@
 .exercise-table tr:last-child td {
   border-bottom: none;
 }
+
+.pill {
+    outline: #DDDDDD solid 1px;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    flex: 1;
+    margin: 0 5px;
+}

@@ -3,6 +3,8 @@ import Navbar from "./components/Navbar.jsx";
 import ChatModal from "./components/ChatModal.jsx";
 import {Toaster} from "react-hot-toast";
 import {AuthContext} from "./context/authContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faComments } from "@fortawesome/free-solid-svg-icons";
 
 //Page Imports
 import Home from "./pages/Shared/Home.jsx";
@@ -37,7 +39,11 @@ function AppLayout() {
                 style: {zIndex: 9999, background: "#333", color: "#fff", fontSize: "16px", padding: "10px 20px", borderRadius: "8px",},
             }} />
             <Navbar />
-            {isAuthenticated && <button className="floating-chat-btn" onClick={() => setIsChatOpen(true)}>💬</button>}
+            {isAuthenticated && (
+                <button className="floating-chat-btn" onClick={() => setIsChatOpen(true)}>
+                    <FontAwesomeIcon icon={faComments} />
+                </button>
+            )}
             <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
             <main style={{ padding: isWorkoutBuilderRoute ? 0 : "20px" }}>
                 <Routes>
