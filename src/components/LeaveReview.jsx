@@ -141,14 +141,11 @@ export default function LeaveReview( {show, handleClose, id} ){
 
 
     return(
-        <div style={OVERLAY_STYLES}>
-            <div style={MODAL_STYLES}>
+        <div style={OVERLAY_STYLES} onClick={handleClose}>
+            <div style={MODAL_STYLES} onClick={(e)=>e.stopPropagation()}>
                 <div style={HEADER_STYLES}>
                     <div style={{display:"flex", maxWidth:"100%", width:"100%", height:"75%", marginLeft:"25px", alignItems:"center", justifyContent:"center"}}>
                         <h3><b>REVIEW</b></h3>
-                    </div>
-                    <div style={{maxWidth:"100%", height:"100%", float:"right"}}>
-                        <button onClick={handleClose} style={CLOSEBUTTON_STYLES}> X </button>
                     </div>
                 </div>
                 <div style={{display:"flex", height:"100%", minHeight:"100%", alignItems:"center", flexDirection:"column"}}>

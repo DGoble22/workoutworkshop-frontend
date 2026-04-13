@@ -132,7 +132,8 @@ export default function EditCoachProfile({ onBack }) {
 
         setSaving(true)
         try {
-            const res = await fetch(`${apiBase}/coach/profile`, {
+            // not sending it coach_id so cannot work
+            const res = await fetch(`${apiBase}/coach/profile/`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

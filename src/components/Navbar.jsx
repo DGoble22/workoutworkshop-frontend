@@ -95,7 +95,6 @@ const Navbar = () => {
                 break;
         }
     };
-
     return (
         <>
         <nav className="navbar navbar-expand navbar-dark navbar-gradient shadow-lg">
@@ -119,9 +118,14 @@ const Navbar = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/coach" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/coach' ? 'active' : ''}`}>
+                            {user.role === 'U' || user.role === 'A' ? 
+                            (<Link to="/findCoach" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/findCoach' ? 'active' : ''}`}>
                                 Coach
-                            </Link>
+                            </Link>)
+                            : (<Link to="/coach" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/coach' ? 'active' : ''}`}>
+                                Coach
+                            </Link>)
+                            }
                         </li>
                         {user.role === 'A' && (
                         <li className="nav-item">

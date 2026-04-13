@@ -319,6 +319,7 @@
     margin-top: 33px;
     padding: 20px;
     gap: 20px;
+    overflow-y: auto;
     }
 
     .home-button-storage {

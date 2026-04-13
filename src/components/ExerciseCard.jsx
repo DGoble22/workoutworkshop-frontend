@@ -135,7 +135,7 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, equipmen
 
             <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>{/*main body*/}
                 
-                <a style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
+                <a href={URL} style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
                     <Image  src={thumbnail} style={{width:"100%", maxWidth:"100%", height:"100%", objectFit:"fill"}}/>
                 </a>
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
