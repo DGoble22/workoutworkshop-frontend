@@ -201,51 +201,56 @@ export default function WorkoutBuilder() {
         console.log("Searching for:", e.target.value);
     };
 
-    //Add exercise to work out
-    const addToWorkout = async (exercise) => {
-
-        const payload = {
-                user_id: user.id,
-                planned_date: selectedDate,
-                exercise_id: exercise.exercise_id
-            };
-
-        console.log("Ready to send to Flask:", payload);
-
-        try{
-            
-            const apiBase = import.meta.env.VITE_API_URL;
-            await axios.post(`${apiBase}/api/workouts/add-workout`, payload);
-            
-            setWorkoutPlan([...workoutPlan, exercise]);
-            toast.success("Workout saved successfully!");
-            navigate(0) // reload page so rep and set count show, maybe change later
-
-
-        } catch (error){ console.error("Error saving workout", error);}
+    // Add exercise to built workout
+    const addToWorkout = (exercise) => {
+        setWorkoutPlan([...workoutPlan, exercise]);
     };
 
-    //Remove exercise from workout
+    // Remove exercise from built workout
     const removeFromWorkout = async (indexToRemove, exercise_id, plan_id) => {
-        console.log(plan_id)
-        let data ={
+
+        // If workout isn't created yet, remove exercise from workout plan without making api call
+        if (!plan_id) {
+            setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));
+            return;
+        }
+
+        // If the workout is created already, delete normally
+        let data = {
             "plan_id": plan_id,
             "exercise_id": exercise_id
+        };
+
+        try {
+            const apiBase = import.meta.env.VITE_API_URL;
+            const url = `${apiBase}/api/workouts/remove`;
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));
+            } else {
+                toast.error("Failed to remove workout");
+            }
+        } catch (error) {
+            console.error("Error removing exercise:", error);
         }
-        
-        const apiBase = import.meta.env.VITE_API_URL;
-        const url = `${apiBase}/api/workouts/remove`;
+    };
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-
-        if(response.ok){setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));}
-        else{toast.error(response.message || "Failed to remove workout");}
-
-        
+    // Updates the workout with user input (sets, reps, weight)
+    const handleUpdateExercise = (indexToUpdate, field, value) => {
+        setWorkoutPlan((prevPlan) =>
+            prevPlan.map((ex, index) => {
+                if (index === indexToUpdate) {
+                    return { ...ex, [field]: value };
+                }
+                return ex;
+            })
+        );
     };
 
     //enable management options for workout in workout builder
@@ -424,7 +429,22 @@ export default function WorkoutBuilder() {
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
                             workoutPlan.map((exercise, index) => (
-                                <ExerciseCard key={index} name={exercise.name} equipment={exercise.equipment_needed} URL={exercise.video_url} manage={manage} reps={exercise.reps} sets={exercise.sets} weight={exercise.weight} plan_id={exercise.plan_id} exercise_id={exercise.exercise_id} apply={apply} thumbnail={exercise.thumbnail} handleDelete={()=>removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}/>
+                                <ExerciseCard
+                                    key={index}
+                                    name={exercise.name}
+                                    equipment={exercise.equipment_needed}
+                                    URL={exercise.video_url}
+                                    manage={manage}
+                                    reps={exercise.reps}
+                                    sets={exercise.sets}
+                                    weight={exercise.weight}
+                                    plan_id={exercise.plan_id}
+                                    exercise_id={exercise.exercise_id}
+                                    apply={apply}
+                                    thumbnail={exercise.thumbnail}
+                                    handleDelete={() => removeFromWorkout(index, exercise.exercise_id, exercise.plan_id)}
+                                    handleUpdate={(field, value) => handleUpdateExercise(index, field, value)}
+                                />
                             ))
                         )}
                     </div>
@@ -444,7 +464,7 @@ export default function WorkoutBuilder() {
 
                             <input
                                 type="text"
-                                maxLength="15" // Limits input to 15 characters
+                                maxLength="20" // Limits input to 15 characters
                                 value={workoutName}
                                 onChange={(e) => setWorkoutName(e.target.value)}
                                 placeholder="e.g., Upper Body"

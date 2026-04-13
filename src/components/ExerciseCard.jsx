@@ -73,8 +73,7 @@ const INPUTBAR_STYlES={
 
 }
 
-export default function ExerciseCard({ URL, name, manage, handleDelete, equipment, reps, sets, weight, apply, thumbnail, exercise_id, plan_id}){
-
+export default function ExerciseCard({ URL, name, manage, handleDelete, handleUpdate, equipment, reps, sets, weight, apply, thumbnail, exercise_id, plan_id}){
     const [numReps, setReps] = useState(reps)
     const [numSets, setSets] = useState(sets)
     const [numWeight, setWeight] = useState(weight)
@@ -126,7 +125,7 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, equipmen
 
     return(
         <div style={CARD_STYLE}>
-            <div style={HEADER_STYLES}> {/* Header */}
+            <div style={HEADER_STYLES}>
                 {name} | {equipment}
                 {manage &&
                     <button onClick={()=>handleDelete()} style={REMOVEBUTTON_STYLES}>-</button>
@@ -141,20 +140,38 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, equipmen
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
                     <div style={WORKOUTDATA_BARS}>
                         Reps:
-                        <input onChange={(e)=>setReps(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numReps} disabled={!manage} inputMode='numeric'/>
+                        <input
+                            onChange={(e) => handleUpdate('reps', e.target.value)}
+                            style={INPUTBAR_STYlES}
+                            value={reps || ""}
+                            disabled={!manage}
+                            inputMode='numeric'
+                        />
                     </div>
 
                     <div style={WORKOUTDATA_BARS}>
                         Sets:
-                        <input onChange={(e)=>setSets(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numSets} disabled={!manage} inputMode='numeric'/>
+                        <input
+                            onChange={(e) => handleUpdate('sets', e.target.value)}
+                            style={INPUTBAR_STYlES}
+                            value={sets || ""}
+                            disabled={!manage}
+                            inputMode='numeric'
+                        />
                     </div>
+
                     <div style={WORKOUTDATA_BARS}>
                         Weight:
-                        <input onChange={(e)=>setWeight(e.target.value)} style={INPUTBAR_STYlES} defaultValue={numWeight} disabled={!manage} inputMode='numeric'/>
+                        <input
+                            onChange={(e) => handleUpdate('weight', e.target.value)}
+                            style={INPUTBAR_STYlES}
+                            value={weight || ""}
+                            disabled={!manage}
+                            inputMode='numeric'
+                        />
                     </div>
                 </div>
             </div>
         </div>
     )
-
 }

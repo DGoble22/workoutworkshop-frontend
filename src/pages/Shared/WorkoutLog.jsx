@@ -115,7 +115,7 @@ export default function WorkoutLog() {
 
         try {
             const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
-            const response = await axios.delete(`${apiBase}/api/workouts/log/${id}`);
+            const response = await axios.delete(`${apiBase}/api/workouts/plan/${id}`);
 
             if (response.data.status === 'success') {
                 setSavedWorkouts((prevWorkouts) =>
@@ -124,7 +124,7 @@ export default function WorkoutLog() {
             }
         } catch (error) {
             console.error("Error deleting workout:", error);
-            toast.error("Failed to delete workout. Check the console.");
+            toast.error("Failed to delete workout.");
         }
     };
 
