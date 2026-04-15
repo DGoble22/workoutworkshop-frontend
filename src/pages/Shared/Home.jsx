@@ -279,10 +279,10 @@ export default function Home() {
                         <p className="home-subtitle">Build plan, track goals, and connect with coaches.</p>
 
                         <div className="home-actions">
-                            <button type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
+                            <button id="home-login" type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
                                 Login
                             </button>
-                            <button type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
+                            <button id="home-register" type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
                                 Register
                             </button>
                         </div>

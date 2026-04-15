@@ -52,27 +52,27 @@ export default function Login({ onClose, onSwitchToRegister }) {
     return (
         <div className="auth-modal-overlay" onClick={onClose}>
             <div className="auth-modal-content" onClick={(e) => e.stopPropagation()}>
-                <button className="auth-close-btn" onClick={onClose}>×</button>
+                <button  id="close-login" className="auth-close-btn" onClick={onClose}>×</button>
 
                 <h2 className="auth-title">Login</h2>
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="username">Username</label>
-                        <input type="username" id="username" name="username" value={formData.username} onChange={handleChange} required placeholder="Enter your username"/>
+                        <input type="username" id="login-username" name="username" value={formData.username} onChange={handleChange} required placeholder="Enter your username"/>
                     </div>
 
                     <div className="auth-field">
                         <label htmlFor="password">Password</label>
-                        <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Enter your password"/>
+                        <input type="password" id="login-password" name="password" value={formData.password} onChange={handleChange} required placeholder="Enter your password"/>
                     </div>
 
-                    <button type="submit" className="auth-submit-btn">Login</button>
+                    <button id="login-submit" type="submit" className="auth-submit-btn">Login</button>
                 </form>
 
                 <p className="auth-switch">
                     Don't have an account?{" "}
-                    <span className="auth-link" onClick={() => onSwitchToRegister && onSwitchToRegister()}>
+                    <span id="login-register" className="auth-link" onClick={() => onSwitchToRegister && onSwitchToRegister()}>
                         Register here
                     </span>
                 </p>

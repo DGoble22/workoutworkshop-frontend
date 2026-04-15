@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
+#ignore selenium testing stuff
+selenium-tests/venv/
+node_modules/
+.env.local
