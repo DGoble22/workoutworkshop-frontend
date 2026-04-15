@@ -248,6 +248,39 @@ export default function Admin() {
         setSelectedExercise(null);
     };
 
+    // Add state for platform metrics
+    const [platformMetrics, setPlatformMetrics] = useState({ total_users: 0, total_subscriptions: 0, total_revenue: 0 });
+    const [loadingMetrics, setLoadingMetrics] = useState(false);
+
+    useEffect(() => {
+        // Fetch platform metrics from the API
+        const fetchPlatformMetrics = async () => {
+            setLoadingMetrics(true);
+            try {
+                const apiBase = import.meta.env.VITE_API_URL;
+                const url = `${apiBase}/admin/platform-metrics`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    console.error("Failed to fetch platform metrics");
+                }
+                const data = await response.json();
+                setPlatformMetrics(data.data);
+            } catch (error) {
+                toast.error(error.message);
+            } finally {
+                setLoadingMetrics(false);
+            }
+        };
+
+        fetchPlatformMetrics();
+    }, []);
+
     return (
         <>
         {!isAuthenticated || user.role !== 'admin' && (
@@ -259,8 +292,31 @@ export default function Admin() {
 
             <div className="admin-dashboard-column">
                 <div className="admin-dashboard-card">
-                    <h3>Users</h3>
-                    <p>All current users of Workout Workshop</p>
+                    {loadingMetrics ? (
+                        <p>Loading metrics...</p>
+                    ) : (
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div className="pill">
+                                <h4>Total Users</h4>
+                                <p>{platformMetrics.total_users}</p>
+                            </div>
+                            <div className="pill">
+                                <h4>Total Subscriptions</h4>
+                                <p>{platformMetrics.total_subscriptions}</p>
+                            </div>
+                            <div className="pill">
+                                <h4>Total Revenue</h4>
+                                <p>${platformMetrics.total_revenue.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="admin-dashboard-card">
+                    <div style={{ position: 'relative' }}>
+                        <h3>Users</h3>
+                        <p>All current users of Workout Workshop</p>
+                    </div>
                     <input type="text" placeholder="Search users..." value={searchQuery} onChange={handleUserSearch} className="search-input"/>
                     {loadingUsers ? (
                         <p>Loading...</p>
@@ -269,7 +325,9 @@ export default function Admin() {
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Role</th>
                                     <th>Name</th>
+                                    <th>Username</th>
                                     <th>Banned</th>
                                     <th>Disabled</th>
                                     <th>Create Date</th>
@@ -279,7 +337,9 @@ export default function Admin() {
                                 {users.map((user) => (
                                     <tr key={user.id}>
                                         <td>{user.id}</td>
+                                        <td>{user.role}</td>
                                         <td>{user.first_name + " " + user.last_name}</td>
+                                        <td>{user.username}</td>
                                         <td>{user.is_banned ? 'Yes' : 'No'}</td>
                                         <td>{user.is_disabled ? 'Yes' : 'No'}</td>
                                         <td>{new Date(user.create_date).toLocaleDateString()}</td>
@@ -406,9 +466,11 @@ export default function Admin() {
                 </div>
 
                 <div className="admin-dashboard-card">
-                    <h3>Edit exercise library</h3>
-                    <p>Add or remove workouts</p>
-
+                    <div style={{ position: 'relative' }}>
+                        <h3>Edit exercise library</h3>
+                        <p>Add or remove workouts</p>
+                        <Button onClick={() => handleOpenExerciseModal(null)} style={{ position: 'absolute', top: '10px', right: '10px' }}>+</Button>
+                    </div>
                     <div className="exercise-table">
                         <h3 onClick={() => toggleTable('Chest')} style={{ cursor: 'pointer' }}>
                             Chest Exercises {collapsedTables.Chest ? '▼' : '▲'}
@@ -417,20 +479,22 @@ export default function Admin() {
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Thumbnail</th>
                                         <th>Exercise Name</th>
                                         <th>Equipment</th>
                                         <th>Muscle Group</th>
                                         <th>Video</th>
-                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Chest.map((exercise) => (
                                         <tr key={exercise.exercise_id}>
+                                            <td><img src={exercise.thumbnail} alt={exercise.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: "5px" }} /></td>
                                             <td>{exercise.name}</td>
                                             <td>{exercise.equipment}</td>
                                             <td>{exercise.muscle_group}</td>
-                                            <td>{exercise.video_url}</td>
+                                            <td><a href={exercise.video_url} target="_blank" rel="noopener noreferrer">{exercise.video_url}</a></td>
                                             <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
                                         </tr>
                                     ))}
@@ -447,20 +511,22 @@ export default function Admin() {
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Thumbnail</th>
                                         <th>Exercise Name</th>
                                         <th>Equipment</th>
                                         <th>Muscle Group</th>
                                         <th>Video</th>
-                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Arms.map((exercise) => (
                                         <tr key={exercise.exercise_id}>
+                                            <td><img src={exercise.thumbnail} alt={exercise.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: "5px" }} /></td>
                                             <td>{exercise.name}</td>
                                             <td>{exercise.equipment}</td>
                                             <td>{exercise.muscle_group}</td>
-                                            <td>{exercise.video_url}</td>
+                                            <td><a href={exercise.video_url} target="_blank" rel="noopener noreferrer">{exercise.video_url}</a></td>
                                             <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
                                         </tr>
                                     ))}
@@ -477,20 +543,22 @@ export default function Admin() {
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Thumbnail</th>
                                         <th>Exercise Name</th>
                                         <th>Equipment</th>
                                         <th>Muscle Group</th>
                                         <th>Video</th>
-                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Legs.map((exercise) => (
                                         <tr key={exercise.exercise_id}>
+                                            <td><img src={exercise.thumbnail} alt={exercise.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: "5px" }} /></td>
                                             <td>{exercise.name}</td>
                                             <td>{exercise.equipment}</td>
                                             <td>{exercise.muscle_group}</td>
-                                            <td>{exercise.video_url}</td>
+                                            <td><a href={exercise.video_url} target="_blank" rel="noopener noreferrer">{exercise.video_url}</a></td>
                                             <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
                                         </tr>
                                     ))}
@@ -507,20 +575,22 @@ export default function Admin() {
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Thumbnail</th>
                                         <th>Exercise Name</th>
                                         <th>Equipment</th>
                                         <th>Muscle Group</th>
                                         <th>Video</th>
-                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Back.map((exercise) => (
                                         <tr key={exercise.exercise_id}>
+                                            <td><img src={exercise.thumbnail} alt={exercise.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: "5px" }} /></td>
                                             <td>{exercise.name}</td>
                                             <td>{exercise.equipment}</td>
                                             <td>{exercise.muscle_group}</td>
-                                            <td>{exercise.video_url}</td>
+                                            <td><a href={exercise.video_url} target="_blank" rel="noopener noreferrer">{exercise.video_url}</a></td>
                                             <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
                                         </tr>
                                     ))}
@@ -537,20 +607,22 @@ export default function Admin() {
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Thumbnail</th>
                                         <th>Exercise Name</th>
                                         <th>Equipment</th>
                                         <th>Muscle Group</th>
                                         <th>Video</th>
-                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Cardio.map((exercise) => (
                                         <tr key={exercise.exercise_id}>
+                                            <td><img src={exercise.thumbnail} alt={exercise.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: "5px" }} /></td>
                                             <td>{exercise.name}</td>
                                             <td>{exercise.equipment}</td>
                                             <td>{exercise.muscle_group}</td>
-                                            <td>{exercise.video_url}</td>
+                                            <td><a href={exercise.video_url} target="_blank" rel="noopener noreferrer">{exercise.video_url}</a></td>
                                             <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
                                         </tr>
                                     ))}
@@ -567,20 +639,22 @@ export default function Admin() {
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Thumbnail</th>
                                         <th>Exercise Name</th>
                                         <th>Equipment</th>
                                         <th>Muscle Group</th>
                                         <th>Video</th>
-                                        <th><Button onClick={() => handleOpenExerciseModal(null)}>+</Button></th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Core.map((exercise) => (
                                         <tr key={exercise.exercise_id}>
+                                            <td><img src={exercise.thumbnail} alt={exercise.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: "5px"}} /></td>
                                             <td>{exercise.name}</td>
                                             <td>{exercise.equipment}</td>
                                             <td>{exercise.muscle_group}</td>
-                                            <td>{exercise.video_url}</td>
+                                            <td><a href={exercise.video_url} target="_blank" rel="noopener noreferrer">{exercise.video_url}</a></td>
                                             <td><Button onClick={() => handleOpenExerciseModal(exercise)}>Edit</Button></td>
                                         </tr>
                                     ))}

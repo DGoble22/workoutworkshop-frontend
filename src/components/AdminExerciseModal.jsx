@@ -9,6 +9,7 @@ const AdminExerciseModal = ({ show, handleClose, exercise, onExerciseChange }) =
     equipment: '',
     muscleGroup: '',
     video_url: '',
+    thumbnail: '',
   });
 
   const { token, user } = useContext(AuthContext);
@@ -78,6 +79,7 @@ const AdminExerciseModal = ({ show, handleClose, exercise, onExerciseChange }) =
             muscle_group: exerciseData.muscleGroup,
             equipment_needed: exerciseData.equipment,
             video_url: exerciseData.video_url,
+            thumb_url: exerciseData.thumbnail,
           }),
         });
         if (!response.ok) {
@@ -104,6 +106,7 @@ const AdminExerciseModal = ({ show, handleClose, exercise, onExerciseChange }) =
             muscle_group: exerciseData.muscleGroup,
             equipment_needed: exerciseData.equipment,
             video_url: exerciseData.video_url,
+            thumb_url: exerciseData.thumbnail,
           }),
         });
         if (!response.ok) {
@@ -181,6 +184,16 @@ const AdminExerciseModal = ({ show, handleClose, exercise, onExerciseChange }) =
               type="text"
               name="video_url"
               value={exerciseData.video_url}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            Thumbnail URL:
+            <input
+              type="text"
+              name="thumbnail"
+              value={exerciseData.thumbnail}
               onChange={handleChange}
               required
             />
