@@ -19,6 +19,7 @@ import fivestars from "../../images/5_star_NOBG.png"
 
 import DefaultProfilePic from '../../images/DefaultProfile.jpg'
 import CoachInfoModal from "../../components/CoachInfoModal";
+import toast from "react-hot-toast";
 
 export default function Home() {
     const { isAuthenticated, user , token} = useContext(AuthContext);
@@ -267,27 +268,150 @@ export default function Home() {
         navigate(`/${menuItem.toLowerCase()}`)
     };
 
+    //States and hook for exercises library management
+    const [Arms, setArms] = useState([]);
+    const [Legs, setLegs] = useState([]);
+    const [Chest, setChest] = useState([]);
+    const [Back, setBack] = useState([])
+    const [Cardio, setCardio] = useState([])
+    const [Core, setCore] = useState([])
+
+    const fetchWorkouts = async () => {
+        try {
+            const apiBase = import.meta.env.VITE_API_URL;
+            const url = `${apiBase}/admin/exercises`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+            if (!response.ok) {
+                console.error("Failed to fetch exercises");
+            }
+            const data = await response.json();
+
+            const grouped = data.data || {};
+            setArms(grouped.Arms || []);
+            setLegs(grouped.Legs || []);
+            setChest(grouped.Chest || []);
+            setBack(grouped.Back || []);
+            setCardio(grouped.Cardio || []);
+            setCore(grouped.Core || []);
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchWorkouts();
+    }, [token]);
+
+    const testimonials = [
+        {
+            name: "Alex Johnson",
+            role: "Client",
+            text: "Workout Workshop completely changed how I track my lifting. The coach connection is seamless!",
+            stars: 5
+        },
+        {
+            name: "Sarah Miller",
+            role: "Marathon Runner",
+            text: "The progress metrics helped me shave 10 minutes off my PR. Seeing my weight and performance trends in one place is key.",
+            stars: 5
+        },
+        {
+            name: "Mike Ross",
+            role: "Coach",
+            text: "As a coach, this platform allows me to manage 20+ clients without losing track of their individual goals.",
+            stars: 5
+        }
+    ];
+
+    const [isExpanded, setIsExpanded] = useState(false);
+    const allExercises = [...Arms, ...Legs, ...Chest, ...Back, ...Cardio, ...Core];
+    const visibleExercises = isExpanded ? allExercises : allExercises.slice(0, 6);
     const firstName = user?.first_name;
     return (
         <>
         <div className="home-page">
             {!isAuthenticated ? (
-                <section className="home-hero container">
-                    <div className="home-hero-card text-center">
-                        <p className="home-kicker">Train smarter</p>
-                        <h1 className="home-title">Welcome to Workout Workshop</h1>
-                        <p className="home-subtitle">Build plan, track goals, and connect with coaches.</p>
+                <>
+                    <section className="home-hero container">
+                        <div className="home-hero-card text-center">
+                            <p className="home-kicker">Train smarter</p>
+                            <h1 className="home-title">Welcome to Workout Workshop</h1>
+                            <p className="home-subtitle">Build plan, track goals, and connect with coaches.</p>
 
-                        <div className="home-actions">
-                            <button type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
-                                Login
-                            </button>
-                            <button type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
-                                Register
+                            <div className="home-actions">
+                                <button type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
+                                    Login
+                                </button>
+                                <button type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
+                                    Register
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* TESTIMONIALS */}
+                    <section className="workout-preview-section container" style={{ marginTop: '40px' }}>
+                        <div className="preview-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
+                            <h2 className="home-title" style={{ fontSize: '2rem' }}>What Our Members Say</h2>
+                            <p className="home-subtitle" style={{ margin: '0', textAlign: 'left' }}>Hear from our community of athletes and coaches.</p>
+                        </div>
+
+                        <div className="workout-grid" style={{ marginTop: '32px' }}>
+                            {testimonials.map((t, index) => (
+                                <div key={index} className="testimonial-card">
+                                    <div className="testimonial-stars">
+                                        {"★".repeat(t.stars)}
+                                    </div>
+                                    <p className="testimonial-text">"{t.text}"</p>
+                                    <div className="testimonial-author">
+                                        <strong>{t.name}</strong>
+                                        <span className="workout-tag" style={{ marginTop: '8px', display: 'inline-block' }}>{t.role}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* WORKOUT PREVIEW */}
+                    <section className="workout-preview-section container">
+                        <div className="preview-header">
+                            <h2>Explore Our Exercises</h2>
+                            {/* Toggle the expanded state instead of navigating */}
+                            <button className="view-all-btn" onClick={() => setIsExpanded(!isExpanded)}>
+                                {isExpanded ? "Show Less" : "View All Exercises"}
                             </button>
                         </div>
-                    </div>
-                </section>
+
+                        <div className="workout-grid">
+                            {visibleExercises.length > 0 ? (
+                                visibleExercises.map((ex, index) => (
+                                    <div key={index} className="workout-preview-card">
+                                        <div className="workout-card-image">
+                                            <img
+                                                src={ex.thumbnail || 'https://via.placeholder.com/300x200?text=No+Thumbnail'}
+                                                alt={ex.name}
+                                            />
+                                        </div>
+                                        <div className="workout-card-info">
+                                            <h4>{ex.name}</h4>
+                                            <span className="workout-tag">{ex.muscle_group}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Loading exercises...</p>
+                            )}
+                        </div>
+                    </section>
+
+
+                </>
             ) : !hasWorkout ? (
                 <section className="home-dashboard container">
                     {/* Days of the Week */}
