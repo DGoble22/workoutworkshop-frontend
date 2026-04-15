@@ -68,7 +68,7 @@ export default function WorkoutDashboard() {
     };
 
     const handleMenuClick = (menuItem) => {
-        navigate(`/${menuItem.toLowerCase()}`)
+        navigate(menuItem);
     };
 
     return (
@@ -109,7 +109,7 @@ export default function WorkoutDashboard() {
                     </div>
                 </button>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/coaching")}>
+                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/coach")}>
                     GET COACHING
                 </button>
 
