@@ -344,19 +344,11 @@ export default function Home() {
                             <h1 className="home-title">Welcome to Workout Workshop</h1>
                             <p className="home-subtitle">Build plan, track goals, and connect with coaches.</p>
 
-<<<<<<< HEAD
-                        <div className="home-actions">
-                            <button id="home-login" type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
-                                Login
-                            </button>
-                            <button id="home-register" type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
-                                Register
-=======
                             <div className="home-actions">
-                                <button type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
+                                <button id="home-login" type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
                                     Login
                                 </button>
-                                <button type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
+                                <button id="home-register" type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
                                     Register
                                 </button>
                             </div>
@@ -393,7 +385,6 @@ export default function Home() {
                             {/* Toggle the expanded state instead of navigating */}
                             <button className="view-all-btn" onClick={() => setIsExpanded(!isExpanded)}>
                                 {isExpanded ? "Show Less" : "View All Exercises"}
->>>>>>> ca666322a6d43d66764be145d4a4eba3365616ec
                             </button>
                         </div>
 
