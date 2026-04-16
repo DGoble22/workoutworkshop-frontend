@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react"
 import { AuthContext } from "../../context/AuthContext"
 import EditCoachProfile from "./EditCoachProfile"
 import CreateMealPlan from "./CreateMealPlan"
+import ClientDetail from "./ClientDetail"
 import ChatModal from "../../components/ChatModal"
 import Image from "react-bootstrap/Image"
 import DefaultProfilePic from "../../images/defaultProfile.jpg"
@@ -9,7 +10,8 @@ import DefaultProfilePic from "../../images/defaultProfile.jpg"
 const VIEWS = {
     DASHBOARD: "dashboard",
     EDIT_PROFILE: "edit_profile",
-    MEAL_PLAN: "meal_plan"
+    MEAL_PLAN: "meal_plan",
+    CLIENT_DETAIL: "client_detail"
 }
 
 const REQUEST_CARD_STYLES = {
@@ -86,7 +88,7 @@ function RequestCard({ request, onAccept, onReject }) {
     )
 }
 
-function ClientsTable({ clients, onMealPlan, onChat }) {
+function ClientsTable({ clients, onMealPlan, onChat, onDetail }) {
     return (
         <table style={TABLE_STYLES}>
             <thead>
@@ -116,13 +118,18 @@ function ClientsTable({ clients, onMealPlan, onChat }) {
                         <td style={TD_STYLES}>
                             <span
                                 style={{ fontSize: "1.3rem", cursor: "pointer" }}
-                                onClick={() => onChat(client.user_id)}
+                                onClick={() => onChat()}
                             >
                                 💬
                             </span>
                         </td>
                         <td style={TD_STYLES}>
-                            <span style={{ color: "#cb0a0a", fontWeight: "700", cursor: "pointer" }}>›</span>
+                            <span
+                                style={{ color: "#cb0a0a", fontWeight: "700", cursor: "pointer" }}
+                                onClick={() => onDetail(client.user_id)}
+                            >
+                                ›
+                            </span>
                         </td>
                     </tr>
                 ))}
@@ -138,8 +145,8 @@ export default function Coach() {
     const [clients, setClients] = useState([])
     const [coachId, setCoachId] = useState(null)
     const [selectedClient, setSelectedClient] = useState(null)
+    const [detailClient, setDetailClient] = useState(null)
     const [showChat, setShowChat] = useState(false)
-    const [chatClient, setChatClient] = useState(null)
     const [loading, setLoading] = useState(true)
 
     const apiBase = import.meta.env.VITE_API_URL || ""
@@ -207,9 +214,13 @@ export default function Coach() {
         setView(VIEWS.MEAL_PLAN)
     }
 
-    function handleChat(user_id) {
-        setChatClient(user_id)
+    function handleChat() {
         setShowChat(true)
+    }
+
+    function handleClientDetail(user_id) {
+        setDetailClient(clients.find(c => c.user_id === user_id))
+        setView(VIEWS.CLIENT_DETAIL)
     }
 
     if (view === VIEWS.EDIT_PROFILE) {
@@ -225,6 +236,17 @@ export default function Coach() {
             <div className="container mt-4">
                 <CreateMealPlan
                     client={clients.find(c => c.user_id === selectedClient)}
+                    onBack={() => setView(VIEWS.DASHBOARD)}
+                />
+            </div>
+        )
+    }
+
+    if (view === VIEWS.CLIENT_DETAIL) {
+        return (
+            <div className="container mt-4">
+                <ClientDetail
+                    client={detailClient}
                     onBack={() => setView(VIEWS.DASHBOARD)}
                 />
             </div>
@@ -276,15 +298,15 @@ export default function Coach() {
                                     clients={clients}
                                     onMealPlan={handleMealPlan}
                                     onChat={handleChat}
+                                    onDetail={handleClientDetail}
                                 />
                             )}
                         </div>
                     </div>
 
                     <ChatModal
-                        show={showChat}
-                        handleClose={() => setShowChat(false)}
-                        client={clients.find(c => c.user_id === chatClient)}
+                        isOpen={showChat}
+                        onClose={() => setShowChat(false)}
                     />
                 </div>
             )}
