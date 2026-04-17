@@ -117,15 +117,12 @@ const Navbar = () => {
                                 Workout Builder
                             </Link>
                         </li>
-                        <li id="nav-coach" className="nav-item">
-                            {user.role === 'U' || user.role === 'A' ? 
-                            (<Link to="/findCoach" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/findCoach' ? 'active' : ''}`}>
+                        <li className="nav-item">
+                            {user.role === "C" &&(
+                            <Link to="/coach" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/coach' ? 'active' : ''}`}>
                                 Coach
-                            </Link>)
-                            : (<Link to="/coach" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/coach' ? 'active' : ''}`}>
-                                Coach
-                            </Link>)
-                            }
+                            </Link>
+                            )}
                         </li>
                         {user.role === 'A' && (
                         <li id="nav-admin" className="nav-item">

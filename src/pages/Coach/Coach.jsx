@@ -237,7 +237,7 @@ export default function Coach() {
 
     return (
         <>
-            {user.role === 'C' && (
+            {user?.role === 'C' && (
                 <div className="container mt-4">
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
                         <div style={{ position: "relative", width: "100%", maxWidth: "700px", textAlign: "center", marginBottom: "28px" }}>
