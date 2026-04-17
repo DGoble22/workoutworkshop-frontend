@@ -1,6 +1,6 @@
 /* Navbar gradient background */
 .navbar-gradient {
-    background: linear-gradient(90deg, #ff0000 0%, #000000 100%);
+    background: linear-gradient(90deg, #711A19 0%, #000000 100%);
     padding: 1rem 0;
 }
 
@@ -45,7 +45,7 @@
 
 /* Styling for Login Button */
 .nav-button {
-    background: #ff0000;
+    background: #711A19;
     color: white;
     border: none;
     padding: 10px 24px;
@@ -58,7 +58,7 @@
 .nav-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    background: #dd0000;
+    background: #711A19;
 }
 
 .nav-button:active {
@@ -132,7 +132,7 @@
 
 .profile-dropdown button:hover {
     background-color: #f8f9fa;
-    color: #ff0000; /* Ties back into your theme */
+    color: #711A19; /* Ties back into your theme */
 }
 
 .profile-dropdown .delete-btn {
