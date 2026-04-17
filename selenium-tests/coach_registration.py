@@ -46,8 +46,6 @@ if __name__ == "__main__":
     driver.find_element(By.ID, "register-next-1").click() #go to next page
     time.sleep(2)
 
-    driver.find_element(By.ID, "register-next-1").click()
-    time.sleep(2)
     # -----------Coach Info Page-----------
     fName = driver.find_element(By.ID, "register-first_name")
     lName = driver.find_element(By.ID, "register-last_name")
@@ -83,13 +81,11 @@ if __name__ == "__main__":
     time.sleep(1.5)
     driver.find_element(By.ID, "register-Coach").click()
     time.sleep(1.5)
-    driver.find_element(By.ID, "register-Nutrition").click()
+    driver.find_element(By.ID, "register-Nutritionist").click()
     time.sleep(1.5)
     driver.find_element(By.ID, "register-next-3").click() #move to next page
     time.sleep(1.5)
-    driver.find_element(By.ID, "register-Nutrition").click()
-    time.sleep(1.5)
-    driver.find_element(By.ID, "register-Nutrition").click()
+    driver.find_element(By.ID, "register-Coach").click()
     time.sleep(1.5)
     # upload files
     test_file = os.path.abspath("Files/TestFile.jpg")
@@ -106,25 +102,44 @@ if __name__ == "__main__":
 
     # -----------Availibility Page-----------
 
-    # -----------Goals Page-----------
-    # -----------Skip Payment-----------
-    currWeight=driver.find_element(By.ID, "register-current_weight")
-    goalWeight=driver.find_element(By.ID, "register-goal_weight")
+    
+    #click on available days
+    driver.find_element(By.ID, "register-M").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "register-T").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "register-TH").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "register-M").click()
+    time.sleep(1)
+
+    Tstart = driver.find_element(By.ID, "start-time-T")
+    Tend = driver.find_element(By.ID, "end-time-T")
+
+    Tstart.send_keys("0900p") #invalid time
+    time.sleep(1)
+    Tstart.send_keys("0930a")
+    time.sleep(1)
+
+    #set price
+    price = driver.find_element(By.ID, "register-pricing")
     actions = ActionChains(driver) 
     
-    actions.click_and_hold(currWeight).move_by_offset(50, 0).release().perform()
+    actions.click_and_hold(price).move_by_offset(50, 0).release().perform()
     time.sleep(1.5)
-    actions.click_and_hold(goalWeight).move_by_offset(50, 0).release().perform()  
-    time.sleep(1.5)
-    actions.click_and_hold(goalWeight).move_by_offset(-50, 0).release().perform() 
-    
+    actions.click_and_hold(price).move_by_offset(-45, 0).release().perform()
+    time.sleep(2)
+
+    driver.find_element(By.ID, "register-next-4").click()
+
+    # -----------Goals Page-----------
     time.sleep(1.5)   
-    driver.find_element(By.ID, "Strength").click()
-    time.sleep(1)
     driver.find_element(By.ID, "WeightLoss").click()
     goalText = driver.find_element(By.ID, "register-goal_text")
     goalText.send_keys("This is a text goal")
     time.sleep(2)
+
+    # -----------Skip Payment-----------
     driver.find_element(By.ID, "register-skip").click() #skip payment
 
     time.sleep(2)

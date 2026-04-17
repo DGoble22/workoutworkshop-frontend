@@ -127,6 +127,7 @@ export default function EditGoalsModal({ onClose }) {
                             {goalTypes.map((goal) => (
                                 <label key={goal} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
                                     <input
+                                        id={`goals-${goal}`}
                                         type="radio"
                                         name="goal_type"
                                         value={goal}
@@ -142,6 +143,7 @@ export default function EditGoalsModal({ onClose }) {
                     <div className="auth-field">
                         <label>Goal Notes</label>
                         <textarea
+                            id="goal-notes"
                             name="information"
                             value={formData.information}
                             onChange={handleChange}
@@ -151,8 +153,8 @@ export default function EditGoalsModal({ onClose }) {
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', marginTop: '20px' }}>
-                        <button type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
-                        <button type="submit" className="auth-submit-btn" disabled={isSubmitting}>
+                        <button id="goals-cancel" type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
+                        <button id="goals-submit" type="submit" className="auth-submit-btn" disabled={isSubmitting}>
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </button>
                     </div>

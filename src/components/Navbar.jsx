@@ -158,14 +158,14 @@ const Navbar = () => {
                                         Hi, {name}!
                                     </div>
                                     <hr />
-                                    <button onClick={() => handleMenuClick('upload')}>Upload Profile Picture</button>
-                                    <button onClick={() => handleMenuClick('username')}>Edit Username</button>
-                                    <button onClick={() => handleMenuClick('password')}>Change Password</button>
-                                    <button onClick={() => handleMenuClick('goals')}>Edit Goals</button>
-                                    <button onClick={() => handleMenuClick('payment')}>Change Payment Details</button>
+                                    <button id="nav-pfp" onClick={() => handleMenuClick('upload')}>Upload Profile Picture</button>
+                                    <button id="nav-username" onClick={() => handleMenuClick('username')}>Edit Username</button>
+                                    <button id="nav-password" onClick={() => handleMenuClick('password')}>Change Password</button>
+                                    <button id="nav-goals" onClick={() => handleMenuClick('goals')}>Edit Goals</button>
+                                    <button id="nav-payment" onClick={() => handleMenuClick('payment')}>Change Payment Details</button>
                                     <hr />
-                                    <button onClick={() => handleMenuClick('logout')}>Sign Out</button>
-                                    <button onClick={() => handleMenuClick('delete')} className="delete-btn">Delete Account</button>
+                                    <button id="nav-signout" onClick={() => handleMenuClick('logout')}>Sign Out</button>
+                                    <button id="nav-delete" onClick={() => handleMenuClick('delete')} className="delete-btn">Delete Account</button>
                                 </div>
                             )}
                         </div>

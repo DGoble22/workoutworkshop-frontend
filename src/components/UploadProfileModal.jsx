@@ -94,6 +94,7 @@ export default function UploadProfileModal({ onClose }) {
 
                     <div className="auth-field">
                         <input
+                            id="upload-pfp"
                             type="file"
                             accept="image/jpeg, image/png"
                             onChange={handleFileChange}
@@ -101,8 +102,8 @@ export default function UploadProfileModal({ onClose }) {
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', marginTop: '20px' }}>
-                        <button type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
-                        <button type="submit" className="auth-submit-btn" disabled={isUploading}>
+                        <button id="upload-pfp-cancel" type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
+                        <button id="upload-pfp-submit" type="submit" className="auth-submit-btn" disabled={isUploading}>
                             {isUploading ? 'Uploading...' : 'Save'}
                         </button>
                     </div>

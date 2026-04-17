@@ -46,7 +46,7 @@ export default function CoachAvailabilityEditor({ value = [], onChange, disabled
         {/* ui for toggling active days */}
       <div className="availability-day-grid">
         {DOW_OPTIONS.map((dow) => (
-          <button key={dow} type="button" className={`availability-day-btn ${isDayActive(dow) ? "is-active" : ""}`} onClick={() => toggleDay(dow)} disabled={disabled}>
+          <button id={`register-${dow}`} key={dow} type="button" className={`availability-day-btn ${isDayActive(dow) ? "is-active" : ""}`} onClick={() => toggleDay(dow)} disabled={disabled}>
             {dow}
           </button>
         ))}
@@ -60,8 +60,8 @@ export default function CoachAvailabilityEditor({ value = [], onChange, disabled
           return (
             <div key={`slot-${dow}`} className="availability-row">
               <div className="availability-row-day">{dow}</div>
-              <input type="time" value={normalizeTime(slot?.start_time)} onChange={(e) => updateDaySlot(dow, { start_time: e.target.value })} disabled={disabled} aria-label={`${dow} start time`}/>
-              <input type="time" value={normalizeTime(slot?.end_time)} onChange={(e) => updateDaySlot(dow, { end_time: e.target.value })} disabled={disabled} aria-label={`${dow} end time`}/>
+              <input id={`start-time-${dow}`} type="time" value={normalizeTime(slot?.start_time)} onChange={(e) => updateDaySlot(dow, { start_time: e.target.value })} disabled={disabled} aria-label={`${dow} start time`}/>
+              <input id={`end-time-${dow}`} type="time" value={normalizeTime(slot?.end_time)} onChange={(e) => updateDaySlot(dow, { end_time: e.target.value })} disabled={disabled} aria-label={`${dow} end time`}/>
               {invalidRange && <div className="availability-row-error">End time must be after start time.</div>}
             </div>
           );

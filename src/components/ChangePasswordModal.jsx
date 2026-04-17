@@ -76,12 +76,12 @@ export default function ChangePasswordModal({ onClose }) {
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="auth-field">
                         <label>Old Password</label>
-                        <input type="password" required placeholder="Enter current password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} maxLength={50}/>
+                        <input id="old-password" type="password" required placeholder="Enter current password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} maxLength={50}/>
                     </div>
 
                     <div className="auth-field">
                         <label >New Password</label>
-                        <input type="password" required placeholder="Enter your new password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
+                        <input id="password-new" type="password" required placeholder="Enter your new password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
                     </div>
 
                     {/* Real-time Password Checklist */}
@@ -102,12 +102,12 @@ export default function ChangePasswordModal({ onClose }) {
 
                     <div className="auth-field">
                         <label>Confirm New Password</label>
-                        <input type="password" required placeholder="Confirm your new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}/>
+                        <input id="confirm-password" type="password" required placeholder="Confirm your new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}/>
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', marginTop: '20px' }}>
-                        <button type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
-                        <button type="submit" className="auth-submit-btn" disabled={isSubmitting}>
+                        <button id="password-cancel" type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
+                        <button id="password-submit" type="submit" className="auth-submit-btn" disabled={isSubmitting}>
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </button>
                     </div>

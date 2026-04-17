@@ -109,7 +109,7 @@ export default function WorkoutDashboard() {
                     </div>
                 </button>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/coach")}>
+                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/findCoach")}>
                     GET COACHING
                 </button>
 

@@ -64,6 +64,7 @@ export default function DeleteAccountModal({ onClose }) {
                     <button
                         type="button"
                         className="auth-submit-btn"
+                        id="delete-cancel"
                         style={{ backgroundColor: '#6c757d', flex: 1 }}
                         onClick={onClose}
                         disabled={isDeleting}
@@ -73,6 +74,7 @@ export default function DeleteAccountModal({ onClose }) {
                     <button
                         type="button"
                         className="auth-submit-btn"
+                        id="delete-confirm"
                         style={{ backgroundColor: '#dc3545', flex: 1 }}
                         onClick={handleDelete}
                         disabled={isDeleting}
