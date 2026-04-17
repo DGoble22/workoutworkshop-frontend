@@ -152,7 +152,7 @@ export default function WorkoutLog() {
                             </div>
 
                             <button style={EDIT_BTN} onClick={() => handleEdit(workout.id, workout.date, workout.title)}>
-                                Edit
+                                View
                             </button>
                             <button style={REMOVE_BTN} onClick={() => handleRemove(workout.id)}>
                                 Remove
