@@ -346,8 +346,23 @@ export default function WorkoutBuilder() {
                     let wDay = addDays(today, difference);
                     let formattedDate = format(wDay, "MM-dd");
 
+                    const isActive = day === initialdate.state?.day;
+
+                    // Dynamically adjust the style based on the isActive flag
+                    // Grows taller if active with a grow/shrink animation. Background changes and drop shadow added as well
+                    const dynamicStyle = {
+                        ...DOTWCARD_STYLES,
+                        height: isActive ? "95%" : "75%",
+                        transition: "all 0.2s ease-in-out",
+                        backgroundColor: isActive ? "#4a4a4a" : "#2C2C2C",
+                        boxShadow: isActive ? "0 4px 8px rgba(0,0,0,0.4)" : "none"
+                    };
                     return (
-                        <button onClick={()=>{navigate(`/workout-builder/${day}`, {state:{"day": day}})}} key={day} style={DOTWCARD_STYLES}>
+                        <button
+                            onClick={()=>{navigate(`/workout-builder/${day}`, {state:{"day": day}})}}
+                            key={day}
+                            style={dynamicStyle}
+                        >
                             <span style={{ fontSize: "1.1rem" }}>{day}</span>
                             <span style={{ fontSize: "0.8rem", color: "#aaaaaa", marginTop: "4px" }}>{formattedDate}</span>
                         </button>
