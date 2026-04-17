@@ -17,8 +17,8 @@ export default function WorkoutCalendar() {
             if (!user || !user.id) return;
 
             try {
-                const apiBase = import.meta.env.VITE_API_URL || '';
-                const response = await fetch(`${apiBase}/workouts/log/${user.id}`);
+                const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+                const response = await fetch(`${apiBase}/api/workouts/log/${user.id}`);
                 if (!response.ok) {
                     console.error("Backend returned an error:", response.status);
                 }
