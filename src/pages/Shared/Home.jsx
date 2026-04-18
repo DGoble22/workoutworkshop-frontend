@@ -439,7 +439,7 @@ export default function Home() {
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
                                 <button>Create a Plan</button>
-                                {hasCoach ? (<button onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+                                {hasCoach ? (<button id="home-coach" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
                             </div>
                         </div>
 

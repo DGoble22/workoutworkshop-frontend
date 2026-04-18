@@ -102,7 +102,7 @@ export default function FindCoach() {
                 </Dropdown.Menu>
                 </Dropdown>
             </div>
-            <div style={CardsDiv_Styles}>
+            <div id="coach-scroll" style={CardsDiv_Styles}>
                 {Filtered.map((coach)=>(
                     <CoachCard key={coach["Coach ID"]} name={coach["Name"]} price={coach["pricing"]} URL={coach["URL"]} rating={coach["rating"]} nutrition={coach["is_nutritionist"]} bio={coach["bio"]} id={coach["Coach ID"]}/>
                 ))}

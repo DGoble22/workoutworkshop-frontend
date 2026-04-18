@@ -129,7 +129,7 @@ export default function ApplicationSurvey( {show, handleClose, id} ){
                     <b>Application Survey</b>
                 </div>
                 <div style={{display:"flex", maxWidth:"100%", height:"100%", float:"right", marginRight:"10px"}}>
-                    <button style={CLOSEBUTTON_STYLES} onClick={handleClose}> X </button>
+                    <button id="close-application" style={CLOSEBUTTON_STYLES} onClick={handleClose}> X </button>
                 </div>
             </div>
             <div style={{width:"95%", float:"left"}}>
@@ -138,9 +138,9 @@ export default function ApplicationSurvey( {show, handleClose, id} ){
                     -Explain why you think im a good fit to be your coach
                 </p>
             </div>
-            <textarea onChange={(e)=>{setComment(e.target.value), setApplicationError(false)}} style={{width:"95%", height:"65%", overflowWrap:"break-word"}}/>
+            <textarea id="application-text" onChange={(e)=>{setComment(e.target.value), setApplicationError(false)}} style={{width:"95%", height:"65%", overflowWrap:"break-word"}}/>
             <ApplicationError show={applicationError}/>
-            <button disabled={buttonOmmited} onClick={validateComment} style={{display:"flex", width:"95%", height:"10%", borderRadius:"5px", marginBottom:"10px", marginTop:"10px", color:"#ffffff", backgroundColor:"#2C2C2C", alignItems:"center", justifyContent:"center"}}> {applyButton} </button>
+            <button id="apply-button" disabled={buttonOmmited} onClick={validateComment} style={{display:"flex", width:"95%", height:"10%", borderRadius:"5px", marginBottom:"10px", marginTop:"10px", color:"#ffffff", backgroundColor:"#2C2C2C", alignItems:"center", justifyContent:"center"}}> {applyButton} </button>
         </div>
     </div>
     )
