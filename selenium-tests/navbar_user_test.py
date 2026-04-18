@@ -33,11 +33,7 @@ if __name__ == "__main__":
     time.sleep(1.5)
     driver.find_element(By.ID, "nav-home").click() #go to homepage
     time.sleep(1.5)
-    driver.find_element(By.ID, "nav-coach").click() #click on coach page
-    time.sleep(1.5)
     driver.find_element(By.ID, "nav-logo").click() #use logo to go back home
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-user-logo").click() #open user dropdown
     time.sleep(1.5)
     driver.find_element(By.ID, "nav-user-logo").click() #close user dropdown
     time.sleep(2)
