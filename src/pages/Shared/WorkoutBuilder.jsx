@@ -198,39 +198,9 @@ export default function WorkoutBuilder() {
         setExpandedCategory(expandedCategory === category ? null : category);
     };
 
-<<<<<<< HEAD
-    //Search bar, doesn't work yet
-    const handleSearch = (e) => {
-        console.log("Searching for:", e.target.value);
-    };
-
-    //Add exercise to work out
-    const addToWorkout = async (exercise) => {
-
-        const payload = {
-                user_id: user.id,
-                planned_date: selectedDate,
-                exercise_id: exercise.exercise_id
-            };
-
-        console.log("Ready to send to Flask:", payload);
-
-        try{
-            
-            const apiBase = import.meta.env.VITE_API_URL;
-            await axios.post(`${apiBase}/api/workouts/add-workout`, payload);
-            
-            setWorkoutPlan([...workoutPlan, exercise]);
-            toast.success("Workout saved successfully!");
-            navigate(0) // reload page so rep and set count show, maybe change later
-
-
-        } catch (error){ console.error("Error saving workout", error);}
-=======
     // Add exercise to built workout
     const addToWorkout = (exercise) => {
         setWorkoutPlan([...workoutPlan, exercise]);
->>>>>>> 1be8be29569919996ff9d0913dd0ed783f6c8e0a
     };
 
     // Remove exercise from built workout
