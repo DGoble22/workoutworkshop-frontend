@@ -51,7 +51,7 @@
 }
 
 .admin-dashboard-card button {
-    background: #ff0000;
+    background: #711A19;
     color: white;
     border: none;
     padding: 10px 24px;
@@ -65,7 +65,7 @@
 .admin-dashboard-card button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    background: #dd0000;
+    background: #711A19;
 }
 
 .admin-dashboard-card-actions {
@@ -109,7 +109,7 @@
 
 .pagination button {
   padding: 8px 12px;
-  background-color: #ff0000;
+  background-color: #711A19;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;

@@ -454,8 +454,8 @@ export default function Home() {
                         <div className="dashboard-card-progress-metric">
                             <h3>Progress Metrics</h3>
                             <p>Review trends in performance, weight, and goal progress over time.</p>
-                            <div style={{display:"flex", width: "80%", height:"200px", alignItems:"center", justifyContent:"center"}}>
-                                <ResponsiveContainer width="100%" height="100%" >
+                            <div style={{ display: "flex", width: "100%", minWidth: 280, height: 220, alignItems: "center", justifyContent: "center" }}>
+                                <ResponsiveContainer width="100%" height={220} minWidth={280}>
                                     <LineChart responsive data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                         <XAxis dataKey="date"/>
                                         <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>
@@ -549,8 +549,8 @@ export default function Home() {
                         <div className="dashboard-card-progress-metric">
                             <h3>Progress Metrics</h3>
                             <p>Review trends in performance, weight, and goal progress over time.</p>
-                            <div style={{display:"flex", width: "80%", height:"200px", alignItems:"center", justifyContent:"center"}}>
-                                <ResponsiveContainer width="100%" height="100%" >
+                            <div style={{ display: "flex", width: "100%", minWidth: 280, height: 220, alignItems: "center", justifyContent: "center" }}>
+                                <ResponsiveContainer width="100%" height={220} minWidth={280}>
                                     <LineChart responsive data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                         <XAxis dataKey="date"/>
                                         <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>

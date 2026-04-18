@@ -17,22 +17,13 @@ const DOTWCARD_STYLES = {
     margin: "0 5px",
     height: "75%",
     backgroundColor: "#2C2C2C",
-    borderradius: "14px",
+    borderRadius: "14px",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     color: "#ffffff",
     cursor: "pointer"
-};
-
-const SEARCHBAR_STYLES = {
-    flex: 1,
-    border: "none",
-    outline: "none",
-    height: "45px",
-    borderRadius: "50px",
-    backgroundColor: "#d9d9d99b",
-    paddingLeft: "15px",
 };
 
 const FilterButton_Styles = {
@@ -150,6 +141,7 @@ export default function WorkoutBuilder() {
     const [exercises, setExercises] = useState([]);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [workoutPlan, setWorkoutPlan] = useState([]);
+    const [filterType, setFilterType] = useState("Muscle Group");
 
     const [manage, setManage] = useState(false); //handles if user can change exercise data
     const [apply, setApply] = useState(false); //handle if users applies exercise changes
@@ -159,6 +151,7 @@ export default function WorkoutBuilder() {
     const [selectedDate, setSelectedDate] = useState(null);
 
     let initialdate = useLocation(); //get date initally clicked on dashboard
+
     // Grab exercises from the Flask backend when component mounts
     useEffect(() => {
         if (!user || !user.id) return;
@@ -178,12 +171,21 @@ export default function WorkoutBuilder() {
         fetchExercises();
         // load the exercises for the intial date
         findDate(initialdate.state.day);
-        
+
     }, [user, initialdate.state.day]);
 
-    //Group exercises by muscle group
+    // Group exercises dynamically based on filterType
     const groupedExercises = exercises.reduce((groups, exercise) => {
-        const group = exercise.muscle_group;
+
+        // Determine the category name based on the selected filter
+        let group = "Other";
+        if (filterType === "Muscle Group") {
+            group = exercise.muscle_group || "Other";
+        } else if (filterType === "Equipment") {
+            // Default to "Bodyweight" if equipment_needed is null/empty
+            group = exercise.equipment_needed || "Bodyweight";
+        }
+
         if (!groups[group]) {
             groups[group] = [];
         }
@@ -196,6 +198,7 @@ export default function WorkoutBuilder() {
         setExpandedCategory(expandedCategory === category ? null : category);
     };
 
+<<<<<<< HEAD
     //Search bar, doesn't work yet
     const handleSearch = (e) => {
         console.log("Searching for:", e.target.value);
@@ -223,6 +226,11 @@ export default function WorkoutBuilder() {
 
 
         } catch (error){ console.error("Error saving workout", error);}
+=======
+    // Add exercise to built workout
+    const addToWorkout = (exercise) => {
+        setWorkoutPlan([...workoutPlan, exercise]);
+>>>>>>> 1be8be29569919996ff9d0913dd0ed783f6c8e0a
     };
 
     // Remove exercise from built workout
@@ -316,8 +324,8 @@ export default function WorkoutBuilder() {
 
         const apiBase = import.meta.env.VITE_API_URL;
         axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${wDay}`)
-        .then(res => {setWorkoutPlan(res.data["data"]);})
-        .catch(err => console.log(err))
+            .then(res => {setWorkoutPlan(res.data["data"]);})
+            .catch(err => console.log(err))
     }
 
     // Handle saving workout
@@ -342,12 +350,12 @@ export default function WorkoutBuilder() {
         console.log("Ready to send to Flask:", payload);
 
         try {
-             const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
-             await axios.post(`${apiBase}/api/workouts/save`, payload);
-             toast.success("Workout saved successfully!");
-         } catch (error) {
-             console.error("Error saving workout", error);
-         }
+            const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+            await axios.post(`${apiBase}/api/workouts/save`, payload);
+            toast.success("Workout saved successfully!");
+        } catch (error) {
+            console.error("Error saving workout", error);
+        }
 
         // Close modal and reset workout name
         setShowModal(false);
@@ -358,10 +366,38 @@ export default function WorkoutBuilder() {
         <div style={{ display: "flex", width: "100%", height: "calc(100vh - 65px)", flexDirection: "column", overflow: "hidden" }}>
 
             {/* Days of the week */}
-            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px", borderRadius: "14px"}}>
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-                    <button onClick={()=>{navigate(`/workout-builder/${day}`, {state:{"day": day}})}} key={day} style={DOTWCARD_STYLES}>{day}</button>
-                ))}
+            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px"}}>
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => {
+
+                    // Calculate date for DOW button
+                    let today = new Date();
+                    let dayofweek = today.getDay();
+                    let difference = (index - dayofweek + 7) % 7;
+                    let wDay = addDays(today, difference);
+                    let formattedDate = format(wDay, "MM-dd");
+
+                    const isActive = day === initialdate.state?.day;
+
+                    // Dynamically adjust the style based on the isActive flag
+                    // Grows taller if active with a grow/shrink animation. Background changes and drop shadow added as well
+                    const dynamicStyle = {
+                        ...DOTWCARD_STYLES,
+                        height: isActive ? "95%" : "75%",
+                        transition: "all 0.2s ease-in-out",
+                        backgroundColor: isActive ? "#4a4a4a" : "#2C2C2C",
+                        boxShadow: isActive ? "0 4px 8px rgba(0,0,0,0.4)" : "none"
+                    };
+                    return (
+                        <button
+                            onClick={()=>{navigate(`/workout-builder/${day}`, {state:{"day": day}})}}
+                            key={day}
+                            style={dynamicStyle}
+                        >
+                            <span style={{ fontSize: "1.1rem" }}>{day}</span>
+                            <span style={{ fontSize: "0.8rem", color: "#aaaaaa", marginTop: "4px" }}>{formattedDate}</span>
+                        </button>
+                    )
+                })}
             </div>
 
             <div style={{ display: "flex", flex: 1, width: "100%", overflow: "hidden" }}>
@@ -369,19 +405,34 @@ export default function WorkoutBuilder() {
                 {/* Find Workouts */}
                 <div style={{ display: "flex", width: "35%", backgroundColor: "#a3a1a1", flexDirection: "column", padding: "10px 0" }}>
 
-                    {/* Search Bar */}
-                    <div style={{ display: "flex", width: "90%", margin: "0 auto 10px auto", alignItems: "center" }}>
-                        <input type="text" placeholder="Search..." style={SEARCHBAR_STYLES} onChange={handleSearch}/>
+                    {/* Filter Section */}
+                    <div style={{ display: "flex", width: "90%", margin: "0 auto 10px auto", alignItems: "center", justifyContent: "flex-end" }}>
+
+                        {/* Show what is currently selected, dynamic */}
+                        <span style={{ color: "#4D4343", fontSize: "1.2rem", marginRight: "10px" }}>
+                            Filter: {filterType}
+                        </span>
+
                         <Dropdown>
                             <Dropdown.Toggle style={FilterButton_Styles} variant="success" id="dropdown-basic">
                                 <Image src={filter} alt="filter" style={{height: "100%", width: "100%", objectFit: "contain"}}/>
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                {/* Adds exercises from database */}
-                                {Object.keys(groupedExercises).map(group => (
-                                    <Dropdown.Item key={group}>{group}</Dropdown.Item>
-                                ))}
+                                {/* Updates states and closes open sections */}
+                                <Dropdown.Item onClick={() => {
+                                    setFilterType("Muscle Group");
+                                    setExpandedCategory(null);
+                                }}>
+                                    Muscle Group
+                                </Dropdown.Item>
+
+                                <Dropdown.Item onClick={() => {
+                                    setFilterType("Equipment");
+                                    setExpandedCategory(null);
+                                }}>
+                                    Equipment
+                                </Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
@@ -438,7 +489,6 @@ export default function WorkoutBuilder() {
                     {/* Right Side Header */}
                     <div style={{ display: "flex", width: "100%", height: "10%", backgroundColor: "#711A19", alignItems: "center", justifyContent: "flex-end", paddingRight: "20px", gap: "15px" }}>
                         {!manage ? <button onClick={()=>handleManage()}style={HEADERBUTTON_STYLES}>Manage</button> : <button onClick={()=>handleManage()} style={APPLYBUTTON_STYLES}>Apply</button>}
-                        <button style={HEADERBUTTON_STYLES}>Add Group</button>
                     </div>
 
                     {/* Built Workout */}
@@ -483,7 +533,7 @@ export default function WorkoutBuilder() {
 
                             <input
                                 type="text"
-                                maxLength="20" // Limits input to 15 characters
+                                maxLength="20" // Limits input to 20 characters
                                 value={workoutName}
                                 onChange={(e) => setWorkoutName(e.target.value)}
                                 placeholder="e.g., Upper Body"

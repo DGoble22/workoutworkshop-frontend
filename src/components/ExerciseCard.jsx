@@ -141,7 +141,10 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
                     <div style={WORKOUTDATA_BARS}>
                         Reps:
                         <input
-                            onChange={(e) => handleUpdate('reps', e.target.value)}
+                            onChange={(e) => {
+                                const onlyNumbers = e.target.value.replace(/\D/g, '');
+                                handleUpdate('reps', onlyNumbers);
+                            }}
                             style={INPUTBAR_STYlES}
                             value={reps || ""}
                             disabled={!manage}
@@ -152,7 +155,10 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
                     <div style={WORKOUTDATA_BARS}>
                         Sets:
                         <input
-                            onChange={(e) => handleUpdate('sets', e.target.value)}
+                            onChange={(e) => {
+                                const onlyNumbers = e.target.value.replace(/\D/g, '');
+                                handleUpdate('sets', onlyNumbers);
+                            }}
                             style={INPUTBAR_STYlES}
                             value={sets || ""}
                             disabled={!manage}
@@ -163,7 +169,10 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
                     <div style={WORKOUTDATA_BARS}>
                         Weight:
                         <input
-                            onChange={(e) => handleUpdate('weight', e.target.value)}
+                            onChange={(e) => {
+                                const onlyNumbers = e.target.value.replace(/\D/g, '');
+                                handleUpdate('weight', onlyNumbers);
+                            }}
                             style={INPUTBAR_STYlES}
                             value={weight || ""}
                             disabled={!manage}

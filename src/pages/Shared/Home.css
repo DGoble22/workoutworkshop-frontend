@@ -22,7 +22,7 @@
 
 .home-kicker {
     margin: 0 0 10px;
-    color: #ff0000;
+    color: #711A19;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -61,13 +61,13 @@
 }
 
 .home-auth-btn-login {
-    background: #ff0000;
+    background: #711A19;
     color: #fff;
     box-shadow: 0 8px 18px rgba(255, 0, 0, 0.25);
 }
 
 .home-auth-btn-login:hover {
-    background: #cb0a0a;
+    background: #711A19;
     transform: translateY(-1px);
 }
 
@@ -151,7 +151,7 @@
 }
 
 .dashboard-card button {
-    background: #ff0000;
+    background: #711A19;
     color: white;
     border: none;
     padding: 10px 24px;
@@ -165,7 +165,7 @@
 .dashboard-card button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    background: #dd0000;
+    background: #711A19;
 }
 
 .dashboard-card-actions {
@@ -240,13 +240,13 @@
     }
 
     .home-auth-btn-login {
-        background: #ff0000;
+        background: #711A19;
         color: #fff;
         box-shadow: 0 10px 20px rgba(230, 57, 70, 0.3);
     }
 
     .home-auth-btn-login:hover {
-        background: #dd0000;
+        background: #711A19;
     }
 
     .home-auth-btn-register {
@@ -470,14 +470,14 @@
 
 .workout-tag {
     font-size: 0.8rem;
-    color: #ff0000;
+    color: #711A19;
     font-weight: 600;
 }
 
 .view-all-btn {
-    background: #ff0000;
+    background: #711A19;
     color: #ffffff;
-    border: 2px solid #ff0000;
+    border: 2px solid #711A19;
     padding: 8px 16px;
     border-radius: 8px;
     font-weight: 600;
@@ -486,7 +486,7 @@
 }
 
 .view-all-btn:hover {
-    background: #dd0000;
+    background: #711A19;
     color: white;
 }
 
@@ -522,7 +522,7 @@
 
 .testimonial-card:hover {
     transform: translateY(-5px);
-    border-color: #ff0000;
+    border-color: #711A19;
 }
 
 .testimonial-stars {
