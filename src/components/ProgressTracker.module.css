@@ -1,8 +1,8 @@
-.progress-tracker {
+.progressTracker {
     padding: 20px;
 }
 
-.progress-upload-form {
+.progressUploadForm {
     margin-bottom: 30px;
     display: flex;
     flex-direction: column;
@@ -14,7 +14,7 @@
     background-color: #f9f9f9;
 }
 
-.progress-upload-label {
+.progressUploadLabel {
     padding: 12px 24px;
     background-color: #711A19;
     color: #ffffff;
@@ -24,11 +24,11 @@
     transition: background-color 0.3s ease;
 }
 
-.progress-upload-label:hover {
+.progressUploadLabel:hover {
     background-color: #511A19;
 }
 
-.progress-upload-submit {
+.progressUploadSubmit {
     padding: 12px 30px;
     background-color: #711A19;
     color: #fff;
@@ -39,24 +39,24 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.progress-upload-submit:disabled {
+.progressUploadSubmit:disabled {
     cursor: not-allowed;
     opacity: 0.75;
 }
 
-.progress-grid {
+.progressGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 15px;
 }
 
-.progress-card {
+.progressCard {
     border: 1px solid #ddd;
     border-radius: 8px;
     position: relative;
 }
 
-.progress-badge {
+.progressBadge {
     position: absolute;
     top: 5px;
     left: 5px;
@@ -67,28 +67,31 @@
     font-size: 12px;
 }
 
-.progress-image {
+.progressImage {
     width: 100%;
-    height: 200px;
-    object-fit: cover;
+    height: auto;
+    max-height: 520px;
+    object-fit: contain;
+    display: block;
+    background: #f5f5f5;
 }
 
-.progress-date {
+.progressDate {
     text-align: center;
 }
 
-.progress-toggle-row {
+.progressToggleRow {
     margin-top: 20px;
     display: flex;
     justify-content: center;
 }
 
-.progress-toggle-btn {
+.progressToggleBtn {
     padding: 10px;
     cursor: pointer;
 }
 
-.delete-btn {
+.deleteBtn {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -108,6 +111,7 @@
     z-index: 10;
 }
 
-.delete-btn:hover {
+.deleteBtn:hover {
     background: rgba(0, 0, 0, 1);
 }
+

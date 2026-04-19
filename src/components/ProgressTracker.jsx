@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './ProgressTracker.css';
+import styles from './ProgressTracker.module.css';
 
 const ProgressTracker = ({ userId, token }) => {
     const [pictures, setPictures] = useState([]);
@@ -96,44 +96,44 @@ const ProgressTracker = ({ userId, token }) => {
     };
 
     return (
-        <div className="progress-tracker">
+        <div className={styles.progressTracker}>
             <h3>My Progress Photos</h3>
             <p>Track pictures of your progress.</p>
-            <form onSubmit={handleUpload} className="progress-upload-form">
+            <form onSubmit={handleUpload} className={styles.progressUploadForm}>
                 {/* Photo Upload */}
                 <input id="progress-upload-input" type="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files[0])} style={{ display: 'none' }}/>
-                <label htmlFor="progress-upload-input" className="progress-upload-label">
+                <label htmlFor="progress-upload-input" className={styles.progressUploadLabel}>
                     {selectedFile ? `Selected: ${selectedFile.name}` : " Upload a Progress Photo"}
                 </label>
 
                 {/* Upload Button */}
                 {selectedFile && (
-                    <button type="submit" disabled={loading} className="progress-upload-submit">
+                    <button type="submit" disabled={loading} className={styles.progressUploadSubmit}>
                         {loading ? 'Uploading...' : 'Upload Now'}
                     </button>
                 )}
             </form>
 
-            <div className="progress-grid">
+            <div className={styles.progressGrid}>
                 {pictures.length === 0 ? (
                     <p style={{ textAlign: 'center', gridColumn: '1 / -1', color: '#666' }}>
                         No progress photos yet. Upload your first one above!
                     </p>
                 ) : (
                     displayedPics.map((pic, index) => (
-                        <div key={pic.picture_id} className="progress-card" style={{ position: 'relative' }}>
+                        <div key={pic.picture_id} className={styles.progressCard} style={{ position: 'relative' }}>
                             {/* Delete Button - Only shows in "Show All" mode or if less than 3 images */}
                             {(showAll || pictures.length <= 3) && (
-                                <button onClick={() => handleDelete(pic.picture_id)} className="delete-btn" title="Delete Photo">×</button>
+                                <button onClick={() => handleDelete(pic.picture_id)} className={styles.deleteBtn} title="Delete Photo">×</button>
                             )}
 
                             {!showAll && pictures.length > 3 && (
-                                <span className="progress-badge">
+                                <span className={styles.progressBadge}>
                                 {index === 0 ? "Start" : index === 1 ? "Midway" : "Latest"}
                             </span>
                             )}
-                            <img src={pic.image_url} alt="Progress" className="progress-image" />
-                            <p className="progress-date">
+                            <img src={pic.image_url} alt="Progress" className={styles.progressImage} />
+                            <p className={styles.progressDate}>
                                 {pic.create_date ? new Date(pic.create_date).toLocaleDateString() : 'Invalid Date'}
                             </p>
                         </div>
@@ -141,9 +141,9 @@ const ProgressTracker = ({ userId, token }) => {
                 )}
             </div>
 
-            <div className="progress-toggle-row">
+            <div className={styles.progressToggleRow}>
                 {pictures.length > 3 && (
-                    <button onClick={() => setShowAll(!showAll)} className="progress-toggle-btn">
+                    <button onClick={() => setShowAll(!showAll)} className={styles.progressToggleBtn}>
                         {showAll ? 'Show Highlights' : `Show All ${pictures.length} Photos`}
                     </button>
                 )}
