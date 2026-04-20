@@ -214,10 +214,10 @@ export default function ViewCoachApplicationModal({ show, handleClose, coachId }
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button style={{backgroundColor: "#14AE5C", borderColor: "#14AE5C"}} onClick={handleAccept}>
+                        <Button id="coach-accept" style={{backgroundColor: "#14AE5C", borderColor: "#14AE5C"}} onClick={handleAccept}>
                             Accept
                         </Button>
-                        <Button style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleRejectModal}>
+                        <Button id="coach-reject" style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleRejectModal}>
                             Reject
                         </Button>
                     </Modal.Footer>
@@ -231,13 +231,13 @@ export default function ViewCoachApplicationModal({ show, handleClose, coachId }
                 </Modal.Header>
                 <Modal.Body>
                     <p>Please provide a reason for rejecting this application:</p>
-                    <textarea className="form-control" rows="3" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} placeholder="Enter rejection reason here..."/>
+                    <textarea id="rejection-reason" className="form-control" rows="3" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} placeholder="Enter rejection reason here..."/>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleRejectCancel}>
+                    <Button id="rejection-cancel" variant="secondary" onClick={handleRejectCancel}>
                         Cancel
                     </Button>
-                    <Button style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleRejectConfirm}>
+                    <Button id="confirm-rejection" style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleRejectConfirm}>
                         Confirm Rejection
                     </Button>
                 </Modal.Footer>

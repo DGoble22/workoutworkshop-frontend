@@ -317,7 +317,7 @@ export default function Admin() {
                         <h3>Users</h3>
                         <p>All current users of Workout Workshop</p>
                     </div>
-                    <input type="text" placeholder="Search users..." value={searchQuery} onChange={handleUserSearch} className="search-input"/>
+                    <input id="search-users" type="text" placeholder="Search users..." value={searchQuery} onChange={handleUserSearch} className="search-input"/>
                     {loadingUsers ? (
                         <p>Loading...</p>
                     ) : (
@@ -350,6 +350,7 @@ export default function Admin() {
                     )}
                     <div className="pagination">
                         <button
+                            id="user-previous"
                             onClick={() => handlePageChangeUsers(currentPageUsers - 1)}
                             disabled={currentPageUsers === 1}
                         >
@@ -357,6 +358,7 @@ export default function Admin() {
                         </button>
                         <span>Page {currentPageUsers} of {totalPagesUsers}</span>
                         <button
+                            id="user-next"
                             onClick={() => handlePageChangeUsers(currentPageUsers + 1)}
                             disabled={currentPageUsers === totalPagesUsers}
                         >
@@ -387,7 +389,7 @@ export default function Admin() {
                                         <td>{coach.coach_id}</td>
                                         <td>{coach.name}</td>
                                         <td>{coach.status}</td>
-                                        <td><Button onClick={() => handleOpenViewCoachApplicationModal(coach)}>View</Button></td>
+                                        <td><Button id={`application-${coach.name}`}onClick={() => handleOpenViewCoachApplicationModal(coach)}>View</Button></td>
                                     </tr>
                                 ))
                             ) : (
@@ -400,6 +402,7 @@ export default function Admin() {
                     )}
                     <div className="pagination">
                         <button
+                            id="coach-previous"
                             onClick={() => handlePageChangeCoachApplications(currentPageCoachApplications - 1)}
                             disabled={currentPageCoachApplications === 1}
                         >
@@ -407,6 +410,7 @@ export default function Admin() {
                         </button>
                         <span>Page {currentPageCoachApplications} of {totalPagesCoachApplications}</span>
                         <button
+                            id="coach-next"
                             onClick={() => handlePageChangeCoachApplications(currentPageCoachApplications+ 1)}
                             disabled={currentPageCoachApplications === totalPagesCoachApplications}
                         >
@@ -437,7 +441,7 @@ export default function Admin() {
                                         <td>{report.report_id}</td>
                                         <td>{report.name}</td>
                                         <td>{report.status}</td>
-                                        <td><Button onClick={() => handleOpenViewCoachReportModal(report.report_id)}>View</Button></td>
+                                        <td><Button id={`report-${report.name}`} onClick={() => handleOpenViewCoachReportModal(report.report_id)}>View</Button></td>
                                     </tr>
                                 ))
                             ) : (
@@ -450,6 +454,7 @@ export default function Admin() {
                     )} 
                     <div className="pagination">
                         <button
+                            id="report-previous"
                             onClick={() => handlePageChangeCoachReports(currentPageCoachReports - 1)}
                             disabled={currentPageCoachReports === 1}
                         >
@@ -457,6 +462,7 @@ export default function Admin() {
                         </button>
                         <span>Page {currentPageCoachReports} of {totalPagesCoachReports}</span>
                         <button
+                            id="report-next"
                             onClick={() => handlePageChangeCoachReports(currentPageCoachReports+ 1)}
                             disabled={currentPageCoachReports === totalPagesCoachReports}
                         >
