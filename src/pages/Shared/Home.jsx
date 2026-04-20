@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import Login from "../../components/Login";
 import Register from "../../components/Register";
+import ProgressTracker from "../../components/ProgressTracker"; // Import feature
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { format } from 'date-fns';
@@ -443,6 +444,11 @@ export default function Home() {
                             </div>
                         </div>
 
+                        {/* PROGRESS TRACKER FEATURE */}
+                        <div className="dashboard-card">
+                            <ProgressTracker userId={user.id} token={token} />
+                        </div>
+
                         <div className="dashboard-card">
                             <h3>Daily Survey</h3>
                             <p>Track how you feel each day (1-5) after training.</p>
@@ -537,6 +543,11 @@ export default function Home() {
                             </div>
                             
                         </div>
+
+                            {/* PROGRESS TRACKER FEATURE (ADDED) */}
+                            <div className="dashboard-card">
+                                <ProgressTracker userId={user.id} token={token} />
+                            </div>
 
                         <div className="dashboard-card">
                             <h3>Daily Survey</h3>
