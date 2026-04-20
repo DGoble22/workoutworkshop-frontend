@@ -14,6 +14,7 @@ const PAGE_WRAPPER = {
 const TOP_BAR_STYLES = {
     display: "flex",
     width: "100%",
+    borderRadius: "15px",
     backgroundColor: "#c9c9c9",
     padding: "20px 10px",
     justifyContent: "space-between",
@@ -26,7 +27,7 @@ const DOTWCARD_STYLES = {
     height: "60px",
     flex: 1,
     margin: "0 8px",
-    borderRadius: "4px",
+    borderRadius: "14px",
     cursor: "pointer",
     fontSize: "1rem",
     transition: "transform 0.2s"

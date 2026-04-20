@@ -246,7 +246,7 @@ export default function WorkoutEdit() {
                             {/* Card Body */}
                             <div style={CARD_BODY}>
                                 <img
-                                    src={ex.video_url || "https://via.placeholder.com/120x80"}
+                                    src={ex.thumbnail|| "https://via.placeholder.com/120x80"}
                                     alt={ex.exercise_name}
                                     style={IMAGE_PLACEHOLDER}
                                 />

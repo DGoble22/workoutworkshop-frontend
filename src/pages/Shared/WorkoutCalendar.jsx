@@ -17,7 +17,8 @@ export default function WorkoutCalendar() {
             if (!user || !user.id) return;
 
             try {
-                const response = await fetch(`http://localhost:5000/api/workouts/log/${user.id}`);
+                const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+                const response = await fetch(`${apiBase}/api/workouts/log/${user.id}`);
                 if (!response.ok) {
                     console.error("Backend returned an error:", response.status);
                 }
@@ -77,13 +78,28 @@ export default function WorkoutCalendar() {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100vh", backgroundColor: "#303030", fontFamily: "sans-serif" }}>
+        <div style={{ display: "flex", flexDirection: "column", width: "100%", minheight: "100vh", backgroundColor: "#303030", fontFamily: "sans-serif" }}>
 
-            {/* Month header with arrows */}
+            {/* Month and Year header with arrows */}
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#847979", padding: "20px 0", color: "white", fontSize: "2.5rem", gap: "20px" }}>
                 <button onClick={handlePrevMonth} style={ARROW_BTN}>&lt;</button>
-                <span style={{ minWidth: "300px", textAlign: "center", letterSpacing: "2px" }}>{monthName}</span>
+
+                {/* Flex column to fit month and year together */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "300px" }}>
+
+                    {/* Month */}
+                    <span style={{ letterSpacing: "2px", lineHeight: "1" }}>
+                        {monthName}
+                    </span>
+
+                    {/* Year */}
+                    <span style={{ fontSize: "1.2rem", marginTop: "-3px", color: "#E0E0E0" }}>
+                        {year}
+                    </span>
+                </div>
+
                 <button onClick={handleNextMonth} style={ARROW_BTN}>&gt;</button>
+
             </div>
 
             {/* Calendar Body */}

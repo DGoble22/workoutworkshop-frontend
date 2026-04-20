@@ -135,13 +135,16 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
             <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>{/*main body*/}
                 
                 <a style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
-                    <Image  src={thumbnail} style={{width:"100%", maxWidth:"100%", height:"100%", objectFit:"fill"}}/>
+                    <img  src={thumbnail} style={{width:"100%", maxWidth:"100%", height:"100%", objectFit:"fill"}} alt={"https://via.placeholder.com/120x80"}/>
                 </a>
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
                     <div style={WORKOUTDATA_BARS}>
                         Reps:
                         <input
-                            onChange={(e) => handleUpdate('reps', e.target.value)}
+                            onChange={(e) => {
+                                const onlyNumbers = e.target.value.replace(/\D/g, '');
+                                handleUpdate('reps', onlyNumbers);
+                            }}
                             style={INPUTBAR_STYlES}
                             value={reps || ""}
                             disabled={!manage}
@@ -152,7 +155,10 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
                     <div style={WORKOUTDATA_BARS}>
                         Sets:
                         <input
-                            onChange={(e) => handleUpdate('sets', e.target.value)}
+                            onChange={(e) => {
+                                const onlyNumbers = e.target.value.replace(/\D/g, '');
+                                handleUpdate('sets', onlyNumbers);
+                            }}
                             style={INPUTBAR_STYlES}
                             value={sets || ""}
                             disabled={!manage}
@@ -163,7 +169,10 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
                     <div style={WORKOUTDATA_BARS}>
                         Weight:
                         <input
-                            onChange={(e) => handleUpdate('weight', e.target.value)}
+                            onChange={(e) => {
+                                const onlyNumbers = e.target.value.replace(/\D/g, '');
+                                handleUpdate('weight', onlyNumbers);
+                            }}
                             style={INPUTBAR_STYlES}
                             value={weight || ""}
                             disabled={!manage}

@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import Login from "../../components/Login";
 import Register from "../../components/Register";
+import ProgressTracker from "../../components/ProgressTracker"; // Import feature
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { format } from 'date-fns';
@@ -443,6 +444,11 @@ export default function Home() {
                             </div>
                         </div>
 
+                        {/* PROGRESS TRACKER FEATURE */}
+                        <div className="dashboard-card">
+                            <ProgressTracker userId={user.id} token={token} />
+                        </div>
+
                         <div className="dashboard-card">
                             <h3>Daily Survey</h3>
                             <p>Track how you feel each day (1-5) after training.</p>
@@ -454,8 +460,8 @@ export default function Home() {
                         <div className="dashboard-card-progress-metric">
                             <h3>Progress Metrics</h3>
                             <p>Review trends in performance, weight, and goal progress over time.</p>
-                            <div style={{display:"flex", width: "80%", height:"200px", alignItems:"center", justifyContent:"center"}}>
-                                <ResponsiveContainer width="100%" height="100%" >
+                            <div style={{ display: "flex", width: "100%", minWidth: 280, height: 220, alignItems: "center", justifyContent: "center" }}>
+                                <ResponsiveContainer width="100%" height={220} minWidth={280}>
                                     <LineChart responsive data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                         <XAxis dataKey="date"/>
                                         <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>
@@ -538,6 +544,11 @@ export default function Home() {
                             
                         </div>
 
+                            {/* PROGRESS TRACKER FEATURE (ADDED) */}
+                            <div className="dashboard-card">
+                                <ProgressTracker userId={user.id} token={token} />
+                            </div>
+
                         <div className="dashboard-card">
                             <h3>Daily Survey</h3>
                             <p>Track how you feel each day (1-5) after training.</p>
@@ -549,8 +560,8 @@ export default function Home() {
                         <div className="dashboard-card-progress-metric">
                             <h3>Progress Metrics</h3>
                             <p>Review trends in performance, weight, and goal progress over time.</p>
-                            <div style={{display:"flex", width: "80%", height:"200px", alignItems:"center", justifyContent:"center"}}>
-                                <ResponsiveContainer width="100%" height="100%" >
+                            <div style={{ display: "flex", width: "100%", minWidth: 280, height: 220, alignItems: "center", justifyContent: "center" }}>
+                                <ResponsiveContainer width="100%" height={220} minWidth={280}>
                                     <LineChart responsive data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                         <XAxis dataKey="date"/>
                                         <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>

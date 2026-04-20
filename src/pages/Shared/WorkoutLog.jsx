@@ -90,7 +90,7 @@ export default function WorkoutLog() {
         if (!user || !user.id) return;
         const fetchWorkouts = async () => {
             try {
-                const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+                const apiBase = import.meta.env.VITE_API_URL || '';
                 const response = await axios.get(`${apiBase}/api/workouts/log/${user.id}`);
                 if (response.data.status === 'success') {
                     setSavedWorkouts(response.data.data);
@@ -114,13 +114,15 @@ export default function WorkoutLog() {
         if (!confirmDelete) return;
 
         try {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
-            const response = await axios.delete(`${apiBase}/api/workouts/plan/${id}`);
+            const apiBase = import.meta.env.VITE_API_URL || '';
+            const response = await fetch(`${apiBase}/api/workouts/plan/${id}`);
+            const data = await response.json();
 
-            if (response.data.status === 'success') {
+            if (data.status === 'success') {
                 setSavedWorkouts((prevWorkouts) =>
                     prevWorkouts.filter((workout) => workout.id !== id)
                 );
+                toast.success("Workout has been successfully deleted.");
             }
         } catch (error) {
             console.error("Error deleting workout:", error);
@@ -150,7 +152,7 @@ export default function WorkoutLog() {
                             </div>
 
                             <button style={EDIT_BTN} onClick={() => handleEdit(workout.id, workout.date, workout.title)}>
-                                Edit
+                                View
                             </button>
                             <button style={REMOVE_BTN} onClick={() => handleRemove(workout.id)}>
                                 Remove
