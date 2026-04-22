@@ -27,7 +27,9 @@ const SECTION_HEADER_STYLES = {
     backgroundColor: "#f5f5f5",
     borderBottom: "1px solid #ccc",
     fontWeight: "700",
-    fontSize: "1.1rem"
+    fontSize: "1.1rem",
+    cursor: "pointer",
+    userSelect: "none"
 }
 
 const SECTION_BODY_STYLES = {
@@ -85,7 +87,7 @@ const SAVE_BUTTON_STYLES = {
     height: "48px",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#cb0a0a",
+    backgroundColor: "#711A19",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -93,6 +95,18 @@ const SAVE_BUTTON_STYLES = {
     fontWeight: "700",
     cursor: "pointer",
     marginTop: "10px"
+}
+
+function Section({ title, children, defaultOpen = true }) {
+    const [open, setOpen] = useState(defaultOpen)
+    return (
+        <div style={SECTION_STYLES}>
+            <div style={SECTION_HEADER_STYLES} onClick={() => setOpen(o => !o)}>
+                {open ? "▾" : "▸"} {title}
+            </div>
+            {open && <div style={SECTION_BODY_STYLES}>{children}</div>}
+        </div>
+    )
 }
 
 export default function EditCoachProfile({ onBack, coachId }) {
@@ -178,56 +192,47 @@ export default function EditCoachProfile({ onBack, coachId }) {
                     Edit Coach Profile
                 </h1>
                 {onBack && (
-                    <button onClick={onBack} style={{ background: "none", border: "none", color: "#cb0a0a", cursor: "pointer", fontWeight: "600" }}>
+                    <button onClick={onBack} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
                         ← Back to Dashboard
                     </button>
                 )}
             </div>
 
-            <div style={SECTION_STYLES}>
-                <div style={SECTION_HEADER_STYLES}>▾ Availability</div>
-                <div style={SECTION_BODY_STYLES}>
-                    <span style={LABEL_STYLES}>Check off your available time slots for coaching sessions</span>
-                    <CoachAvailabilityEditor value={availability} onChange={setAvailability} disabled={saving} />
-                </div>
-            </div>
+            <Section title="Availability">
+                <span style={LABEL_STYLES}>Check off your available time slots for coaching sessions</span>
+                <CoachAvailabilityEditor value={availability} onChange={setAvailability} disabled={saving} />
+            </Section>
 
-            <div style={SECTION_STYLES}>
-                <div style={SECTION_HEADER_STYLES}>▾ Pricing</div>
-                <div style={SECTION_BODY_STYLES}>
-                    <span style={LABEL_STYLES}>Your weekly rate</span>
-                    <div style={ROW_STYLES}>
-                        <span style={DOLLAR_STYLES}>$</span>
-                        <input
-                            style={PRICE_INPUT_STYLES}
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={pricing}
-                            onChange={e => setPricing(e.target.value)}
-                            disabled={saving}
-                        />
-                        <span style={{ color: "#888", fontSize: "0.85rem", whiteSpace: "nowrap" }}>/ week</span>
-                    </div>
-                </div>
-            </div>
-
-            <div style={SECTION_STYLES}>
-                <div style={SECTION_HEADER_STYLES}>▾ Bio</div>
-                <div style={SECTION_BODY_STYLES}>
-                    <span style={LABEL_STYLES}>Tell clients about yourself</span>
-                    <textarea
-                        style={{ ...INPUT_STYLES, height: "100px", resize: "vertical" }}
-                        placeholder="Write a short bio..."
-                        value={bio}
-                        onChange={e => setBio(e.target.value)}
+            <Section title="Pricing">
+                <span style={LABEL_STYLES}>Your weekly rate</span>
+                <div style={ROW_STYLES}>
+                    <span style={DOLLAR_STYLES}>$</span>
+                    <input
+                        style={PRICE_INPUT_STYLES}
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={pricing}
+                        onChange={e => setPricing(e.target.value)}
                         disabled={saving}
                     />
+                    <span style={{ color: "#888", fontSize: "0.85rem", whiteSpace: "nowrap" }}>/ week</span>
                 </div>
-            </div>
+            </Section>
 
-            {error && <p style={{ color: "#cb0a0a", marginBottom: "10px" }}>{error}</p>}
+            <Section title="Bio">
+                <span style={LABEL_STYLES}>Tell clients about yourself</span>
+                <textarea
+                    style={{ ...INPUT_STYLES, height: "100px", resize: "vertical" }}
+                    placeholder="Write a short bio..."
+                    value={bio}
+                    onChange={e => setBio(e.target.value)}
+                    disabled={saving}
+                />
+            </Section>
+
+            {error && <p style={{ color: "#711A19", marginBottom: "10px" }}>{error}</p>}
             {saveMessage && <p style={{ color: "#2e7d32", marginBottom: "10px" }}>{saveMessage}</p>}
 
             <button style={SAVE_BUTTON_STYLES} onClick={handleSave} disabled={saving}>

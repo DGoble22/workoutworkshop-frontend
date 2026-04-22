@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React, { useState, useEffect, useContext } from "react"
+import { AuthContext } from "../../context/AuthContext"
 
 const PAGE_STYLES = {
     display: "flex",
@@ -58,7 +59,7 @@ const ADD_BUTTON_STYLES = {
     borderRadius: "6px",
     backgroundColor: "#f5f5f5",
     cursor: "pointer",
-    color: "#cb0a0a",
+    color: "#711A19",
     fontWeight: "600",
     fontSize: "0.9rem"
 }
@@ -69,7 +70,7 @@ const SAVE_BUTTON_STYLES = {
     height: "48px",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#cb0a0a",
+    backgroundColor: "#711A19",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -87,11 +88,29 @@ const REMOVE_BTN_STYLES = {
     fontSize: "1rem"
 }
 
-const INITIAL_MEALS = {
+const DAYS = [
+    { label: "Monday", dow: "M" },
+    { label: "Tuesday", dow: "T" },
+    { label: "Wednesday", dow: "W" },
+    { label: "Thursday", dow: "TH" },
+    { label: "Friday", dow: "F" },
+    { label: "Saturday", dow: "SAT" },
+    { label: "Sunday", dow: "SUN" }
+]
+
+const MEAL_SECTIONS = ["Breakfast", "Lunch", "Dinner", "Snack"]
+
+const EMPTY_DAY = {
     Breakfast: [],
     Lunch: [],
     Dinner: [],
     Snack: []
+}
+
+function createEmptyWeek() {
+    const week = {}
+    DAYS.forEach(d => { week[d.dow] = { ...EMPTY_DAY, Breakfast: [], Lunch: [], Dinner: [], Snack: [] } })
+    return week
 }
 
 let nextId = 100
@@ -132,8 +151,8 @@ function MealSection({ title, items, onAdd, onRemove, onUpdate }) {
                                 <input
                                     style={{ ...INPUT_STYLES, width: "60px" }}
                                     type="number"
-                                    value={item.calories}
-                                    onChange={e => onUpdate(item.id, "calories", Number(e.target.value))}
+                                    value={item.calories === 0 ? "" : item.calories}
+                                    onChange={e => onUpdate(item.id, "calories", e.target.value === "" ? 0 : Number(e.target.value))}
                                     placeholder="0"
                                 />
                             </td>
@@ -149,37 +168,115 @@ function MealSection({ title, items, onAdd, onRemove, onUpdate }) {
     )
 }
 
-export default function CreateMealPlan({ onBack, client }) {
-    const [meals, setMeals] = useState(INITIAL_MEALS)
-    const [saved, setSaved] = useState(false)
+export default function CreateMealPlan({ onBack, client, coachId }) {
+    const { token } = useContext(AuthContext)
+    const [weekMeals, setWeekMeals] = useState(createEmptyWeek())
+    const [selectedDay, setSelectedDay] = useState("M")
+    const [saving, setSaving] = useState(false)
+    const [saveMessage, setSaveMessage] = useState("")
+    const [error, setError] = useState("")
+
+    const apiBase = import.meta.env.VITE_API_URL || ""
+
+    useEffect(() => {
+        async function loadMealPlan() {
+            if (!coachId || !client) return
+            try {
+                const res = await fetch(`${apiBase}/coach/meal-plan/${coachId}/${client.user_id}`)
+                const data = await res.json()
+                if (data.status === "success" && data.data) {
+                    const loaded = createEmptyWeek()
+                    for (const row of data.data) {
+                        const dow = row.dow
+                        if (loaded[dow]) {
+                            try {
+                                const parsed = JSON.parse(row.meal)
+                                if (parsed.Breakfast) {
+                                    loaded[dow].Breakfast = parsed.Breakfast.map(i => ({ ...i, id: nextId++ }))
+                                    loaded[dow].Lunch = parsed.Lunch.map(i => ({ ...i, id: nextId++ }))
+                                    loaded[dow].Dinner = parsed.Dinner.map(i => ({ ...i, id: nextId++ }))
+                                    loaded[dow].Snack = parsed.Snack.map(i => ({ ...i, id: nextId++ }))
+                                }
+                            } catch (e) {
+                                console.error("Failed to parse meal:", e)
+                            }
+                        }
+                    }
+                    setWeekMeals(loaded)
+                }
+            } catch (e) {
+                console.error("Failed to load meal plan:", e)
+            }
+        }
+        loadMealPlan()
+    }, [coachId, client])
 
     function addItem(section) {
-        setMeals(prev => ({
+        setWeekMeals(prev => ({
             ...prev,
-            [section]: [...prev[section], { id: nextId++, food: "", portion: "", calories: 0 }]
+            [selectedDay]: {
+                ...prev[selectedDay],
+                [section]: [...prev[selectedDay][section], { id: nextId++, food: "", portion: "", calories: 0 }]
+            }
         }))
     }
 
     function removeItem(section, id) {
-        setMeals(prev => ({
+        setWeekMeals(prev => ({
             ...prev,
-            [section]: prev[section].filter(item => item.id !== id)
+            [selectedDay]: {
+                ...prev[selectedDay],
+                [section]: prev[selectedDay][section].filter(item => item.id !== id)
+            }
         }))
     }
 
     function updateItem(section, id, field, value) {
-        setMeals(prev => ({
+        setWeekMeals(prev => ({
             ...prev,
-            [section]: prev[section].map(item => item.id === id ? { ...item, [field]: value } : item)
+            [selectedDay]: {
+                ...prev[selectedDay],
+                [section]: prev[selectedDay][section].map(item => item.id === id ? { ...item, [field]: value } : item)
+            }
         }))
     }
 
-    const allItems = Object.values(meals).flat()
+    const currentDay = weekMeals[selectedDay]
+    const allItems = Object.values(currentDay).flat()
     const totalCalories = allItems.reduce((sum, item) => sum + Number(item.calories), 0)
 
-    function handleSave() {
-        setSaved(true)
-        setTimeout(() => setSaved(false), 3000)
+    async function handleSave() {
+        setError("")
+        setSaveMessage("")
+        setSaving(true)
+
+        const mealsPayload = DAYS.map(({ dow }) => ({
+            dow,
+            meal: JSON.stringify({
+                Breakfast: weekMeals[dow].Breakfast.map(({ food, portion, calories }) => ({ food, portion, calories })),
+                Lunch: weekMeals[dow].Lunch.map(({ food, portion, calories }) => ({ food, portion, calories })),
+                Dinner: weekMeals[dow].Dinner.map(({ food, portion, calories }) => ({ food, portion, calories })),
+                Snack: weekMeals[dow].Snack.map(({ food, portion, calories }) => ({ food, portion, calories }))
+            })
+        }))
+
+        try {
+            const res = await fetch(`${apiBase}/coach/meal-plan/${coachId}/${client.user_id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ meals: mealsPayload })
+            })
+            const data = await res.json()
+            if (data.status === "success") {
+                setSaveMessage("Meal plan saved!")
+            } else {
+                setError(data.message || "Failed to save meal plan.")
+            }
+        } catch (e) {
+            setError("Network error. Please try again.")
+        } finally {
+            setSaving(false)
+        }
     }
 
     return (
@@ -187,7 +284,7 @@ export default function CreateMealPlan({ onBack, client }) {
             <div style={{ width: "100%", marginBottom: "20px", textAlign: "center" }}>
                 <h1 style={{ fontWeight: "800", textDecoration: "underline" }}>Create Meal Plan</h1>
                 {onBack && (
-                    <button onClick={onBack} style={{ background: "none", border: "none", color: "#cb0a0a", cursor: "pointer", fontWeight: "600" }}>
+                    <button onClick={onBack} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
                         ← Back to Dashboard
                     </button>
                 )}
@@ -196,15 +293,35 @@ export default function CreateMealPlan({ onBack, client }) {
             <div style={{ width: "100%", marginBottom: "20px" }}>
                 <p style={{ margin: 0 }}>Client: <strong>{client ? `${client.first_name} ${client.last_name}` : "Unknown"}</strong></p>
                 <p style={{ margin: 0, color: "#666" }}>Goal: <strong>{client ? client.goal_type : ""}</strong></p>
-                <p style={{ margin: 0, color: "#666" }}>Daily Calorie target: 1800 kcal</p>
+            </div>
+
+            <div style={{ display: "flex", gap: "8px", width: "100%", marginBottom: "20px", flexWrap: "wrap" }}>
+                {DAYS.map(({ label, dow }) => (
+                    <button
+                        key={dow}
+                        onClick={() => setSelectedDay(dow)}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "20px",
+                            border: "1px solid #ccc",
+                            backgroundColor: selectedDay === dow ? "#711A19" : "#ffffff",
+                            color: selectedDay === dow ? "#ffffff" : "#333",
+                            fontWeight: selectedDay === dow ? "700" : "400",
+                            cursor: "pointer",
+                            fontSize: "0.9rem"
+                        }}
+                    >
+                        {label}
+                    </button>
+                ))}
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", width: "100%" }}>
-                {Object.keys(meals).map(section => (
+                {MEAL_SECTIONS.map(section => (
                     <MealSection
                         key={section}
                         title={section}
-                        items={meals[section]}
+                        items={currentDay[section]}
                         onAdd={() => addItem(section)}
                         onRemove={(id) => removeItem(section, id)}
                         onUpdate={(id, field, value) => updateItem(section, id, field, value)}
@@ -213,13 +330,14 @@ export default function CreateMealPlan({ onBack, client }) {
             </div>
 
             <div style={{ width: "100%", marginTop: "16px" }}>
-                <strong>Total Calories: {totalCalories} kcal</strong>
+                <strong>Total Calories for {DAYS.find(d => d.dow === selectedDay)?.label}: {totalCalories} kcal</strong>
             </div>
 
-            {saved && <p style={{ color: "#2e7d32", marginTop: "10px" }}>Meal plan saved!</p>}
+            {error && <p style={{ color: "#cb0a0a", marginTop: "10px" }}>{error}</p>}
+            {saveMessage && <p style={{ color: "#2e7d32", marginTop: "10px" }}>{saveMessage}</p>}
 
-            <button style={SAVE_BUTTON_STYLES} onClick={handleSave}>
-                Save Meal Plan
+            <button style={SAVE_BUTTON_STYLES} onClick={handleSave} disabled={saving}>
+                {saving ? "Saving..." : "Save Meal Plan"}
             </button>
         </div>
     )
