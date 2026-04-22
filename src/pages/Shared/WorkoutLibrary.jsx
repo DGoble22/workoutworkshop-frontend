@@ -1,6 +1,10 @@
 //imports
-import React, {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
+import { addDays, format } from "date-fns";
 
 // Styling
 const PAGE_CONTAINER = {
@@ -25,12 +29,6 @@ const LIST_CONTAINER = {
     flexDirection: "column",
     width: "100%",
     maxWidth: "600px",
-    gap: "15px"
-};
-
-const ROW_STYLE = {
-    display: "flex",
-    width: "100%",
     gap: "15px"
 };
 
@@ -124,9 +122,29 @@ const EXERCISE_ROW = {
 
 export default function WorkoutLibrary() {
     const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
 
-    // State to track which workout is currently selected for the modal.
+    // State
     const [selectedWorkout, setSelectedWorkout] = useState(null);
+    const [dbExercises, setDbExercises] = useState([]);
+    const [selectedDay, setSelectedDay] = useState("Mon");
+
+    // Fetch DB exercises on load to map names to IDs
+    useEffect(() => {
+        if (!user || !user.id) return;
+        const fetchExercises = async () => {
+            try {
+                const apiBase = import.meta.env.VITE_API_URL || '';
+                const response = await axios.get(`${apiBase}/api/workouts/exercises`);
+                if (response.data && response.data.data) {
+                    setDbExercises(response.data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching database exercises.", error);
+            }
+        };
+        fetchExercises();
+    }, [user]);
 
     //Workouts with title, description, and exercises (name, sets, reps)
     const libraryData = [
@@ -135,9 +153,8 @@ export default function WorkoutLibrary() {
             title: "Push Day",
             time: "Estimated Time: 45min - 1hr. ",
             description: "A push day will target the chest, triceps and shoulders. This workout focuses on pressing movements. ",
-
             exercises: [
-                { name: "Barbell Bench Press", sets: 4, reps: 8 },
+                { name: "Bench Press", sets: 4, reps: 8 },
                 { name: "Incline Dumbbell Press", sets: 3, reps: 10 },
                 { name: "Overhead Press", sets: 3, reps: 8 },
                 { name: "Tricep Pushdown", sets: 3, reps: 12 }
@@ -161,8 +178,8 @@ export default function WorkoutLibrary() {
             time: "Estimated Time: 45min - 1hr. ",
             description: "This workout will target all muscles on the lower body like the quads, hamstrings, glutes, and calves. It focuses on compound movements that engage multiple muscle groups.",
             exercises: [
-                { name: "Barbell Squats", sets: 4, reps: 6 },
-                { name: "Romanian Deadlifts (RDL)", sets: 3, reps: 8 },
+                { name: "Barbell Squat", sets: 4, reps: 6 },
+                { name: "Romanian Deadlift (RDL)", sets: 3, reps: 8 },
                 { name: "Leg Press", sets: 3, reps: 10 },
                 { name: "Calf Raises", sets: 4, reps: 15 }
             ]
@@ -174,8 +191,8 @@ export default function WorkoutLibrary() {
             description: "This workout will work out every muscle in the upper body. It will be less sets for each exercise to limit fatigue. " +
                 "This workout will target the chest, triceps, shoulders, back, biceps, and forearms. It focuses on compound movements that engage multiple muscle groups.",
             exercises: [
-                { name: "Incline Dumbell Press", sets: 2, reps: 6 },
-                {name: "Chest Flies", sets: 2, reps: 8},
+                { name: "Incline Dumbbell Press", sets: 2, reps: 6 },
+                { name: "Chest Flies", sets: 2, reps: 8 },
                 { name: "Overhead Tricep Extensions", sets: 3, reps: 10 },
                 { name: "Lateral Raises", sets: 3, reps: 10 },
                 { name: "Lat Pulldown", sets: 2, reps: 6 },
@@ -185,7 +202,69 @@ export default function WorkoutLibrary() {
         }
     ];
 
-    //goes back one page if back button is clicked
+    // Assign a workout to a day of the week
+    const handleAssignWorkout = async () => {
+        if (!user || !user.id) {
+            toast.error("You must be logged in to save a workout.");
+            return;
+        }
+
+        // Calculate the date for the selected day
+        const daysArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const index = daysArray.indexOf(selectedDay);
+        const today = new Date();
+        const dayofweek = today.getDay();
+        const difference = (index - dayofweek + 7) % 7;
+        const wDay = addDays(today, difference);
+        const formattedDate = format(wDay, "MM-dd-yyyy");
+
+        // Map exercises from library to DB exercise IDs
+        let missingExercises = [];
+        const payloadExercises = selectedWorkout.exercises.map(libEx => {
+            // Find matching exercise in DB by name
+            const matchedDbEx = dbExercises.find(
+                dbEx => dbEx.name.toLowerCase().trim() === libEx.name.toLowerCase().trim()
+            );
+
+            if (!matchedDbEx) {
+                missingExercises.push(libEx.name);
+            }
+
+            return {
+                exercise_id: matchedDbEx ? matchedDbEx.exercise_id : null,
+                name: libEx.name,
+                sets: libEx.sets,
+                reps: libEx.reps,
+                weight: 135
+            };
+        });
+
+        // Fail-safe in case names don't match DB entries
+        if (missingExercises.length > 0) {
+            toast.error(`Error: Could not find these exercises in the database: ${missingExercises.join(", ")}`);
+            return;
+        }
+
+        // Payload structure expected by backend
+        const payload = {
+            user_id: user.id,
+            date: formattedDate,
+            workout_name: selectedWorkout.title,
+            exercises: payloadExercises
+        };
+
+        // Send paylos to backend
+        try {
+            const apiBase = import.meta.env.VITE_API_URL || '';
+            await axios.post(`${apiBase}/api/workouts/save`, payload);
+            toast.success(`${selectedWorkout.title} successfully added to ${selectedDay}!`);
+            setSelectedWorkout(null);
+        } catch (error) {
+            console.error("Error assigning workout:", error);
+            toast.error("Failed to assign workout. Please try again.");
+        }
+    };
+
     const handleBack = () => {
         navigate(-1);
     };
@@ -195,7 +274,6 @@ export default function WorkoutLibrary() {
             <h1 style={TITLE_STYLE}>Workout Library</h1>
 
             <div style={LIST_CONTAINER}>
-
                 {/* Render the list of wide buttons */}
                 {libraryData.map((workout) => (
                     <button
@@ -216,10 +294,7 @@ export default function WorkoutLibrary() {
             {/* Workout Modal */}
             {selectedWorkout && (
                 <div style={MODAL_OVERLAY} onClick={() => setSelectedWorkout(null)}>
-
-                    {/* Click outside modal or "x" button to close it */}
                     <div style={MODAL_CONTENT} onClick={(e) => e.stopPropagation()}>
-
                         <button style={MODAL_CLOSE_BTN} onClick={() => setSelectedWorkout(null)}>
                             ×
                         </button>
@@ -228,7 +303,7 @@ export default function WorkoutLibrary() {
                             {selectedWorkout.title}
                         </h2>
 
-                        <h6 style={{ marginTop: 0, paddingRight: "20px" }}>
+                        <h6 style={{ marginTop: 0, paddingRight: "20px", color: "#ccc" }}>
                             {selectedWorkout.time}
                         </h6>
 
@@ -249,10 +324,32 @@ export default function WorkoutLibrary() {
                             ))}
                         </div>
 
+                        {/* Assign workout bar */}
+                        <div style={{ marginTop: "25px", display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#333", padding: "15px", borderRadius: "10px" }}>
+                            <label htmlFor="daySelect" style={{ fontWeight: "bold" }}>Assign to:</label>
+
+                            <select
+                                id="daySelect"
+                                value={selectedDay}
+                                onChange={(e) => setSelectedDay(e.target.value)}
+                                style={{ padding: "8px", borderRadius: "5px", border: "none", backgroundColor: "#D9D9D9", color: "#000", fontWeight: "bold", outline: "none", cursor: "pointer" }}
+                            >
+                                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
+                                    <option key={day} value={day}>{day}</option>
+                                ))}
+                            </select>
+
+                            <button
+                                onClick={handleAssignWorkout}
+                                style={{ marginLeft: "auto", padding: "10px 20px", backgroundColor: "#64E46C", color: "#000", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", boxShadow: "0 2px 5px rgba(0,0,0,0.2)" }}
+                            >
+                                Add to Calendar
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             )}
-
         </div>
     );
 }
