@@ -5,7 +5,7 @@ import filter from "../../images/FilterButton.png";
 import Image from 'react-bootstrap/Image';
 import Dropdown from 'react-bootstrap/Dropdown';
 import ExerciseCard from "../../components/ExerciseCard";
-import { addDays, format } from 'date-fns'
+import { addDays, format } from 'date-fns';
 import { AuthContext } from '../../context/AuthContext';
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -133,24 +133,80 @@ const CREATE_WORKOUT_BTN = {
     marginTop: "auto"
 };
 
+// Confirm Modal Styling
+const MODAL_OVERLAY = {
+    position: "fixed",
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000
+};
+
+const CONFIRM_MODAL_CONTENT = {
+    backgroundColor: "#333",
+    color: "#fff",
+    padding: "25px",
+    borderRadius: "12px",
+    width: "90%",
+    maxWidth: "350px",
+    textAlign: "center",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.8)",
+    zIndex: 1010
+};
+
+const CONFIRM_BTN_GROUP = {
+    display: "flex",
+    justifyContent: "center",
+    gap: "15px",
+    marginTop: "20px"
+};
+
+const YES_BTN = {
+    backgroundColor: "#711A19",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "10px 20px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    flex: 1
+};
+
+const NO_BTN = {
+    backgroundColor: "#D9D9D9",
+    color: "#000",
+    border: "none",
+    borderRadius: "8px",
+    padding: "10px 20px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    flex: 1
+};
+
 // Main Component
 export default function WorkoutBuilder() {
-    const {user} = useContext(AuthContext)
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
-    //State variables
+
+    // State variables
     const [exercises, setExercises] = useState([]);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [workoutPlan, setWorkoutPlan] = useState([]);
     const [filterType, setFilterType] = useState("Muscle Group");
 
-    const [manage, setManage] = useState(false); //handles if user can change exercise data
-    const [apply, setApply] = useState(false); //handle if users applies exercise changes
+    const [manage, setManage] = useState(false);
+    const [apply, setApply] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
     const [workoutName, setWorkoutName] = useState("");
     const [selectedDate, setSelectedDate] = useState(null);
 
-    let initialdate = useLocation(); //get date initally clicked on dashboard
+    const [showOverwriteModal, setShowOverwriteModal] = useState(false);
+    const [existingPlanId, setExistingPlanId] = useState(null);
+
+    let initialdate = useLocation();
 
     // Grab exercises from the Flask backend when component mounts
     useEffect(() => {
@@ -169,20 +225,16 @@ export default function WorkoutBuilder() {
         };
 
         fetchExercises();
-        // load the exercises for the intial date
         findDate(initialdate.state.day);
 
     }, [user, initialdate.state.day]);
 
     // Group exercises dynamically based on filterType
     const groupedExercises = exercises.reduce((groups, exercise) => {
-
-        // Determine the category name based on the selected filter
         let group = "Other";
         if (filterType === "Muscle Group") {
             group = exercise.muscle_group || "Other";
         } else if (filterType === "Equipment") {
-            // Default to "Bodyweight" if equipment_needed is null/empty
             group = exercise.equipment_needed || "Bodyweight";
         }
 
@@ -193,33 +245,27 @@ export default function WorkoutBuilder() {
         return groups;
     }, {});
 
-    //Expand category, close if same category is clicked again
     const toggleCategory = (category) => {
         setExpandedCategory(expandedCategory === category ? null : category);
     };
 
-    // Add exercise to built workout
     const addToWorkout = (exercise) => {
         setWorkoutPlan([...workoutPlan, exercise]);
     };
 
-    // Remove exercise from built workout
     const removeFromWorkout = async (indexToRemove, exercise_id, plan_id) => {
-
-        // If workout isn't created yet, remove exercise from workout plan without making api call
         if (!plan_id) {
             setWorkoutPlan(workoutPlan.filter((_, index) => index !== indexToRemove));
             return;
         }
 
-        // If the workout is created already, delete normally
         let data = {
             "plan_id": plan_id,
             "exercise_id": exercise_id
         };
 
         try {
-            const apiBase = import.meta.env.VITE_API_URL;
+            const apiBase = import.meta.env.VITE_API_URL || '';
             const url = `${apiBase}/api/workouts/remove`;
 
             const response = await fetch(url, {
@@ -238,7 +284,6 @@ export default function WorkoutBuilder() {
         }
     };
 
-    // Updates the workout with user input (sets, reps, weight)
     const handleUpdateExercise = (indexToUpdate, field, value) => {
         setWorkoutPlan((prevPlan) =>
             prevPlan.map((ex, index) => {
@@ -250,56 +295,45 @@ export default function WorkoutBuilder() {
         );
     };
 
-    //enable management options for workout in workout builder
-    const handleManage = () =>{
-        if(manage){
-            setApply(true)
-            setTimeout(()=>{setApply(false)}, 1500) //sets apply flag to false after 1.5s
-            setManage(false)
+    const handleManage = () => {
+        if (manage) {
+            setApply(true);
+            setTimeout(() => { setApply(false) }, 1500);
+            setManage(false);
+        } else {
+            setManage(true);
         }
+    };
 
-        else {setManage(true)}
-    }
-
-    //find the date for the weekly builder: gives value in MM/dd/yyyy format
     const findDate = (day) => {
-
-        //get the index of the date
-        let index = -1
-        switch(day){
-            case 'Sun': index =0; break;
-            case 'Mon': index =1; break;
-            case 'Tue': index =2; break;
-            case 'Wed': index =3; break;
-            case 'Thu': index =4; break;
-            case 'Fri': index =5; break;
-            case 'Sat': index =6; break;
+        let index = -1;
+        switch (day) {
+            case 'Sun': index = 0; break;
+            case 'Mon': index = 1; break;
+            case 'Tue': index = 2; break;
+            case 'Wed': index = 3; break;
+            case 'Thu': index = 4; break;
+            case 'Fri': index = 5; break;
+            case 'Sat': index = 6; break;
             default: console.log("error with retrieving index");
         }
 
-        //create date object and get today's date as integer
-        let today = new Date()
-        let dayofweek = today.getDay()
+        let today = new Date();
+        let dayofweek = today.getDay();
+        let difference = (index - dayofweek + 7) % 7;
+        let wDay = addDays(today, difference);
+        wDay = format(wDay, "MM-dd-yyyy");
 
-        //find how many days we need to go forward to find next "date"
-        let difference = (index - dayofweek+7)%7
-
-        // calculate date "difference" days from now
-        let wDay = addDays(today, difference)
-        wDay = format(wDay, "MM-dd-yyyy") //gets date in MM-dd-yyyy format
-        console.log(wDay)
-
-        // save date to the state
         setSelectedDate(wDay);
 
-        const apiBase = import.meta.env.VITE_API_URL;
+        const apiBase = import.meta.env.VITE_API_URL || '';
         axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${wDay}`)
-            .then(res => {setWorkoutPlan(res.data["data"]);})
-            .catch(err => console.log(err))
-    }
+            .then(res => { setWorkoutPlan(res.data["data"]); })
+            .catch(err => console.log(err));
+    };
 
-    // Handle saving workout
-    const handleSaveWorkout = async () => {
+    // Initiate save by checking if a workout already exists for that day
+    const handleInitiateSave = async () => {
         if (!selectedDate) {
             toast.error("Please select a day of the week first!");
             return;
@@ -309,37 +343,75 @@ export default function WorkoutBuilder() {
             return;
         }
 
-        // data to send to the backend
-        const payload = {
-            user_id: user.id,
-            date: selectedDate,
-            workout_name: workoutName,
-            exercises: workoutPlan
-        };
-
-        console.log("Ready to send to Flask:", payload);
-
         try {
             const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
-            await axios.post(`${apiBase}/api/workouts/save`, payload);
-            toast.success("Workout saved successfully!");
+            const checkResponse = await axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${selectedDate}`);
+
+            // If a workout exists, open the overwrite modal
+            if (checkResponse.data.hasPlan) {
+                setExistingPlanId(checkResponse.data.data[0].plan_id);
+                setShowOverwriteModal(true);
+            } else {
+                // If no workout exists, go straight to naming it
+                setExistingPlanId(null);
+                setShowModal(true);
+            }
         } catch (error) {
-            console.error("Error saving workout", error);
+            console.error("Error checking plan:", error);
+            toast.error("Failed to check daily plan.");
+        }
+    };
+
+    // User confirms they want to overwrite
+    const handleConfirmOverwrite = () => {
+        setShowOverwriteModal(false);
+        setShowModal(true);
+    };
+
+    // Saving workout
+    const handleSaveWorkout = async () => {
+        if (!workoutName.trim()) {
+            toast.error("Please enter a workout name.");
+            return;
         }
 
-        // Close modal and reset workout name
-        setShowModal(false);
-        setWorkoutName("");
+        const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+
+        try {
+            // If they agreed to overwrite, delete the old plan first before saving the new one
+            if (existingPlanId) {
+                await fetch(`${apiBase}/api/workouts/plan/${existingPlanId}`, {
+                    method: 'DELETE'
+                });
+            }
+
+            const payload = {
+                user_id: user.id,
+                date: selectedDate,
+                workout_name: workoutName,
+                exercises: workoutPlan
+            };
+
+            await axios.post(`${apiBase}/api/workouts/save`, payload);
+            toast.success("Workout saved successfully!");
+
+            // Close modals and reset states
+            setShowModal(false);
+            setWorkoutName("");
+            setExistingPlanId(null);
+
+        } catch (error) {
+            console.error("Error saving workout", error);
+            toast.error("Failed to save workout.");
+        }
     };
 
     return (
         <div style={{ display: "flex", width: "100%", height: "calc(100vh - 65px)", flexDirection: "column", overflow: "hidden" }}>
 
             {/* Days of the week */}
-            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px"}}>
+            <div style={{ display: "flex", width: "100%", height: "15%", backgroundColor: "#a3a1a1", alignItems: "center", padding: "0 10px" }}>
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => {
-
-                    // Calculate date for DOW button
                     let today = new Date();
                     let dayofweek = today.getDay();
                     let difference = (index - dayofweek + 7) % 7;
@@ -348,8 +420,6 @@ export default function WorkoutBuilder() {
 
                     const isActive = day === initialdate.state?.day;
 
-                    // Dynamically adjust the style based on the isActive flag
-                    // Grows taller if active with a grow/shrink animation. Background changes and drop shadow added as well
                     const dynamicStyle = {
                         ...DOTWCARD_STYLES,
                         height: isActive ? "95%" : "75%",
@@ -359,7 +429,7 @@ export default function WorkoutBuilder() {
                     };
                     return (
                         <button
-                            onClick={()=>{navigate(`/workout-builder/${day}`, {state:{"day": day}})}}
+                            onClick={() => { navigate(`/workout-builder/${day}`, { state: { "day": day } }) }}
                             key={day}
                             style={dynamicStyle}
                         >
@@ -374,22 +444,17 @@ export default function WorkoutBuilder() {
 
                 {/* Find Workouts */}
                 <div style={{ display: "flex", width: "35%", backgroundColor: "#a3a1a1", flexDirection: "column", padding: "10px 0" }}>
-
-                    {/* Filter Section */}
                     <div style={{ display: "flex", width: "90%", margin: "0 auto 10px auto", alignItems: "center", justifyContent: "flex-end" }}>
-
-                        {/* Show what is currently selected, dynamic */}
                         <span style={{ color: "#4D4343", fontSize: "1.2rem", marginRight: "10px" }}>
                             Filter: {filterType}
                         </span>
 
                         <Dropdown>
                             <Dropdown.Toggle style={FilterButton_Styles} variant="success" id="dropdown-basic">
-                                <Image src={filter} alt="filter" style={{height: "100%", width: "100%", objectFit: "contain"}}/>
+                                <Image src={filter} alt="filter" style={{ height: "100%", width: "100%", objectFit: "contain" }} />
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                {/* Updates states and closes open sections */}
                                 <Dropdown.Item onClick={() => {
                                     setFilterType("Muscle Group");
                                     setExpandedCategory(null);
@@ -407,22 +472,16 @@ export default function WorkoutBuilder() {
                         </Dropdown>
                     </div>
 
-                    {/* Categories Scroll */}
                     <div style={{ display: "flex", flex: 1, width: "100%", flexDirection: "column", alignItems: "center", overflowY: "auto", paddingBottom: "20px" }}>
-
                         {Object.keys(groupedExercises).map(category => (
                             <React.Fragment key={category}>
-                                {/* Category Header */}
                                 <div style={EXERCISECATEGORY_STYLES} onClick={() => toggleCategory(category)}>
                                     <div style={{ fontWeight: "bold" }}>{category}</div>
                                     <div>{expandedCategory === category ? "Λ" : "V"}</div>
                                 </div>
 
-                                {/* Exercises in category */}
                                 {expandedCategory === category && groupedExercises[category]?.map(exercise => (
                                     <div key={exercise.exercise_id} style={EXERCISE_CARD_WRAPPER}>
-
-                                        {/* Card Header: Name and + Button */}
                                         <div style={EXERCISE_CARD_HEADER}>
                                             <span>{exercise.name}</span>
                                             <button
@@ -434,17 +493,14 @@ export default function WorkoutBuilder() {
                                             </button>
                                         </div>
 
-                                        {/* Equipment Needed */}
                                         <div style={EXERCISE_CARD_BODY}>
                                             <span>Equipment: {exercise.equipment_needed || "None"}</span>
                                         </div>
-
                                     </div>
                                 ))}
                             </React.Fragment>
                         ))}
 
-                        {/* While exercises are being queried */}
                         {Object.keys(groupedExercises).length === 0 && (
                             <div style={{ color: "#4D4343", marginTop: "20px", textAlign: "center", width: "80%" }}>
                                 Loading exercises
@@ -455,15 +511,11 @@ export default function WorkoutBuilder() {
 
                 {/* Manage Workouts */}
                 <div style={{ display: "flex", flex: 1, flexDirection: "column", overflow: "hidden" }}>
-
-                    {/* Right Side Header */}
                     <div style={{ display: "flex", width: "100%", height: "10%", backgroundColor: "#711A19", alignItems: "center", justifyContent: "flex-end", paddingRight: "20px", gap: "15px" }}>
-                        {!manage ? <button onClick={()=>handleManage()}style={HEADERBUTTON_STYLES}>Manage</button> : <button onClick={()=>handleManage()} style={APPLYBUTTON_STYLES}>Apply</button>}
+                        {!manage ? <button onClick={() => handleManage()} style={HEADERBUTTON_STYLES}>Manage</button> : <button onClick={() => handleManage()} style={APPLYBUTTON_STYLES}>Apply</button>}
                     </div>
 
-                    {/* Built Workout */}
                     <div style={{ flex: 1, overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
-
                         {workoutPlan.length === 0 ? (
                             <p style={{ color: "#aaa", textAlign: "center", marginTop: "20px" }}>No exercises added yet.</p>
                         ) : (
@@ -488,22 +540,46 @@ export default function WorkoutBuilder() {
                         )}
                     </div>
 
-                    {/* Create Workout Button */}
                     <div style={{ padding: "20px", display: "flex", justifyContent: "flex-start", backgroundColor: "#D9D9D9" }}>
-                        <button style={CREATE_WORKOUT_BTN} onClick={() => setShowModal(true)}>Create Workout</button>
+                        {/* Update the onClick to handleInitiateSave instead of opening Name modal directly */}
+                        <button style={CREATE_WORKOUT_BTN} onClick={handleInitiateSave}>Create Workout</button>
                     </div>
                 </div>
 
+                {/* Overwrite Confirm Modal */}
+                {showOverwriteModal && (
+                    <div style={MODAL_OVERLAY}>
+                        <div style={CONFIRM_MODAL_CONTENT}>
+                            <h3 style={{ marginTop: 0 }}>Overwrite Workout?</h3>
+                            <p style={{ fontSize: "1rem", lineHeight: "1.4", color: "#ccc" }}>
+                                A workout already exists for <strong>{initialdate.state?.day}</strong>.
+                                Are you sure you want to overwrite it?
+                            </p>
+                            <div style={CONFIRM_BTN_GROUP}>
+                                <button style={NO_BTN} onClick={() => {
+                                    setShowOverwriteModal(false);
+                                    setExistingPlanId(null);
+                                }}>
+                                    Cancel
+                                </button>
+                                <button style={YES_BTN} onClick={handleConfirmOverwrite}>
+                                    Yes, Overwrite
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Name workout modal */}
                 {showModal && (
-                    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+                    <div style={MODAL_OVERLAY}>
                         <div style={{ backgroundColor: "#514E4A", padding: "30px", borderRadius: "15px", width: "350px", color: "#fff", display: "flex", flexDirection: "column", gap: "20px", boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}>
 
                             <h3 style={{ margin: 0, textAlign: "center" }}>Name Your Workout</h3>
 
                             <input
                                 type="text"
-                                maxLength="20" // Limits input to 20 characters
+                                maxLength="20"
                                 value={workoutName}
                                 onChange={(e) => setWorkoutName(e.target.value)}
                                 placeholder="e.g., Upper Body"
@@ -511,7 +587,10 @@ export default function WorkoutBuilder() {
                             />
 
                             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
-                                <button onClick={() => setShowModal(false)} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#a3a1a1", fontWeight: "bold" }}>Cancel</button>
+                                <button onClick={() => {
+                                    setShowModal(false);
+                                    setExistingPlanId(null);
+                                }} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#a3a1a1", fontWeight: "bold" }}>Cancel</button>
                                 <button onClick={handleSaveWorkout} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#711A19", color: "#fff", fontWeight: "bold" }}>Save Workout</button>
                             </div>
 

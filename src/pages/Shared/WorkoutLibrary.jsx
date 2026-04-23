@@ -60,7 +60,7 @@ const BACK_BTN = {
     alignSelf: "flex-start"
 };
 
-// Modal Styling
+// Main Modal Styling
 const MODAL_OVERLAY = {
     position: "fixed",
     top: 0,
@@ -120,6 +120,46 @@ const EXERCISE_ROW = {
     marginBottom: "10px"
 };
 
+// Confirm Modal Styling
+const CONFIRM_MODAL_CONTENT = {
+    backgroundColor: "#333",
+    color: "#fff",
+    padding: "25px",
+    borderRadius: "12px",
+    width: "90%",
+    maxWidth: "350px",
+    textAlign: "center",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.8)",
+    zIndex: 1010
+};
+
+const CONFIRM_BTN_GROUP = {
+    display: "flex",
+    justifyContent: "center",
+    gap: "15px",
+    marginTop: "20px"
+};
+
+const YES_BTN = {
+    backgroundColor: "#711A19",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "10px 20px",
+    fontWeight: "bold",
+    cursor: "pointer"
+};
+
+const NO_BTN = {
+    backgroundColor: "#D9D9D9",
+    color: "#000",
+    border: "none",
+    borderRadius: "8px",
+    padding: "10px 20px",
+    fontWeight: "bold",
+    cursor: "pointer"
+};
+
 export default function WorkoutLibrary() {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
@@ -128,6 +168,9 @@ export default function WorkoutLibrary() {
     const [selectedWorkout, setSelectedWorkout] = useState(null);
     const [dbExercises, setDbExercises] = useState([]);
     const [selectedDay, setSelectedDay] = useState("Mon");
+
+    // New State for the Confirm Modal
+    const [pendingOverwrite, setPendingOverwrite] = useState(null);
 
     // Fetch DB exercises on load to map names to IDs
     useEffect(() => {
@@ -146,7 +189,6 @@ export default function WorkoutLibrary() {
         fetchExercises();
     }, [user]);
 
-    //Workouts with title, description, and exercises (name, sets, reps)
     const libraryData = [
         {
             id: 1,
@@ -167,7 +209,7 @@ export default function WorkoutLibrary() {
             description: "A pull day will target the back, biceps, and forearms. This workout focuses on pulling movements.",
             exercises: [
                 { name: "Deadlift", sets: 3, reps: 5 },
-                { name: "Lat Pulldown", sets: 3, reps: 10 },
+                { name: "Lat Pull down", sets: 3, reps: 10 },
                 { name: "Barbell Row", sets: 3, reps: 8 },
                 { name: "Bicep Curls", sets: 4, reps: 12 }
             ]
@@ -193,23 +235,22 @@ export default function WorkoutLibrary() {
             exercises: [
                 { name: "Incline Dumbbell Press", sets: 2, reps: 6 },
                 { name: "Chest Flies", sets: 2, reps: 8 },
-                { name: "Overhead Tricep Extensions", sets: 3, reps: 10 },
+                { name: "Overhead Tricep Extension", sets: 3, reps: 10 },
                 { name: "Lateral Raises", sets: 3, reps: 10 },
-                { name: "Lat Pulldown", sets: 2, reps: 6 },
+                { name: "Lat Pull down", sets: 2, reps: 6 },
                 { name: "Cable Row", sets: 2, reps: 8 },
                 { name: "Preacher Curls", sets: 3, reps: 10 }
             ]
         }
     ];
 
-    // Assign a workout to a day of the week
+    // Handles logic to prep assignment
     const handleAssignWorkout = async () => {
         if (!user || !user.id) {
             toast.error("You must be logged in to save a workout.");
             return;
         }
 
-        // Calculate the date for the selected day
         const daysArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         const index = daysArray.indexOf(selectedDay);
         const today = new Date();
@@ -218,17 +259,13 @@ export default function WorkoutLibrary() {
         const wDay = addDays(today, difference);
         const formattedDate = format(wDay, "MM-dd-yyyy");
 
-        // Map exercises from library to DB exercise IDs
+        // Map library exercises to the payload format
         let missingExercises = [];
         const payloadExercises = selectedWorkout.exercises.map(libEx => {
-            // Find matching exercise in DB by name
             const matchedDbEx = dbExercises.find(
                 dbEx => dbEx.name.toLowerCase().trim() === libEx.name.toLowerCase().trim()
             );
-
-            if (!matchedDbEx) {
-                missingExercises.push(libEx.name);
-            }
+            if (!matchedDbEx) missingExercises.push(libEx.name);
 
             return {
                 exercise_id: matchedDbEx ? matchedDbEx.exercise_id : null,
@@ -239,13 +276,11 @@ export default function WorkoutLibrary() {
             };
         });
 
-        // Fail-safe in case names don't match DB entries
         if (missingExercises.length > 0) {
-            toast.error(`Error: Could not find these exercises in the database: ${missingExercises.join(", ")}`);
+            toast.error(`Error: Could not find these exercises in DB: ${missingExercises.join(", ")}`);
             return;
         }
 
-        // Payload structure expected by backend
         const payload = {
             user_id: user.id,
             date: formattedDate,
@@ -253,15 +288,53 @@ export default function WorkoutLibrary() {
             exercises: payloadExercises
         };
 
-        // Send paylos to backend
+        const apiBase = import.meta.env.VITE_API_URL || '';
+
         try {
-            const apiBase = import.meta.env.VITE_API_URL || '';
-            await axios.post(`${apiBase}/api/workouts/save`, payload);
-            toast.success(`${selectedWorkout.title} successfully added to ${selectedDay}!`);
-            setSelectedWorkout(null);
+            // Check if plan exists
+            const checkResponse = await axios.get(`${apiBase}/api/workouts/daily-plan/${user.id}/${formattedDate}`);
+
+            // If a plan exists, prompt for overwrite
+            if (checkResponse.data.hasPlan) {
+                const existingPlanId = checkResponse.data.data[0].plan_id;
+                setPendingOverwrite({ existingPlanId, payload });
+                return;
+            }
+
+            // If no plan exists, execute save immediately
+            await executeSave(payload);
+
         } catch (error) {
-            console.error("Error assigning workout:", error);
-            toast.error("Failed to assign workout. Please try again.");
+            console.error("Error checking plan:", error);
+            toast.error("Failed to check daily plan.");
+        }
+    };
+
+    // Actual save execution logic
+    const executeSave = async (payload) => {
+        const apiBase = import.meta.env.VITE_API_URL || '';
+        try {
+            await axios.post(`${apiBase}/api/workouts/save`, payload);
+            toast.success(`${selectedWorkout.title} successfully added!`);
+            setSelectedWorkout(null);
+            setPendingOverwrite(null);
+        } catch (error) {
+            console.error("Error saving workout:", error);
+            toast.error("Failed to save workout.");
+        }
+    };
+
+    // Called when the user clicks "Yes" in the custom modal
+    const handleConfirmOverwrite = async () => {
+        const apiBase = import.meta.env.VITE_API_URL || '';
+        try {
+            await fetch(`${apiBase}/api/workouts/plan/${pendingOverwrite.existingPlanId}`, {
+                method: 'DELETE'
+            });
+            await executeSave(pendingOverwrite.payload);
+        } catch (error) {
+            console.error("Error overwriting workout:", error);
+            toast.error("Failed to overwrite workout.");
         }
     };
 
@@ -274,7 +347,6 @@ export default function WorkoutLibrary() {
             <h1 style={TITLE_STYLE}>Workout Library</h1>
 
             <div style={LIST_CONTAINER}>
-                {/* Render the list of wide buttons */}
                 {libraryData.map((workout) => (
                     <button
                         key={workout.id}
@@ -291,7 +363,7 @@ export default function WorkoutLibrary() {
                 </button>
             </div>
 
-            {/* Workout Modal */}
+            {/* Main Workout Modal */}
             {selectedWorkout && (
                 <div style={MODAL_OVERLAY} onClick={() => setSelectedWorkout(null)}>
                     <div style={MODAL_CONTENT} onClick={(e) => e.stopPropagation()}>
@@ -302,7 +374,6 @@ export default function WorkoutLibrary() {
                         <h2 style={{ marginTop: 0, paddingRight: "20px" }}>
                             {selectedWorkout.title}
                         </h2>
-
                         <h6 style={{ marginTop: 0, paddingRight: "20px", color: "#ccc" }}>
                             {selectedWorkout.time}
                         </h6>
@@ -324,7 +395,6 @@ export default function WorkoutLibrary() {
                             ))}
                         </div>
 
-                        {/* Assign workout bar */}
                         <div style={{ marginTop: "25px", display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#333", padding: "15px", borderRadius: "10px" }}>
                             <label htmlFor="daySelect" style={{ fontWeight: "bold" }}>Assign to:</label>
 
@@ -341,12 +411,32 @@ export default function WorkoutLibrary() {
 
                             <button
                                 onClick={handleAssignWorkout}
-                                style={{ marginLeft: "auto", padding: "10px 20px", backgroundColor: "#64E46C", color: "#000", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", boxShadow: "0 2px 5px rgba(0,0,0,0.2)" }}
+                                style={{ marginLeft: "auto", padding: "10px 20px", backgroundColor: "#0c571b", color: "#000", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", boxShadow: "0 2px 5px rgba(0,0,0,0.2)" }}
                             >
                                 Add to Calendar
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
 
+            {/* Confirm Overwrite Modal */}
+            {pendingOverwrite && (
+                <div style={MODAL_OVERLAY}>
+                    <div style={CONFIRM_MODAL_CONTENT}>
+                        <h3 style={{ marginTop: 0 }}>Overwrite Workout?</h3>
+                        <p style={{ fontSize: "1rem", lineHeight: "1.4" }}>
+                            A workout already exists for <strong>{selectedDay}</strong>.
+                            Are you sure you want to overwrite it?
+                        </p>
+                        <div style={CONFIRM_BTN_GROUP}>
+                            <button style={NO_BTN} onClick={() => setPendingOverwrite(null)}>
+                                Cancel
+                            </button>
+                            <button style={YES_BTN} onClick={handleConfirmOverwrite}>
+                                Yes, Overwrite
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
