@@ -13,6 +13,7 @@ const AdminExerciseModal = ({ show, handleClose, exercise, onExerciseChange }) =
   });
 
   const { token, user } = useContext(AuthContext);
+  const [thumbnail, setThumbnail] = useState(null);
 
   useEffect(() => {
     if (exercise) {
@@ -26,6 +27,10 @@ const AdminExerciseModal = ({ show, handleClose, exercise, onExerciseChange }) =
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handleFileChange = (e) => {
+    setThumbnail(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -63,60 +68,43 @@ const AdminExerciseModal = ({ show, handleClose, exercise, onExerciseChange }) =
   if (!show) return null;
 
   const AddOrEdit = async () => {
-    if (exercise) {
-      try {
-        const apiBase = import.meta.env.VITE_API_URL;
-        const url = `${apiBase}/admin/exercises/update/${exercise.exercise_id}`;
-        const response = await fetch(url, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            user_id: user.id,
-            name: exerciseData.name,
-            muscle_group: exerciseData.muscleGroup,
-            equipment_needed: exerciseData.equipment,
-            video_url: exerciseData.video_url,
-            thumb_url: exerciseData.thumbnail,
-          }),
-        });
-        if (!response.ok) {
-          console.error('Failed to update exercise');
-        } else {
-          toast.success('Exercise edited!');
-        }
-      } catch (error) {
-        toast.error(error.message);
+    // 1. Create the FormData object
+    const formDataToSend = new FormData();
+
+    // 2. Append all text data
+    formDataToSend.append('user_id', user.id);
+    formDataToSend.append('name', exerciseData.name);
+    formDataToSend.append('muscle_group', exerciseData.muscleGroup);
+    formDataToSend.append('equipment_needed', exerciseData.equipment);
+    formDataToSend.append('video_url', exerciseData.video_url);
+
+    // 3. Append the file if one was selected
+    if (thumbnail) {
+      formDataToSend.append('thumbnail', thumbnail);
+    }
+
+    try {
+      const apiBase = import.meta.env.VITE_API_URL;
+      const url = exercise
+          ? `${apiBase}/admin/exercises/update/${exercise.exercise_id}`
+          : `${apiBase}/admin/exercises/add`;
+
+      const response = await fetch(url, {
+        method: exercise ? 'PUT' : 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
+
+      if (!response.ok) {
+        console.error(`Failed to ${exercise ? 'update' : 'add'} exercise`);
+        toast.error(`Failed to ${exercise ? 'update' : 'add'} exercise`);
+      } else {
+        toast.success(`Exercise ${exercise ? 'edited' : 'added'}!`);
       }
-    } else {
-      try {
-        const apiBase = import.meta.env.VITE_API_URL;
-        const url = `${apiBase}/admin/exercises/add`;
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            user_id: user.id,
-            name: exerciseData.name,
-            muscle_group: exerciseData.muscleGroup,
-            equipment_needed: exerciseData.equipment,
-            video_url: exerciseData.video_url,
-            thumb_url: exerciseData.thumbnail,
-          }),
-        });
-        if (!response.ok) {
-          console.error('Failed to add exercise');
-        } else {
-          toast.success('Exercise added!');
-        }
-      } catch (error) {
-        toast.error(error.message);
-      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -189,13 +177,13 @@ const AdminExerciseModal = ({ show, handleClose, exercise, onExerciseChange }) =
             />
           </label>
           <label>
-            Thumbnail URL:
+            Thumbnail Image:
             <input
-              type="text"
-              name="thumbnail"
-              value={exerciseData.thumbnail}
-              onChange={handleChange}
-              required
+                type="file"
+                name="thumbnail_file"
+                accept="image/*"
+                onChange={handleFileChange}
+                required={!exercise}
             />
           </label>
           <div className="modal-actions">

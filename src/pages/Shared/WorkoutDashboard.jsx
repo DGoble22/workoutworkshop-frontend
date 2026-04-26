@@ -39,7 +39,20 @@ const MAIN_CONTAINER = {
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    padding: "40px 0"
+    padding: "56px 0"
+};
+
+const MENU_CARD_STYLES = {
+    width: "100%",
+    maxWidth: "520px",
+    background: "#ffffff",
+    border: "1px solid #ececec",
+    borderRadius: "14px",
+    padding: "30px 28px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.06)"
 };
 
 const MENU_BUTTON_STYLES = {
@@ -52,7 +65,7 @@ const MENU_BUTTON_STYLES = {
     backgroundColor: "#ffffff",
     border: "1px solid #000000",
     borderRadius: "15px",
-    margin: "15px 0",
+    margin: "22px auto",
     fontSize: "1.5rem",
     cursor: "pointer",
     color: "#000000",
@@ -92,7 +105,7 @@ export default function WorkoutDashboard() {
 
             {/* Main Menu Buttons */}
             <div style={MAIN_CONTAINER}>
-
+                <div style={MENU_CARD_STYLES}>
                 <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/calendar")}>
                     {/* Calendar Icon */}
                     <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -121,6 +134,7 @@ export default function WorkoutDashboard() {
                 <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/workout-library")}>
                     WORKOUT LIBRARY
                 </button>
+                </div>
 
             </div>
         </div>
