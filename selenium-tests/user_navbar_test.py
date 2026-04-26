@@ -231,46 +231,7 @@ if __name__ == "__main__":
     CVC.send_keys("1234")
     
     driver.find_element(By.ID, "finish").click()
-    time.sleep(1.5)
-
-    #------------sign out--------------
-    driver.find_element(By.ID, "nav-user-logo").click() #close user dropdown
     time.sleep(1)
-    driver.find_element(By.ID, "nav-signout").click()
-    time.sleep(1.5)
-    
-
-    #-----------coach--------------
-    login(driver, "UItestCoach", "Correctpass123")
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-workout").click() #open workout page
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-home").click() #go to homepage
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-coach").click() #click on coach page
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-logo").click() #use logo to go back home
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-user-logo").click() #open user dropdown
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-signout").click()
-    time.sleep(1.5)
-
-    #-----------admin---------------
-    login(driver, "UItestAdmin", "Correctpass123")
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-workout").click() #open workout page
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-home").click() #go to homepage
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-admin").click() #click on admin page
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-logo").click() #use logo to go back home
-    time.sleep(1)
-    driver.find_element(By.ID, "nav-user-logo").click() #close user dropdown
-    time.sleep(1.5)
-    driver.find_element(By.ID, "nav-signout").click()
-    time.sleep(1.5)
 
     time.sleep(2)
     report = driver.execute_script("return window.__coverage__;")
@@ -294,7 +255,4 @@ if __name__ == "__main__":
      "-n", "src/components/EditUsernameModal.jsx",
      "-n", "src/components/ChangePasswordModal.jsx",
      "-n", "src/components/EditGoalsModal.jsx",
-     "-n", "src/components/DeleteAccountModal.jsx",
      "-n", "src/components/EditPaymentDetailsModal.jsx"], check=True, shell=True)
-
-

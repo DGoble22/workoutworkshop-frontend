@@ -81,8 +81,8 @@ function RequestCard({ request, onAccept, onReject }) {
             </div>
             <p style={{ marginBottom: "12px" }}>Goal: {request.goal_type}</p>
             <div style={{ display: "flex", gap: "10px" }}>
-                <button style={ACCEPT_BUTTON_STYLES} onClick={() => onAccept(request.request_id)}>ACCEPT</button>
-                <button style={REJECT_BUTTON_STYLES} onClick={() => onReject(request.request_id)}>REJECT</button>
+                <button id={`request-accept-${request.first_name} ${request.last_name}`} style={ACCEPT_BUTTON_STYLES} onClick={() => onAccept(request.request_id)}>ACCEPT</button>
+                <button id={`request-reject-${request.first_name} ${request.last_name}`} style={REJECT_BUTTON_STYLES} onClick={() => onReject(request.request_id)}>REJECT</button>
             </div>
         </div>
     )
