@@ -369,7 +369,7 @@ export default function Home() {
                                     <div className="testimonial-stars">
                                         {"★".repeat(t.stars)}
                                     </div>
-                                    <p className="testimonial-text">"{t.text}"</p>
+                                    <p className="testimonial-text">{t.text}</p>
                                     <div className="testimonial-author">
                                         <strong>{t.name}</strong>
                                         <span className="workout-tag" style={{ marginTop: '8px', display: 'inline-block' }}>{t.role}</span>
@@ -514,12 +514,24 @@ export default function Home() {
                                 </div>
                             </div>
                             <div className="home-button-storage">
-
-                                <div className="dashboard-exercise-tracker-card">
-                                    <div style={{width: "60%", height:"60%"}}>
-                                        <CircularProgressbar styles={buildStyles({textColor: "#000000", pathColor: "#14AE5C"})} value={percentage} maxValue={1} text={`${completedExercises.length}/${workoutPlan.length}`} />
+                                <div
+                                    className="dashboard-exercise-tracker-card"
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        gap: "35px"
+                                    }}
+                                >
+                                    <div style={{ width: "60%", height: "60%" }}>
+                                        <CircularProgressbar
+                                            styles={buildStyles({ textColor: "#000000", pathColor: "#14AE5C" })}
+                                            value={percentage}
+                                            maxValue={1}
+                                            text={`${completedExercises.length}/${workoutPlan.length}`}
+                                        />
                                     </div>
-                                    Workouts Completed
+                                    <span>Workouts Completed</span>
                                 </div>
 
                                  <button className="home-menu-button" onClick={() => handleMenuClick("/calendar")}>

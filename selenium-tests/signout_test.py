@@ -10,7 +10,6 @@ from helper import login_to_profile_editor
 #load_dotenv()
 URL = "http://localhost:5173/"
 
-#Skip payment
 if __name__ == "__main__":
     driver = webdriver.Chrome() #use Chrome
     driver.get(URL) #access site

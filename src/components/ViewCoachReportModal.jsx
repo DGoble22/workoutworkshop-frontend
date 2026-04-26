@@ -216,7 +216,11 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                         <Modal.Title>{coach?.name}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
+<<<<<<< HEAD
                         <Button id="coach-profile" onClick={handleViewCoachInfo} style={{ display: 'block', margin: '0 auto' ,backgroundColor: "#ff0000", borderColor: "#ff0000"}}>View Profile</Button>
+=======
+                        <Button onClick={handleViewCoachInfo} style={{ display: 'block', margin: '0 auto' ,backgroundColor: "#711A19", borderColor: "#711A19"}}>View Profile</Button>
+>>>>>>> fcb9ceedf0eb7bad3044cb17bea017b1dee2c659
                         <h3 style={{textAlign: "center", marginTop: "10px"}}>Report Details</h3>
                         <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '16px', marginTop: '16px' }}>
                             <p>"{report?.reason}"</p>
@@ -226,10 +230,17 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                         <Button id="dismiss-report" style={{backgroundColor: "#14AE5C", borderColor: "#14AE5C"}} onClick={handleDismissReport}>
                             Dismiss Report
                         </Button>
+<<<<<<< HEAD
                         <Button id="disable-coach" style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleDisableModal}>
                             Disable Coach
                         </Button>
                         <Button id="ban-coach" style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleBanModal}>
+=======
+                        <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleDisableModal}>
+                            Disable Coach
+                        </Button>
+                        <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleBanModal}>
+>>>>>>> fcb9ceedf0eb7bad3044cb17bea017b1dee2c659
                             Ban Coach
                         </Button>
                     </Modal.Footer>
@@ -255,7 +266,11 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                     <Button id="disable-cancel" variant="secondary" onClick={handleModalClose}>
                         Cancel
                     </Button>
+<<<<<<< HEAD
                     <Button id="disable-confirm" style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleDisableConfirm}>
+=======
+                    <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleDisableConfirm}>
+>>>>>>> fcb9ceedf0eb7bad3044cb17bea017b1dee2c659
                         Confirm Disable
                     </Button>
                 </Modal.Footer>
@@ -274,7 +289,11 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                     <Button id="cancel-ban" variant="secondary" onClick={handleModalClose}>
                         Cancel
                     </Button>
+<<<<<<< HEAD
                     <Button id="confirm-ban" style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleBanConfirm}>
+=======
+                    <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleBanConfirm}>
+>>>>>>> fcb9ceedf0eb7bad3044cb17bea017b1dee2c659
                         Confirm Ban
                     </Button>
                 </Modal.Footer>

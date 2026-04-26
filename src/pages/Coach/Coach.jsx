@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react"
 import { AuthContext } from "../../context/AuthContext"
 import EditCoachProfile from "./EditCoachProfile"
 import CreateMealPlan from "./CreateMealPlan"
+import ClientDetail from "./ClientDetail"
 import ChatModal from "../../components/ChatModal"
 import Image from "react-bootstrap/Image"
 import DefaultProfilePic from "../../images/defaultProfile.jpg"
@@ -9,7 +10,8 @@ import DefaultProfilePic from "../../images/defaultProfile.jpg"
 const VIEWS = {
     DASHBOARD: "dashboard",
     EDIT_PROFILE: "edit_profile",
-    MEAL_PLAN: "meal_plan"
+    MEAL_PLAN: "meal_plan",
+    CLIENT_DETAIL: "client_detail"
 }
 
 const REQUEST_CARD_STYLES = {
@@ -34,7 +36,7 @@ const ACCEPT_BUTTON_STYLES = {
 }
 
 const REJECT_BUTTON_STYLES = {
-    backgroundColor: "#cb0a0a",
+    backgroundColor: "#711A19",
     color: "#ffffff",
     border: "none",
     borderRadius: "6px",
@@ -86,7 +88,7 @@ function RequestCard({ request, onAccept, onReject }) {
     )
 }
 
-function ClientsTable({ clients, onMealPlan, onChat }) {
+function ClientsTable({ clients, onMealPlan, onChat, onDetail, isNutritionist }) {
     return (
         <table style={TABLE_STYLES}>
             <thead>
@@ -104,25 +106,34 @@ function ClientsTable({ clients, onMealPlan, onChat }) {
                     <tr key={client.user_id}>
                         <td style={{ ...TD_STYLES, fontWeight: "700" }}>{client.first_name} {client.last_name}</td>
                         <td style={TD_STYLES}>{client.goal_type}</td>
-                        <td style={TD_STYLES}>N/A</td>
+                        <td style={TD_STYLES}>{client.last_workout || "N/A"}</td>
                         <td style={{ ...TD_STYLES, paddingLeft: "30px" }}>
-                            <span
+                            {isNutritionist ? (
+                                <span
                                 style={{ fontSize: "1.3rem", cursor: "pointer" }}
                                 onClick={() => onMealPlan(client.user_id)}
-                            >
+                                >
                                 📋
-                            </span>
-                        </td>
+                                </span>
+                            ) : (
+                                <span style={{ color: "#ccc", fontSize: "0.8rem" }}>N/A</span>
+                            )}
+                            </td>
                         <td style={TD_STYLES}>
                             <span
                                 style={{ fontSize: "1.3rem", cursor: "pointer" }}
-                                onClick={() => onChat(client.user_id)}
+                                onClick={() => onChat()}
                             >
                                 💬
                             </span>
                         </td>
                         <td style={TD_STYLES}>
-                            <span style={{ color: "#cb0a0a", fontWeight: "700", cursor: "pointer" }}>›</span>
+                            <span
+                                style={{ color: "#711A19", fontWeight: "700", cursor: "pointer" }}
+                                onClick={() => onDetail(client.user_id)}
+                            >
+                                ›
+                            </span>
                         </td>
                     </tr>
                 ))}
@@ -138,11 +149,33 @@ export default function Coach() {
     const [clients, setClients] = useState([])
     const [coachId, setCoachId] = useState(null)
     const [selectedClient, setSelectedClient] = useState(null)
+    const [detailClient, setDetailClient] = useState(null)
     const [showChat, setShowChat] = useState(false)
-    const [chatClient, setChatClient] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [isNutritionist, setIsNutritionist] = useState(false)
 
     const apiBase = import.meta.env.VITE_API_URL || ""
+
+    async function getLastWorkout(user_id) {
+        try {
+            const res = await fetch(`${apiBase}/api/workouts/log/${user_id}`)
+            const data = await res.json()
+            if (data.status === "success" && data.data.length > 0) {
+                const lastDate = data.data[0].date
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                const workout = new Date(lastDate)
+                workout.setHours(0, 0, 0, 0)
+                const diffDays = Math.floor((today - workout) / (1000 * 60 * 60 * 24))
+                if (diffDays === 0) return "Today"
+                if (diffDays === 1) return "Yesterday"
+                return lastDate
+            }
+            return "N/A"
+        } catch (e) {
+            return "N/A"
+        }
+    }
 
     useEffect(() => {
         async function loadCoachData() {
@@ -153,13 +186,27 @@ export default function Coach() {
                 const cid = coachIdData.coach_id
                 setCoachId(cid)
 
+                const profileRes = await fetch(`${apiBase}/coach/profile/${cid}`)
+                const profileData = await profileRes.json()
+                if (profileData.status === "success") {
+                    setIsNutritionist(profileData.data.is_nutritionist === 1)
+                }
+
                 const requestsRes = await fetch(`${apiBase}/coach/requests/${cid}`)
                 const requestsData = await requestsRes.json()
                 if (requestsData.status === "success") setRequests(requestsData.data)
 
                 const clientsRes = await fetch(`${apiBase}/coach/clients/${cid}`)
                 const clientsData = await clientsRes.json()
-                if (clientsData.status === "success") setClients(clientsData.data)
+                if (clientsData.status === "success") {
+                    const clientsWithWorkouts = await Promise.all(
+                        clientsData.data.map(async client => ({
+                            ...client,
+                            last_workout: await getLastWorkout(client.user_id)
+                        }))
+                    )
+                    setClients(clientsWithWorkouts)
+                }
 
             } catch (e) {
                 console.error("Failed to load coach data:", e)
@@ -207,9 +254,21 @@ export default function Coach() {
         setView(VIEWS.MEAL_PLAN)
     }
 
-    function handleChat(user_id) {
-        setChatClient(user_id)
+    function handleChat() {
         setShowChat(true)
+    }
+
+    function handleClientDetail(user_id) {
+        setDetailClient(clients.find(c => c.user_id === user_id))
+        setView(VIEWS.CLIENT_DETAIL)
+    }
+
+    if (!user || user.role !== 'C') {
+        return (
+            <div className="container mt-4">
+                <p>This page is only accessible for coaches.</p>
+            </div>
+        )
     }
 
     if (view === VIEWS.EDIT_PROFILE) {
@@ -226,6 +285,18 @@ export default function Coach() {
                 <CreateMealPlan
                     client={clients.find(c => c.user_id === selectedClient)}
                     onBack={() => setView(VIEWS.DASHBOARD)}
+                    coachId={coachId}
+                />
+            </div>
+        )
+    }
+
+    if (view === VIEWS.CLIENT_DETAIL) {
+        return (
+            <div className="container mt-4">
+                <ClientDetail
+                    client={detailClient}
+                    onBack={() => setView(VIEWS.DASHBOARD)}
                 />
             </div>
         )
@@ -237,7 +308,7 @@ export default function Coach() {
 
     return (
         <>
-            {user?.role === 'C' && (
+            {user.role === 'C' && (
                 <div className="container mt-4">
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
                         <div style={{ position: "relative", width: "100%", maxWidth: "700px", textAlign: "center", marginBottom: "28px" }}>
@@ -245,7 +316,7 @@ export default function Coach() {
                             <p style={{ color: "#555" }}>Welcome back, {user.first_name}!</p>
                             <button
                                 onClick={() => setView(VIEWS.EDIT_PROFILE)}
-                                style={{ position: "absolute", top: "0", right: "0", background: "none", border: "none", color: "#cb0a0a", fontWeight: "600", cursor: "pointer" }}
+                                style={{ position: "absolute", top: "0", right: "0", background: "none", border: "none", color: "#711A19", fontWeight: "600", cursor: "pointer" }}
                             >
                                 Edit Profile →
                             </button>
@@ -276,15 +347,16 @@ export default function Coach() {
                                     clients={clients}
                                     onMealPlan={handleMealPlan}
                                     onChat={handleChat}
+                                    onDetail={handleClientDetail}
+                                    isNutritionist={isNutritionist}
                                 />
                             )}
                         </div>
                     </div>
 
                     <ChatModal
-                        show={showChat}
-                        handleClose={() => setShowChat(false)}
-                        client={clients.find(c => c.user_id === chatClient)}
+                        isOpen={showChat}
+                        onClose={() => setShowChat(false)}
                     />
                 </div>
             )}

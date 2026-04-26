@@ -115,7 +115,9 @@ export default function WorkoutLog() {
 
         try {
             const apiBase = import.meta.env.VITE_API_URL || '';
-            const response = await fetch(`${apiBase}/api/workouts/plan/${id}`);
+            const response = await fetch(`${apiBase}/api/workouts/plan/${id}`, {
+                method: "DELETE"
+            });
             const data = await response.json();
 
             if (data.status === 'success') {
