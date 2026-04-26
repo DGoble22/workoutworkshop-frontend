@@ -217,11 +217,7 @@ export default function ViewCoachApplicationModal({ show, handleClose, coachId }
                         <Button id="coach-accept" style={{backgroundColor: "#14AE5C", borderColor: "#14AE5C"}} onClick={handleAccept}>
                             Accept
                         </Button>
-<<<<<<< HEAD
-                        <Button id="coach-reject" style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleRejectModal}>
-=======
-                        <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleRejectModal}>
->>>>>>> fcb9ceedf0eb7bad3044cb17bea017b1dee2c659
+                        <Button id="coach-reject" style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleRejectModal}>
                             Reject
                         </Button>
                     </Modal.Footer>
@@ -241,11 +237,7 @@ export default function ViewCoachApplicationModal({ show, handleClose, coachId }
                     <Button id="rejection-cancel" variant="secondary" onClick={handleRejectCancel}>
                         Cancel
                     </Button>
-<<<<<<< HEAD
-                    <Button id="confirm-rejection" style={{backgroundColor: "#ff0000", borderColor: "#ff0000"}} onClick={handleRejectConfirm}>
-=======
-                    <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleRejectConfirm}>
->>>>>>> fcb9ceedf0eb7bad3044cb17bea017b1dee2c659
+                    <Button id="confirm-rejection" style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleRejectConfirm}>
                         Confirm Rejection
                     </Button>
                 </Modal.Footer>
