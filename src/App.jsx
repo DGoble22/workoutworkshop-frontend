@@ -40,7 +40,7 @@ function AppLayout() {
             }} />
             <Navbar />
             {isAuthenticated && (
-                <button className="floating-chat-btn" onClick={() => setIsChatOpen(true)}>
+                <button id="chat-btn" className="floating-chat-btn" onClick={() => setIsChatOpen(true)}>
                     <FontAwesomeIcon icon={faComments} />
                 </button>
             )}

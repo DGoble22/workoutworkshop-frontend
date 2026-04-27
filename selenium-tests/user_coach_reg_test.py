@@ -204,7 +204,7 @@ if __name__ == "__main__":
     driver.find_element(By.ID, "register-isCoach").click()
 
     driver.find_element(By.ID, "register-next-1").click() #go to next page
-    time.sleep(1.5)
+    time.sleep(2)
 
     # -----------Coach Info Page-----------
     fName = driver.find_element(By.ID, "register-first_name")

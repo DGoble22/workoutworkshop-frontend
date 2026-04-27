@@ -153,17 +153,17 @@ export default function WorkoutLog() {
                                 {workout.date} | {workout.title}
                             </div>
 
-                            <button style={EDIT_BTN} onClick={() => handleEdit(workout.id, workout.date, workout.title)}>
+                            <button id={`view-${workout.title}`}style={EDIT_BTN} onClick={() => handleEdit(workout.id, workout.date, workout.title)}>
                                 View
                             </button>
-                            <button style={REMOVE_BTN} onClick={() => handleRemove(workout.id)}>
+                            <button id={`remove-${workout.title}`}style={REMOVE_BTN} onClick={() => handleRemove(workout.id)}>
                                 Remove
                             </button>
                         </div>
                     ))
                 )}
 
-                <button style={BACK_BTN} onClick={handleBack}>
+                <button id="back" style={BACK_BTN} onClick={handleBack}>
                     Back
                 </button>
             </div>

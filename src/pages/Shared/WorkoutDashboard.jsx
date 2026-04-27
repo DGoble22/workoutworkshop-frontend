@@ -79,6 +79,7 @@ export default function WorkoutDashboard() {
             <div style={TOP_BAR_STYLES}>
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
                     <button
+                        id={`nav-${day}`}
                         key={day}
                         style={DOTWCARD_STYLES}
                         onClick={() => handleDayClick(day)}
@@ -93,7 +94,7 @@ export default function WorkoutDashboard() {
             {/* Main Menu Buttons */}
             <div style={MAIN_CONTAINER}>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/calendar")}>
+                <button id="calendar" style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/calendar")}>
                     {/* Calendar Icon */}
                     <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -110,15 +111,15 @@ export default function WorkoutDashboard() {
                     </div>
                 </button>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/findCoach")}>
+                <button id="get-coaching" style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/findCoach")}>
                     GET COACHING
                 </button>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/workout-log")}>
+                <button id="workout-log" style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/workout-log")}>
                     WORKOUT LOG
                 </button>
 
-                <button style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/workout-library")}>
+                <button id="workout-library" style={MENU_BUTTON_STYLES} onClick={() => handleMenuClick("/workout-library")}>
                     WORKOUT LIBRARY
                 </button>
 

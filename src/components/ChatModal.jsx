@@ -101,7 +101,7 @@ const ChatModal = ({ isOpen, onClose }) => {
                     <h3>Messages</h3>
                     <div className="contact-list">
                         {contacts.map(c => (
-                            <div key={c.user_id} className={`contact-item ${selectedContact?.user_id === c.user_id ? 'active' : ''}`} onClick={() => setSelectedContact(c)}>
+                            <div id={`contact-${c.full_name}`} key={c.user_id} className={`contact-item ${selectedContact?.user_id === c.user_id ? 'active' : ''}`} onClick={() => setSelectedContact(c)}>
                                 {c.role === "C" && "Coach: "}
                                 {c.role === "U" && user.role === "C" && `Client: `}
                                 {c.full_name}
@@ -114,7 +114,7 @@ const ChatModal = ({ isOpen, onClose }) => {
                 <div className="chat-main">
                     <div className="chat-header">
                         {selectedContact ? `Chat with ${selectedContact.full_name}` : "Select a contact"}
-                        <button className="close-btn" onClick={onClose}>&times;</button>
+                        <button id="close-chat" className="close-btn" onClick={onClose}>&times;</button>
                     </div>
                     <div className="chat-messages">
                         {messages.length === 0 && selectedContact && (
@@ -128,8 +128,8 @@ const ChatModal = ({ isOpen, onClose }) => {
                         <div ref={messagesEndRef} />
                     </div>
                     <form className="chat-input" onSubmit={sendMessage}>
-                        <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={!selectedContact}/>
-                        <button type="submit" disabled={!selectedContact || !socket}>{socket ? "Send" : "Connecting..."}</button>
+                        <input id="new-msg" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={!selectedContact}/>
+                        <button id="submit-msg" type="submit" disabled={!selectedContact || !socket}>{socket ? "Send" : "Connecting..."}</button>
                     </form>
                 </div>
             </div>

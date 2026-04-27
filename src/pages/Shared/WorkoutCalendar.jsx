@@ -82,7 +82,7 @@ export default function WorkoutCalendar() {
 
             {/* Month and Year header with arrows */}
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#847979", padding: "20px 0", color: "white", fontSize: "2.5rem", gap: "20px" }}>
-                <button onClick={handlePrevMonth} style={ARROW_BTN}>&lt;</button>
+                <button id="prev" onClick={handlePrevMonth} style={ARROW_BTN}>&lt;</button>
 
                 {/* Flex column to fit month and year together */}
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "300px" }}>
@@ -98,7 +98,7 @@ export default function WorkoutCalendar() {
                     </span>
                 </div>
 
-                <button onClick={handleNextMonth} style={ARROW_BTN}>&gt;</button>
+                <button id="next" onClick={handleNextMonth} style={ARROW_BTN}>&gt;</button>
 
             </div>
 

@@ -429,6 +429,7 @@ export default function WorkoutBuilder() {
                     };
                     return (
                         <button
+                            id={`btn-${day}`}
                             onClick={() => { navigate(`/workout-builder/${day}`, { state: { "day": day } }) }}
                             key={day}
                             style={dynamicStyle}
@@ -455,14 +456,14 @@ export default function WorkoutBuilder() {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => {
+                                <Dropdown.Item id="muscle-group" onClick={() => {
                                     setFilterType("Muscle Group");
                                     setExpandedCategory(null);
                                 }}>
                                     Muscle Group
                                 </Dropdown.Item>
 
-                                <Dropdown.Item onClick={() => {
+                                <Dropdown.Item id="equipment" onClick={() => {
                                     setFilterType("Equipment");
                                     setExpandedCategory(null);
                                 }}>
@@ -475,7 +476,7 @@ export default function WorkoutBuilder() {
                     <div style={{ display: "flex", flex: 1, width: "100%", flexDirection: "column", alignItems: "center", overflowY: "auto", paddingBottom: "20px" }}>
                         {Object.keys(groupedExercises).map(category => (
                             <React.Fragment key={category}>
-                                <div style={EXERCISECATEGORY_STYLES} onClick={() => toggleCategory(category)}>
+                                <div id={`dropdown-${category}`}style={EXERCISECATEGORY_STYLES} onClick={() => toggleCategory(category)}>
                                     <div style={{ fontWeight: "bold" }}>{category}</div>
                                     <div>{expandedCategory === category ? "Λ" : "V"}</div>
                                 </div>
@@ -485,6 +486,7 @@ export default function WorkoutBuilder() {
                                         <div style={EXERCISE_CARD_HEADER}>
                                             <span>{exercise.name}</span>
                                             <button
+                                                id={`add-${exercise.name}`}
                                                 style={ADD_BUTTON_STYLES}
                                                 onClick={() => addToWorkout(exercise)}
                                                 title="Add to workout"
@@ -512,7 +514,7 @@ export default function WorkoutBuilder() {
                 {/* Manage Workouts */}
                 <div style={{ display: "flex", flex: 1, flexDirection: "column", overflow: "hidden" }}>
                     <div style={{ display: "flex", width: "100%", height: "10%", backgroundColor: "#711A19", alignItems: "center", justifyContent: "flex-end", paddingRight: "20px", gap: "15px" }}>
-                        {!manage ? <button onClick={() => handleManage()} style={HEADERBUTTON_STYLES}>Manage</button> : <button onClick={() => handleManage()} style={APPLYBUTTON_STYLES}>Apply</button>}
+                        {!manage ? <button id="manage" onClick={() => handleManage()} style={HEADERBUTTON_STYLES}>Manage</button> : <button id="apply" onClick={() => handleManage()} style={APPLYBUTTON_STYLES}>Apply</button>}
                     </div>
 
                     <div style={{ flex: 1, overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -542,7 +544,7 @@ export default function WorkoutBuilder() {
 
                     <div style={{ padding: "20px", display: "flex", justifyContent: "flex-start", backgroundColor: "#D9D9D9" }}>
                         {/* Update the onClick to handleInitiateSave instead of opening Name modal directly */}
-                        <button style={CREATE_WORKOUT_BTN} onClick={handleInitiateSave}>Create Workout</button>
+                        <button id="create-workout" style={CREATE_WORKOUT_BTN} onClick={handleInitiateSave}>Create Workout</button>
                     </div>
                 </div>
 
@@ -556,13 +558,13 @@ export default function WorkoutBuilder() {
                                 Are you sure you want to overwrite it?
                             </p>
                             <div style={CONFIRM_BTN_GROUP}>
-                                <button style={NO_BTN} onClick={() => {
+                                <button id="cancel-overwrite" style={NO_BTN} onClick={() => {
                                     setShowOverwriteModal(false);
                                     setExistingPlanId(null);
                                 }}>
                                     Cancel
                                 </button>
-                                <button style={YES_BTN} onClick={handleConfirmOverwrite}>
+                                <button id="overwrite" style={YES_BTN} onClick={handleConfirmOverwrite}>
                                     Yes, Overwrite
                                 </button>
                             </div>
@@ -578,6 +580,7 @@ export default function WorkoutBuilder() {
                             <h3 style={{ margin: 0, textAlign: "center" }}>Name Your Workout</h3>
 
                             <input
+                                id="workout-name"
                                 type="text"
                                 maxLength="20"
                                 value={workoutName}
@@ -587,11 +590,11 @@ export default function WorkoutBuilder() {
                             />
 
                             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
-                                <button onClick={() => {
+                                <button id="cancel-save-workout" onClick={() => {
                                     setShowModal(false);
                                     setExistingPlanId(null);
                                 }} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#a3a1a1", fontWeight: "bold" }}>Cancel</button>
-                                <button onClick={handleSaveWorkout} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#711A19", color: "#fff", fontWeight: "bold" }}>Save Workout</button>
+                                <button id="save-workout" onClick={handleSaveWorkout} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#711A19", color: "#fff", fontWeight: "bold" }}>Save Workout</button>
                             </div>
 
                         </div>
