@@ -193,4 +193,4 @@ if __name__ == "__main__":
 
     subprocess.run(["npx", "nyc", "report", 
     "-n", "src/pages/Shared/Home.jsx", 
-    "-n", "src/components/ProgressTracker"], check=True, shell=True)
+    "-n", "src/components/ProgressTracker.jsx"], check=True, shell=True)
