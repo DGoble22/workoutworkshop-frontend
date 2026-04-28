@@ -26,7 +26,6 @@ if __name__ == "__main__":
 
     dotw = args.d
     identifier = "select-"+dotw
-    print(identifier)
 
     time.sleep(2)
     login(driver, "UItest", "Correctpass123")

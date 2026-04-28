@@ -253,7 +253,7 @@ export default function Home() {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
             stars.push(
-                <span key={i} className={`star ${dailyRating >= i ? "selected" : ""}`} onClick={() => handleStarClick(i)}>
+                <span id={`star-${i}`} key={i} className={`star ${dailyRating >= i ? "selected" : ""}`} onClick={() => handleStarClick(i)}>
                     ★
                 </span>
             );
@@ -420,6 +420,7 @@ export default function Home() {
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
                             <button
                                 className="home-DOTW-card"
+                                id={`DOTW-${day}`}
                                 key={day}
                                 onClick={() => handleDayClick(day)}
                                 onMouseOver={(e) => e.target.style.transform = "scale(1.05)"} 
@@ -439,7 +440,7 @@ export default function Home() {
                             <h3>Workout Plan</h3>
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
-                                <button onClick={()=>navigate("/workouts")}>Create a Plan</button>
+                                <button id="home-create-plan" onClick={()=>navigate("/workouts")}>Create a Plan</button>
                                 {hasCoach ? (<button id="home-coach" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
                             </div>
                         </div>
@@ -457,7 +458,7 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <div className="dashboard-card-progress-metric">
+                        <div id="metrics" className="dashboard-card-progress-metric">
                             <h3>Progress Metrics</h3>
                             <p>Review trends in performance, weight, and goal progress over time.</p>
                             <div style={{ display: "flex", width: "100%", minWidth: 280, height: 220, alignItems: "center", justifyContent: "center" }}>
@@ -482,6 +483,7 @@ export default function Home() {
                         <div className="home-top-bar">
                             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
                                 <button
+                                    id={`DOTW-${day}`}
                                     className="home-DOTW-card"
                                     key={day}
                                     onClick={() => handleDayClick(day)}
@@ -505,11 +507,11 @@ export default function Home() {
                                     
                                     <div className="exercise-categories">In Progress</div>
                                     {inProgress.map((exercise,index)=>(
-                                        <button key={index} onClick={()=>completeExercise(index, exercise)}className="exercise-inprogress">{exercise.name}  {exercise.sets} X {exercise.reps}</button>
+                                        <button id={`complete-${exercise.name}`} key={index} onClick={()=>completeExercise(index, exercise)}className="exercise-inprogress">{exercise.name}  {exercise.sets} X {exercise.reps}</button>
                                     ))}
                                     <div className="exercise-categories">Completed</div>
                                     {completedExercises.map((exercise,index) =>
-                                        <button key={index} onClick={()=>completeExercise(index, exercise)} className="exercise-completed">{exercise.name}  {exercise.sets} X {exercise.reps}</button>
+                                        <button id={`complete-${exercise.name}`} key={index} onClick={()=>completeExercise(index, exercise)} className="exercise-completed">{exercise.name}  {exercise.sets} X {exercise.reps}</button>
                                     )}
                                 </div>
                             </div>
@@ -534,7 +536,7 @@ export default function Home() {
                                     <span>Workouts Completed</span>
                                 </div>
 
-                                 <button className="home-menu-button" onClick={() => handleMenuClick("/calendar")}>
+                                 <button id="calendar" className="home-menu-button" onClick={() => handleMenuClick("/calendar")}>
                                     {/* Calendar Icon */}
                                     <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -551,7 +553,7 @@ export default function Home() {
                                     </div>
                                 </button>
 
-                                {hasCoach ? (<button className="home-menu-button" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button className="home-menu-button" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+                                {hasCoach ? (<button id="home-coach" className="home-menu-button" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" className="home-menu-button" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
                             </div>
                             
                         </div>
