@@ -67,7 +67,7 @@
 }
 
 .submit-button {
-  background: #ff0000;
+  background: #711A19;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -77,11 +77,11 @@
 }
 
 .submit-button:hover {
-  background: #ee0000;
+  background: #511A19;
 }
 
 .remove-button {
-  background: #ff0000;
+  background: #711A19;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -91,5 +91,5 @@
 }
 
 .remove-button:hover {
-  background: #ee0000;
+  background: #511A19;
 }
