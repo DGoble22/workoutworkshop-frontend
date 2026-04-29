@@ -151,9 +151,10 @@ function ExercisePickerModal({ exercises, onSelect, onClose }) {
             <div style={MODAL_STYLES} onClick={e => e.stopPropagation()}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
                     <h5 style={{ margin: 0, fontWeight: "700" }}>Add Exercise</h5>
-                    <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#999", fontSize: "1.2rem" }}>✕</button>
+                    <button id="add-exercisepicker" onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#999", fontSize: "1.2rem" }}>✕</button>
                 </div>
                 <input
+                    id="search-exercise"
                     type="text"
                     placeholder="Search exercises..."
                     value={search}
@@ -162,6 +163,7 @@ function ExercisePickerModal({ exercises, onSelect, onClose }) {
                 />
                 {filtered.map(ex => (
                     <div
+                        id={`select-${ex.name}`}
                         key={ex.exercise_id}
                         onClick={() => onSelect(ex)}
                         style={{ padding: "10px 12px", borderBottom: "1px solid #eee", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
@@ -216,11 +218,12 @@ function CreatePlanModal({ exercises, userId, apiBase, onCreated, onClose }) {
             <div style={{ ...MODAL_STYLES, maxHeight: "350px" }} onClick={e => e.stopPropagation()}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
                     <h5 style={{ margin: 0, fontWeight: "700" }}>Create New Workout Plan</h5>
-                    <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#999", fontSize: "1.2rem" }}>✕</button>
+                    <button id="creat-plan-close" onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#999", fontSize: "1.2rem" }}>✕</button>
                 </div>
                 <div style={{ marginBottom: "12px" }}>
                     <label style={{ display: "block", marginBottom: "6px", fontWeight: "600", fontSize: "0.9rem" }}>Plan Title</label>
                     <input
+                        id="createplan-title"
                         type="text"
                         placeholder="e.g. Chest Day"
                         value={title}
@@ -231,6 +234,7 @@ function CreatePlanModal({ exercises, userId, apiBase, onCreated, onClose }) {
                 <div style={{ marginBottom: "20px" }}>
                     <label style={{ display: "block", marginBottom: "6px", fontWeight: "600", fontSize: "0.9rem" }}>Date</label>
                     <input
+                        id="createplan-date"
                         type="date"
                         value={date}
                         onChange={e => setDate(e.target.value)}
@@ -238,6 +242,7 @@ function CreatePlanModal({ exercises, userId, apiBase, onCreated, onClose }) {
                     />
                 </div>
                 <button
+                    id="createplan-submit"
                     style={{ ...SAVE_BTN_STYLES, width: "100%", padding: "10px" }}
                     onClick={handleCreate}
                     disabled={creating}
@@ -255,11 +260,12 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
 
     return (
         <div style={PLAN_CARD_STYLES}>
-            <div style={PLAN_HEADER_STYLES} onClick={() => setOpen(o => !o)}>
+            <div id={`open-${plan.title}`} style={PLAN_HEADER_STYLES} onClick={() => setOpen(o => !o)}>
                 <span>{open ? "▾" : "▸"} {plan.title} — {plan.date}</span>
                 {open && (
                     <div style={{ display: "flex", gap: "8px" }}>
                         <button
+                            id={`delete-${plan.title}`}
                             style={DELETE_BTN_STYLES}
                             onClick={e => {
                                 e.stopPropagation();
@@ -272,6 +278,7 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
                             Delete Plan
                         </button>
                         <button
+                            id={`save-${plan.title}`}
                             style={SAVE_BTN_STYLES}
                             onClick={e => { e.stopPropagation(); onSave(plan.id) }}
                         >
@@ -300,6 +307,7 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
                                         <td style={TD_STYLES}>{ex.exercise_name}</td>
                                         <td style={TD_STYLES}>
                                             <input
+                                                id={`sets-${ex.exercise_name}`}
                                                 style={INPUT_STYLES}
                                                 type="number"
                                                 value={ex.sets || ""}
@@ -308,6 +316,7 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
                                         </td>
                                         <td style={TD_STYLES}>
                                             <input
+                                                id={`reps-${ex.exercise_name}`}
                                                 style={INPUT_STYLES}
                                                 type="number"
                                                 value={ex.reps || ""}
@@ -316,6 +325,7 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
                                         </td>
                                         <td style={TD_STYLES}>
                                             <input
+                                                id={`weight-${ex.exercise_name}`}
                                                 style={INPUT_STYLES}
                                                 type="number"
                                                 value={ex.weight || ""}
@@ -324,6 +334,7 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
                                         </td>
                                         <td style={TD_STYLES}>
                                             <button
+                                                id={`remove-${ex.exercise_name}`}
                                                 onClick={() => onRemove(plan.id, ex.exercise_id)}
                                                 style={{ background: "none", border: "none", cursor: "pointer", color: "#711A19", fontWeight: "700" }}
                                             >
@@ -339,7 +350,7 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
                             )}
                         </tbody>
                     </table>
-                    <button style={ADD_EXERCISE_BTN_STYLES} onClick={() => setShowPicker(true)}>
+                    <button id="add-exercise" style={ADD_EXERCISE_BTN_STYLES} onClick={() => setShowPicker(true)}>
                         + Add Exercise
                     </button>
                 </>
@@ -509,7 +520,7 @@ async function handleDeletePlan(plan_id) {
         <div style={PAGE_STYLES}>
             <div style={{ marginBottom: "20px" }}>
                 {onBack && (
-                    <button onClick={onBack} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
+                    <button id="back-to-dash" onClick={onBack} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
                         ← Back to Dashboard
                     </button>
                 )}
@@ -529,7 +540,7 @@ async function handleDeletePlan(plan_id) {
 
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                 <h5 style={{ fontWeight: "700", margin: 0 }}>Workout Plans</h5>
-                <button style={SAVE_BTN_STYLES} onClick={() => setShowCreatePlan(true)}>
+                <button id="create-plan" style={SAVE_BTN_STYLES} onClick={() => setShowCreatePlan(true)}>
                     + Create New Plan
                 </button>
             </div>

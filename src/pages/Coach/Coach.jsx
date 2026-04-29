@@ -110,6 +110,7 @@ function ClientsTable({ clients, onMealPlan, onChat, onDetail, isNutritionist })
                         <td style={{ ...TD_STYLES, paddingLeft: "30px" }}>
                             {isNutritionist ? (
                                 <span
+                                id={`mealplan-${client.first_name} ${client.last_name}`}
                                 style={{ fontSize: "1.3rem", cursor: "pointer" }}
                                 onClick={() => onMealPlan(client.user_id)}
                                 >
@@ -121,6 +122,7 @@ function ClientsTable({ clients, onMealPlan, onChat, onDetail, isNutritionist })
                             </td>
                         <td style={TD_STYLES}>
                             <span
+                                id={`clientchat-${client.first_name} ${client.last_name}`}
                                 style={{ fontSize: "1.3rem", cursor: "pointer" }}
                                 onClick={() => onChat()}
                             >
@@ -129,6 +131,7 @@ function ClientsTable({ clients, onMealPlan, onChat, onDetail, isNutritionist })
                         </td>
                         <td style={TD_STYLES}>
                             <span
+                                id={`details-${client.first_name} ${client.last_name}`}
                                 style={{ color: "#711A19", fontWeight: "700", cursor: "pointer" }}
                                 onClick={() => onDetail(client.user_id)}
                             >
@@ -315,6 +318,7 @@ export default function Coach() {
                             <h1 style={{ fontWeight: "800", textDecoration: "underline" }}>Coach</h1>
                             <p style={{ color: "#555" }}>Welcome back, {user.first_name}!</p>
                             <button
+                                id="edit-coach-profile"
                                 onClick={() => setView(VIEWS.EDIT_PROFILE)}
                                 style={{ position: "absolute", top: "0", right: "0", background: "none", border: "none", color: "#711A19", fontWeight: "600", cursor: "pointer" }}
                             >
