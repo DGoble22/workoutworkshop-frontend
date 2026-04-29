@@ -88,7 +88,7 @@ export default function FindCoach() {
     return (
         <div className="container mt-4" style={{display: "flex", flexDirection: "column", alignItems:"center", maxWidth: "60rem", width: "100%"}}>
             <div style={SearchBar_Styles}>
-                <input type="text" placeholder="Search..." style={{border: "none", background: "none", width: "90%", outline:"none"}} onChange={(e)=>{handleSearch(e)}}/>
+                <input id="search-coach" type="text" placeholder="Search..." style={{border: "none", background: "none", width: "90%", outline:"none"}} onChange={(e)=>{handleSearch(e)}}/>
                 {/*<button style={FilterButton_Styles} onClick={()=>console.log("test CLick")}> <Image src={filter}/> </button>*/}
                 <Dropdown>
                 <Dropdown.Toggle style={FilterButton_Styles} variant="success" id="dropdown-basic">
@@ -96,9 +96,9 @@ export default function FindCoach() {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                    <Dropdown.Item onClick={()=>{filterStrength()}}>Strength</Dropdown.Item>
-                    <Dropdown.Item onClick={()=>{filterNutritionist()}}>Nutrition</Dropdown.Item>
-                    <Dropdown.Item onClick={()=>{clearFilter()}}>Clear Filter</Dropdown.Item>
+                    <Dropdown.Item id="coach-strength" onClick={()=>{filterStrength()}}>Strength</Dropdown.Item>
+                    <Dropdown.Item id="coach-nutrition" onClick={()=>{filterNutritionist()}}>Nutrition</Dropdown.Item>
+                    <Dropdown.Item id="coach-clear" onClick={()=>{clearFilter()}}>Clear Filter</Dropdown.Item>
                 </Dropdown.Menu>
                 </Dropdown>
             </div>

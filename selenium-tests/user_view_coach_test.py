@@ -24,6 +24,26 @@ if __name__ == "__main__":
     driver.find_element(By.ID, "home-coach").click()
     time.sleep(1)
 
+    driver.find_element(By.ID, "dropdown-basic").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "coach-strength").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "dropdown-basic").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "coach-nutrition").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "dropdown-basic").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "coach-clear").click()
+    time.sleep(1)
+    
+    search=driver.find_element(By.ID, "search-coach")
+    search.send_keys("sam")
+    time.sleep(1.5)
+    search.send_keys(Keys.CONTROL + "a")
+    search.send_keys(Keys.BACKSPACE)
+    time.sleep(1)
+
     #find coach
     driver.find_element(By.ID, "coach-Sam Sulek").click()
     time.sleep(1)
@@ -120,5 +140,8 @@ if __name__ == "__main__":
      "-n", "src/components/CoachInfoModal.jsx",
      "-n", "src/components/ReviewsModal.jsx",
      "-n", "src/components/ReviewCard.jsx",
-     "-n", "src/components/ApplicationSurvey.jsx"
+     "-n", "src/components/ApplicationSurvey.jsx",
+     "-n", "src/components/CoachCard.jsx",
+     "-n", "src/components/DOTWavailibility.jsx",
+     "-n", "src/pages/Shared/FindCoach.jsx"
      ], check=True, shell=True)

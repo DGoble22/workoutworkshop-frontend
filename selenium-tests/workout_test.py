@@ -199,6 +199,7 @@ if __name__ == "__main__":
     "-n", "src/pages/Shared/WorkoutDashboard.jsx",
     "-n", "src/pages/Shared/WorkoutLibrary.jsx",
     "-n", "src/pages/Shared/WorkoutLog.jsx",
+    "-n", "src/pages/Shared/WorkoutEdit.jsx",
     "-n", "src/components/ExerciseCard.jsx"], check=True, shell=True)
 
 
