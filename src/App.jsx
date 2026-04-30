@@ -1,3 +1,4 @@
+import UserMealPlan from "./pages/Shared/UserMealPlan.jsx";
 import {BrowserRouter, Routes, Route, useLocation} from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import ChatModal from "./components/ChatModal.jsx";
@@ -57,6 +58,7 @@ function AppLayout() {
                     <Route path="/Admin" element={<Admin/>} />
                     <Route path="/FindCoach" element={<FindCoach/>}/>
                     <Route path="/calendar" element={<WorkoutCalendar />} />
+                    <Route path="/meal-plan" element={<UserMealPlan />} />
                 </Routes>
             </main>
         </div>

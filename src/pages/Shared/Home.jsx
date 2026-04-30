@@ -9,8 +9,7 @@ import { format } from 'date-fns';
 import axios from 'axios';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar'; // npm install --save react-circular-progressbar
 import 'react-circular-progressbar/dist/styles.css';
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'; // npm i recharts
-
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 //star images for ratings
 import onestars from "../../images/1_star_NOBG.png"
 import twostars from "../../images/2_star_NOBG.png"
@@ -30,7 +29,13 @@ export default function Home() {
     const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
     const [showCoach, setShowCoach] = useState(false);
     const today = format(new Date(), "MM-dd-yyyy");
+
+    //graphs which allows user to select which graph they would like to see
+    const [graphType, setGraphType] = useState("Weight");
     const [weightLogs, setWeightLogs] = useState([]);
+    const [surveyLogs, setSurveyLogs] = useState([]);
+    const [workoutStats, setWorkoutStats] = useState([]);
+    const [calorieLogs, setCalorieLogs] = useState([]);
 
     //data to handle which home page user sees
     const [hasWorkout, setHasWorkout] = useState(false); //track if user has workout
@@ -123,12 +128,40 @@ export default function Home() {
                 )
                 .catch(err => console.log(err))
             };
+
+            // Fetch Weekly Workouts
+            const getWorkoutStats = async () => {
+                const apiBase = import.meta.env.VITE_API_URL;
+                await axios.get(`${apiBase}/api/workouts/weekly-stats/${user.id}`)
+                    .then(res => setWorkoutStats(res.data.data))
+                    .catch(err => console.log(err));
+            };
+
+            // Fetch Survey Logs
+            const getSurveyLogs = async () => {
+                const apiBase = import.meta.env.VITE_API_URL;
+                await axios.get(`${apiBase}/user/survey-log/${user.id}`)
+                    .then(res => setSurveyLogs(res.data.data))
+                    .catch(err => console.log(err));
+            };
+
+            // Fetch Calorie Logs
+            const getCalorieLogs = async () => {
+                const apiBase = import.meta.env.VITE_API_URL;
+                await axios.get(`${apiBase}/user/calorie-log/${user.id}`)
+                    .then(res => setCalorieLogs(res.data.data))
+                    .catch(err => console.log(err));
+            };
+
+            getWorkoutStats();
+            getSurveyLogs();
+            getCalorieLogs();
             
 
-        fetchDailyRating();
-        getWorkout();
-        hasCoach();
-        getWeightLogs();
+            fetchDailyRating();
+            getWorkout();
+            hasCoach();
+            getWeightLogs();
 
         } //end of isAuthenticated
     }, [isAuthenticated, selectedDate]);
@@ -440,10 +473,33 @@ export default function Home() {
                             <h3>Workout Plan</h3>
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
+<<<<<<< HEAD
                                 <button id="home-create-plan" onClick={()=>navigate("/workouts")}>Create a Plan</button>
                                 {hasCoach ? (<button id="home-coach" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+=======
+                                <button onClick={() => {
+                                    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                                    const today = days[new Date().getDay()];
+                                    handleDayClick(today);
+                                }}>
+                                    Create a Plan
+                                </button>
+                                {hasCoach ? (<button onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+>>>>>>> 1a5715f0eae9488f5f08d4c5c866cc7a3594d860
                             </div>
                         </div>
+
+                        {hasCoach && (
+                            <div className="dashboard-card" style={{ textAlign: "center" }}>
+                                <h3>Meal Plan</h3>
+                                <p>View the meal plan your coach created for you.</p>
+                                <div className="dashboard-card-actions">
+                                    <button onClick={() => navigate('/meal-plan')}>
+                                        View Meal Plan
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* PROGRESS TRACKER FEATURE */}
                         <div className="dashboard-card">
@@ -558,6 +614,19 @@ export default function Home() {
                             
                         </div>
 
+                            {hasCoach && (
+                                <div className="dashboard-card" style={{ textAlign: "center" }}>
+                                    <h3>Meal Plan</h3>
+                                    <p>View the meal plan your coach created for you.</p>
+                                    <div className="dashboard-card-actions">
+                                        <button onClick={() => navigate('/meal-plan')}>
+                                            View Meal Plan
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+
                             {/* PROGRESS TRACKER FEATURE (ADDED) */}
                             <div className="dashboard-card">
                                 <ProgressTracker userId={user.id} token={token} />
@@ -572,16 +641,69 @@ export default function Home() {
                         </div>
 
                         <div className="dashboard-card-progress-metric">
-                            <h3>Progress Metrics</h3>
-                            <p>Review trends in performance, weight, and goal progress over time.</p>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "15px" }}>
+                                <div style={{ textAlign: "center"}}>
+                                    <h3 style={{ margin: 0 }}>Progress Metrics</h3>
+                                    <p style={{ margin: 0, fontSize: "0.9rem", color: "#666"}}>Review trends over time.</p>
+                                </div>
+
+                                {/* Graph Tabs */}
+                                <select
+                                    value={graphType}
+                                    onChange={(e) => setGraphType(e.target.value)}
+                                    style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", cursor: "pointer", fontWeight: "bold" }}
+                                >
+                                    <option value="Weight">Weight</option>
+                                    <option value="Workouts">Weekly Workouts</option>
+                                    <option value="Calories">Calories</option>
+                                    <option value="Surveys">Surveys</option>
+                                </select>
+                            </div>
+
                             <div style={{ display: "flex", width: "100%", minWidth: 280, height: 220, alignItems: "center", justifyContent: "center" }}>
                                 <ResponsiveContainer width="100%" height={220} minWidth={280}>
-                                    <LineChart responsive data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                        <XAxis dataKey="date"/>
-                                        <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>
-                                        <Tooltip />
-                                        <Line type="monotone" dataKey="weight" stroke="#84d88b" />
-                                    </LineChart>
+
+                                    {/* Weight Graph */}
+                                    {graphType === "Weight" && (
+                                        <LineChart data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <XAxis dataKey="date"/>
+                                            <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="weight" stroke="#84d88b" strokeWidth={3} />
+                                        </LineChart>
+                                    )}
+
+                                    {/* Weekly Workouts Graph (Bar Graph) */}
+                                    {graphType === "Workouts" && (
+                                        <BarChart data={workoutStats} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <XAxis dataKey="week"/>
+                                            <YAxis width={40} allowDecimals={false} />
+                                            <Tooltip cursor={{fill: '#f0f0f0'}} />
+                                            <Bar dataKey="workouts" fill="#711A19" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    )}
+
+                                    {/* Daily Calories Graph */}
+                                    {graphType === "Calories" && (
+                                        <LineChart data={calorieLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <XAxis dataKey="date"/>
+                                            <YAxis width={50} domain={['dataMin-200', 'dataMax+200']}/>
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="calories" stroke="#F4A261" strokeWidth={3} />
+                                        </LineChart>
+                                    )}
+
+                                    {/* Daily Survey Graph */}
+                                    {graphType === "Surveys" && (
+                                        <LineChart data={surveyLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <XAxis dataKey="date"/>
+                                            {/* Hardcoded 1-5 scale for Y-Axis */}
+                                            <YAxis width={30} domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} />
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="rating" stroke="#2A9D8F" strokeWidth={3} />
+                                        </LineChart>
+                                    )}
+
                                 </ResponsiveContainer>
                             </div>
                         </div>
