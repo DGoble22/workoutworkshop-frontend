@@ -81,8 +81,8 @@ function RequestCard({ request, onAccept, onReject }) {
             </div>
             <p style={{ marginBottom: "12px" }}>Goal: {request.goal_type}</p>
             <div style={{ display: "flex", gap: "10px" }}>
-                <button id={`request-accept-${request.first_name} ${request.last_name}`} style={ACCEPT_BUTTON_STYLES} onClick={() => onAccept(request.request_id)}>ACCEPT</button>
-                <button id={`request-reject-${request.first_name} ${request.last_name}`} style={REJECT_BUTTON_STYLES} onClick={() => onReject(request.request_id)}>REJECT</button>
+                <button id={`request-accept-${request.first_name} ${request.last_name}`} style={ACCEPT_BUTTON_STYLES} onClick={() => onAccept(request.request_id, request.user_id)}>ACCEPT</button>
+                <button id={`request-reject-${request.first_name} ${request.last_name}`} style={REJECT_BUTTON_STYLES} onClick={() => onReject(request.request_id, request.user_id)}>REJECT</button>
             </div>
         </div>
     )
@@ -146,7 +146,7 @@ function ClientsTable({ clients, onMealPlan, onChat, onDetail, isNutritionist })
 }
 
 export default function Coach() {
-    const { user } = useContext(AuthContext)
+    const { socket,user } = useContext(AuthContext)
     const [view, setView] = useState(VIEWS.DASHBOARD)
     const [requests, setRequests] = useState([])
     const [clients, setClients] = useState([])
@@ -220,8 +220,19 @@ export default function Coach() {
         loadCoachData()
     }, [])
 
-    async function handleAccept(request_id) {
+    const sendMessage = (receiver, message) => {
+        if (!socket || !socket.connected) return;
+        const messageData = {
+            sender_id: user.id,
+            receiver_id: receiver,
+            text: message
+        };
+        socket.emit("send_message", messageData);
+    };
+
+    async function handleAccept(request_id, receiver) {
         try {
+            await sendMessage(receiver, "You have been ACCEPTED as a Client!")
             const res = await fetch(`${apiBase}/coach/requests/${request_id}/decision`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -236,8 +247,9 @@ export default function Coach() {
         }
     }
 
-    async function handleReject(request_id) {
+    async function handleReject(request_id, receiver) {
         try {
+            await sendMessage(receiver, "You have been REJECTED as a Client!")
             const res = await fetch(`${apiBase}/coach/requests/${request_id}/decision`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
