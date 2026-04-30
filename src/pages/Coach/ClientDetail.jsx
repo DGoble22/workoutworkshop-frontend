@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react"
 import Image from "react-bootstrap/Image"
 import DefaultProfilePic from "../../images/defaultProfile.jpg"
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 const PAGE_STYLES = {
     display: "flex",
@@ -292,62 +293,61 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
                 <>
                     <table style={TABLE_STYLES}>
                         <thead>
-                            <tr>
-                                <th style={TH_STYLES}>Exercise</th>
-                                <th style={TH_STYLES}>Sets</th>
-                                <th style={TH_STYLES}>Reps</th>
-                                <th style={TH_STYLES}>Weight</th>
-                                <th style={TH_STYLES}></th>
-                            </tr>
+                        <tr>
+                            <th style={TH_STYLES}>Exercise</th>
+                            <th style={TH_STYLES}>Sets</th>
+                            <th style={TH_STYLES}>Reps</th>
+                            <th style={TH_STYLES}>Weight</th>
+                            <th style={TH_STYLES}></th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {planDetails && planDetails.length > 0 ? (
-                                planDetails.map(ex => (
-                                    <tr key={ex.exercise_id}>
-                                        <td style={TD_STYLES}>{ex.exercise_name}</td>
-                                        <td style={TD_STYLES}>
-                                            <input
-                                                id={`sets-${ex.exercise_name}`}
-                                                style={INPUT_STYLES}
-                                                type="number"
-                                                value={ex.sets || ""}
-                                                onChange={e => onUpdate(plan.id, ex.exercise_id, "sets", e.target.value)}
-                                            />
-                                        </td>
-                                        <td style={TD_STYLES}>
-                                            <input
-                                                id={`reps-${ex.exercise_name}`}
-                                                style={INPUT_STYLES}
-                                                type="number"
-                                                value={ex.reps || ""}
-                                                onChange={e => onUpdate(plan.id, ex.exercise_id, "reps", e.target.value)}
-                                            />
-                                        </td>
-                                        <td style={TD_STYLES}>
-                                            <input
-                                                id={`weight-${ex.exercise_name}`}
-                                                style={INPUT_STYLES}
-                                                type="number"
-                                                value={ex.weight || ""}
-                                                onChange={e => onUpdate(plan.id, ex.exercise_id, "weight", e.target.value)}
-                                            />
-                                        </td>
-                                        <td style={TD_STYLES}>
-                                            <button
-                                                id={`remove-${ex.exercise_name}`}
-                                                onClick={() => onRemove(plan.id, ex.exercise_id)}
-                                                style={{ background: "none", border: "none", cursor: "pointer", color: "#711A19", fontWeight: "700" }}
-                                            >
-                                                ✕
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={5} style={{ ...TD_STYLES, color: "#888", textAlign: "center" }}>No exercises yet.</td>
+                        {planDetails && planDetails.length > 0 ? (
+                            planDetails.map(ex => (
+                                <tr key={ex.exercise_id}>
+                                    <td style={TD_STYLES}>{ex.exercise_name}</td>
+                                    <td style={TD_STYLES}>
+                                        <input
+                                            id={`sets-${ex.exercise_name}`}
+                                            style={INPUT_STYLES}
+                                            type="number"
+                                            value={ex.sets || ""}
+                                            onChange={e => onUpdate(plan.id, ex.exercise_id, "sets", e.target.value)}
+                                        />
+                                    </td>
+                                    <td style={TD_STYLES}>
+                                        <input
+                                            id={`reps-${ex.exercise_name}`}
+                                            style={INPUT_STYLES}
+                                            type="number"
+                                            value={ex.reps || ""}
+                                            onChange={e => onUpdate(plan.id, ex.exercise_id, "reps", e.target.value)}
+                                        />
+                                    </td>
+                                    <td style={TD_STYLES}>
+                                        <input
+                                            id={`weight-${ex.exercise_name}`}
+                                            style={INPUT_STYLES}
+                                            type="number"
+                                            value={ex.weight || ""}
+                                            onChange={e => onUpdate(plan.id, ex.exercise_id, "weight", e.target.value)}
+                                        />
+                                    </td>
+                                    <td style={TD_STYLES}>
+                                        <button
+                                            onClick={() => onRemove(plan.id, ex.exercise_id)}
+                                            style={{ background: "none", border: "none", cursor: "pointer", color: "#711A19", fontWeight: "700" }}
+                                        >
+                                            ✕
+                                        </button>
+                                    </td>
                                 </tr>
-                            )}
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} style={{ ...TD_STYLES, color: "#888", textAlign: "center" }}>No exercises yet.</td>
+                            </tr>
+                        )}
                         </tbody>
                     </table>
                     <button id="add-exercise" style={ADD_EXERCISE_BTN_STYLES} onClick={() => setShowPicker(true)}>
@@ -374,6 +374,13 @@ export default function ClientDetail({ client, onBack }) {
     const [loading, setLoading] = useState(true)
     const [showCreatePlan, setShowCreatePlan] = useState(false)
 
+    // New state variables for progress metrics
+    const [graphType, setGraphType] = useState("Weight")
+    const [weightLogs, setWeightLogs] = useState([])
+    const [workoutStats, setWorkoutStats] = useState([])
+    const [calorieLogs, setCalorieLogs] = useState([])
+    const [surveyLogs, setSurveyLogs] = useState([])
+
     const apiBase = import.meta.env.VITE_API_URL || ""
 
     const refreshData = useCallback(async () => {
@@ -398,6 +405,7 @@ export default function ClientDetail({ client, onBack }) {
     useEffect(() => {
         async function fetchData() {
             try {
+                // Fetch Workout Data
                 const [logRes, exRes] = await Promise.all([
                     fetch(`${apiBase}/api/workouts/log/${client.user_id}`),
                     fetch(`${apiBase}/api/workouts/exercises`)
@@ -416,6 +424,38 @@ export default function ClientDetail({ client, onBack }) {
                     }
                 }
                 if (exData.status === "success") setExercises(exData.data)
+
+                // Get graph metrics for weight
+                fetch(`${apiBase}/user/weight-log/${client.user_id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.data) {
+                            const formatted = data.data.map(log => ({
+                                date: new Date(log.log_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+                                weight: log.weight
+                            }));
+                            setWeightLogs(formatted);
+                        }
+                    }).catch(e => console.error(e));
+
+                // Get graph metrics for weekly workouts
+                fetch(`${apiBase}/api/workouts/weekly-stats/${client.user_id}`)
+                    .then(res => res.json())
+                    .then(data => data.status === 'success' && setWorkoutStats(data.data))
+                    .catch(e => console.error(e));
+
+                // Get graph metrics for daily calorie intake
+                fetch(`${apiBase}/user/calorie-log/${client.user_id}`)
+                    .then(res => res.json())
+                    .then(data => data.status === 'success' && setCalorieLogs(data.data))
+                    .catch(e => console.error(e));
+
+                // Get graph metrics for daily surveys
+                fetch(`${apiBase}/user/survey-log/${client.user_id}`)
+                    .then(res => res.json())
+                    .then(data => data.status === 'success' && setSurveyLogs(data.data))
+                    .catch(e => console.error(e));
+
             } catch (e) {
                 console.error("Failed to load data:", e)
             } finally {
@@ -423,7 +463,7 @@ export default function ClientDetail({ client, onBack }) {
             }
         }
         fetchData()
-    }, [])
+    }, [client.user_id, apiBase])
 
     function handleUpdate(plan_id, exercise_id, field, value) {
         setPlanDetails(prev => ({
@@ -495,24 +535,24 @@ export default function ClientDetail({ client, onBack }) {
         }
     }
 
-async function handleDeletePlan(plan_id) {
-    try {
-        const res = await fetch(`${apiBase}/coach/delete-plan/${plan_id}`, {
-            method: "DELETE"
-        })
-        const data = await res.json()
-        if (data.status === "success") {
-            setWorkoutLog(prev => prev.filter(p => p.id !== plan_id))
-            setPlanDetails(prev => {
-                const next = { ...prev }
-                delete next[plan_id]
-                return next
+    async function handleDeletePlan(plan_id) {
+        try {
+            const res = await fetch(`${apiBase}/coach/delete-plan/${plan_id}`, {
+                method: "DELETE"
             })
+            const data = await res.json()
+            if (data.status === "success") {
+                setWorkoutLog(prev => prev.filter(p => p.id !== plan_id))
+                setPlanDetails(prev => {
+                    const next = { ...prev }
+                    delete next[plan_id]
+                    return next
+                })
+            }
+        } catch (e) {
+            console.error("Failed to delete plan:", e)
         }
-    } catch (e) {
-        console.error("Failed to delete plan:", e)
     }
-}
 
     if (loading) return <div style={{ textAlign: "center", padding: "40px" }}>Loading...</div>
 
@@ -563,31 +603,99 @@ async function handleDeletePlan(plan_id) {
                 ))
             )}
 
+            {/* Progress metrics section */}
+            <div style={{ ...CLIENT_CARD_STYLES, flexDirection: "column", alignItems: "stretch", marginTop: "30px", padding: "24px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                    <div>
+                        <h5 style={{ margin: 0, fontWeight: "700" }}>Client Progress Metrics</h5>
+                        <p style={{ margin: 0, fontSize: "0.85rem", color: "#666" }}>Review trends over time.</p>
+                    </div>
+
+                    {/* Graph Tabs */}
+                    <select
+                        value={graphType}
+                        onChange={(e) => setGraphType(e.target.value)}
+                        style={{ padding: "8px 12px", borderRadius: "6px", border: "1px solid #ccc", outline: "none", cursor: "pointer", fontWeight: "600", fontSize: "0.9rem" }}
+                    >
+                        <option value="Weight">Weight</option>
+                        <option value="Weekly Workouts">Workouts</option>
+                        <option value="Calories">Calories</option>
+                        <option value="Surveys">Surveys</option>
+                    </select>
+                </div>
+
+                <div style={{ width: "100%", height: "250px" }}>
+                    <ResponsiveContainer width="100%" height="100%">
+
+                        {/* Weight Graph */}
+                        {graphType === "Weight" && (
+                            <LineChart data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <XAxis dataKey="date" tick={{fontSize: 12}} />
+                                <YAxis width={40} domain={['dataMin-5', 'dataMax+5']} tick={{fontSize: 12}} />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="weight" stroke="#84d88b" strokeWidth={3} />
+                            </LineChart>
+                        )}
+
+                        {/* Workout Graph (bar graph) */}
+                        {graphType === "Workouts" && (
+                            <BarChart data={workoutStats} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <XAxis dataKey="week" tick={{fontSize: 12}} />
+                                <YAxis width={40} allowDecimals={false} tick={{fontSize: 12}} />
+                                <Tooltip cursor={{fill: '#f5f5f5'}} />
+                                <Bar dataKey="workouts" fill="#711A19" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                        )}
+
+                        {/* Calorie Graph */}
+                        {graphType === "Calories" && (
+                            <LineChart data={calorieLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <XAxis dataKey="date" tick={{fontSize: 12}} />
+                                <YAxis width={50} domain={['dataMin-200', 'dataMax+200']} tick={{fontSize: 12}} />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="calories" stroke="#F4A261" strokeWidth={3} />
+                            </LineChart>
+                        )}
+
+                        {/* Daily Survey Graph */}
+                        {graphType === "Surveys" && (
+                            <LineChart data={surveyLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <XAxis dataKey="date" tick={{fontSize: 12}} />
+                                <YAxis width={30} domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} tick={{fontSize: 12}} />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="rating" stroke="#2A9D8F" strokeWidth={3} />
+                            </LineChart>
+                        )}
+
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
             {showCreatePlan && (
-            <CreatePlanModal
-                exercises={exercises}
-                userId={client.user_id}
-                apiBase={apiBase}
-                onCreated={async (title) => {
-                    setShowCreatePlan(false)
-                    setTimeout(async () => {
-                        await refreshData()
-                        const logRes = await fetch(`${apiBase}/api/workouts/log/${client.user_id}`)
-                        const logData = await logRes.json()
-                        if (logData.status === "success" && logData.data.length > 0) {
-                            const newestPlan = logData.data[0]
-                            await fetch(`${apiBase}/coach/update-plan-title/${newestPlan.id}`, {
-                                method: "PUT",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ title })
-                            })
-                            refreshData()
-                        }
-                    }, 500)
-                }}
-                onClose={() => setShowCreatePlan(false)}
-            />
-        )}
+                <CreatePlanModal
+                    exercises={exercises}
+                    userId={client.user_id}
+                    apiBase={apiBase}
+                    onCreated={async (title) => {
+                        setShowCreatePlan(false)
+                        setTimeout(async () => {
+                            await refreshData()
+                            const logRes = await fetch(`${apiBase}/api/workouts/log/${client.user_id}`)
+                            const logData = await logRes.json()
+                            if (logData.status === "success" && logData.data.length > 0) {
+                                const newestPlan = logData.data[0]
+                                await fetch(`${apiBase}/coach/update-plan-title/${newestPlan.id}`, {
+                                    method: "PUT",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ title })
+                                })
+                                refreshData()
+                            }
+                        }, 500)
+                    }}
+                    onClose={() => setShowCreatePlan(false)}
+                />
+            )}
         </div>
     )
 }
