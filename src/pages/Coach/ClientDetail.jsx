@@ -335,6 +335,7 @@ function WorkoutPlan({ plan, exercises, planDetails, onUpdate, onSave, onAddExer
                                     </td>
                                     <td style={TD_STYLES}>
                                         <button
+                                            id={`remove-${ex.exercise_name}`}
                                             onClick={() => onRemove(plan.id, ex.exercise_id)}
                                             style={{ background: "none", border: "none", cursor: "pointer", color: "#711A19", fontWeight: "700" }}
                                         >

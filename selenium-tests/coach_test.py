@@ -329,11 +329,34 @@ if __name__ == "__main__":
 
     driver.find_element(By.ID, "clientchat-UITest last name").click()
     time.sleep(2)
+    driver.find_element(By.ID, "close-chat").click()
+    time.sleep(2)
 
     time.sleep(1.5)
     report = driver.execute_script("return window.__coverage__;")
     time.sleep(1.5)
+
+    driver.find_element(By.ID, "nav-user-logo").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "nav-signout").click()
+    time.sleep(1)
+    time.sleep(1)
+    login(driver, "UItest", "Correctpass123")
+    time.sleep(1)
+
+    driver.find_element(By.ID, "home-coach").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "coach-fire").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "fire-confirm").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "fire-cancel").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "coach-close").click()
+    time.sleep(1)
+
     driver.quit()
+
 
     path = os.path.join(".nyc_output", "out.json") # create file in nyc_output folder
     flog = os.path.join(".nyc_output", "coach_report.json")
@@ -347,6 +370,6 @@ if __name__ == "__main__":
 
     subprocess.run(["npx", "nyc", "report", 
     "-n", "src/pages/Coach/Coach.jsx",
-    "-n", "src/pages/Coach/CoachDetail.jsx",
+    "-n", "src/pages/Coach/ClientDetail.jsx",
     "-n", "src/pages/Coach/CreateMealPlan.jsx",
     "-n", "src/pages/Coach/EditCoachProfile.jsx"], check=True, shell=True)
