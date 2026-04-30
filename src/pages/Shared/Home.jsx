@@ -503,17 +503,76 @@ export default function Home() {
                             </div>
                         </div>
 
+<<<<<<< HEAD
                         <div id="metrics" className="dashboard-card-progress-metric">
                             <h3>Progress Metrics</h3>
                             <p>Review trends in performance, weight, and goal progress over time.</p>
+=======
+                        <div className="dashboard-card-progress-metric">
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "15px" }}>
+                                <div style={{ textAlign: "center"}}>
+                                    <h3 style={{ margin: 0 }}>Progress Metrics</h3>
+                                    <p style={{ margin: 0, fontSize: "0.9rem", color: "#666"}}>Review trends over time.</p>
+                                </div>
+
+                                {/* Graph Tabs */}
+                                <select
+                                    value={graphType}
+                                    onChange={(e) => setGraphType(e.target.value)}
+                                    style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", cursor: "pointer", fontWeight: "bold" }}
+                                >
+                                    <option value="Weight">Weight</option>
+                                    <option value="Workouts">Weekly Workouts</option>
+                                    <option value="Calories">Calories</option>
+                                    <option value="Surveys">Surveys</option>
+                                </select>
+                            </div>
+
+>>>>>>> 8933fd0f03b50870de913bceda325defaa646dc8
                             <div style={{ display: "flex", width: "100%", minWidth: 280, height: 220, alignItems: "center", justifyContent: "center" }}>
                                 <ResponsiveContainer width="100%" height={220} minWidth={280}>
-                                    <LineChart responsive data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                        <XAxis dataKey="date"/>
-                                        <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>
-                                        <Tooltip />
-                                        <Line type="monotone" dataKey="weight" stroke="#84d88b" />
-                                    </LineChart>
+
+                                    {/* Weight Graph */}
+                                    {graphType === "Weight" && (
+                                        <LineChart data={weightLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <XAxis dataKey="date"/>
+                                            <YAxis width={40} domain={['dataMin-5', 'dataMax+5']}/>
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="weight" stroke="#84d88b" strokeWidth={3} />
+                                        </LineChart>
+                                    )}
+
+                                    {/* Weekly Workouts Graph (Bar Graph) */}
+                                    {graphType === "Workouts" && (
+                                        <BarChart data={workoutStats} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <XAxis dataKey="week"/>
+                                            <YAxis width={40} allowDecimals={false} />
+                                            <Tooltip cursor={{fill: '#f0f0f0'}} />
+                                            <Bar dataKey="workouts" fill="#711A19" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    )}
+
+                                    {/* Daily Calories Graph */}
+                                    {graphType === "Calories" && (
+                                        <LineChart data={calorieLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <XAxis dataKey="date"/>
+                                            <YAxis width={50} domain={['dataMin-200', 'dataMax+200']}/>
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="calories" stroke="#F4A261" strokeWidth={3} />
+                                        </LineChart>
+                                    )}
+
+                                    {/* Daily Survey Graph */}
+                                    {graphType === "Surveys" && (
+                                        <LineChart data={surveyLogs} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <XAxis dataKey="date"/>
+                                            {/* Hardcoded 1-5 scale for Y-Axis */}
+                                            <YAxis width={30} domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} />
+                                            <Tooltip />
+                                            <Line type="monotone" dataKey="rating" stroke="#2A9D8F" strokeWidth={3} />
+                                        </LineChart>
+                                    )}
+
                                 </ResponsiveContainer>
                             </div>
                         </div>
