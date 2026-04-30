@@ -601,6 +601,19 @@ export default function Home() {
                             
                         </div>
 
+                            {hasCoach && (
+                                <div className="dashboard-card" style={{ textAlign: "center" }}>
+                                    <h3>Meal Plan</h3>
+                                    <p>View the meal plan your coach created for you.</p>
+                                    <div className="dashboard-card-actions">
+                                        <button onClick={() => navigate('/meal-plan')}>
+                                            View Meal Plan
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+
                             {/* PROGRESS TRACKER FEATURE (ADDED) */}
                             <div className="dashboard-card">
                                 <ProgressTracker userId={user.id} token={token} />
