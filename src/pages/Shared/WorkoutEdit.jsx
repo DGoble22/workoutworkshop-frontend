@@ -238,7 +238,7 @@ export default function WorkoutEdit() {
                             {/* Card Header */}
                             <div style={CARD_HEADER}>
                                 <span>{ex.exercise_name}</span>
-                                <button style={MINUS_BTN} onClick={() => handleRemoveExercise(ex.exercise_id)}>
+                                <button id={`remove-${ex.exercise_name}`} style={MINUS_BTN} onClick={() => handleRemoveExercise(ex.exercise_id)}>
                                     -
                                 </button>
                             </div>
@@ -254,6 +254,7 @@ export default function WorkoutEdit() {
                                     <div style={INPUT_ROW}>
                                         <span style={INPUT_LABEL}>Reps:</span>
                                         <input
+                                            id={`reps-${ex.exercise_name}`}
                                             type="number"
                                             style={INPUT_FIELD}
                                             value={ex.reps || ""}
@@ -264,6 +265,7 @@ export default function WorkoutEdit() {
                                     <div style={INPUT_ROW}>
                                         <span style={INPUT_LABEL}>Sets:</span>
                                         <input
+                                            id={`sets-${ex.exercise_name}`}
                                             type="number"
                                             style={INPUT_FIELD}
                                             value={ex.sets || ""}
@@ -275,6 +277,7 @@ export default function WorkoutEdit() {
                                         <span style={INPUT_LABEL}>Weight:</span>
                                         <div style={{ position: "relative" }}>
                                             <input
+                                                id={`weight-${ex.exercise_name}`}
                                                 type="number"
                                                 style={{...INPUT_FIELD, width: "200px"}}
                                                 value={ex.weight || ""}
@@ -292,10 +295,10 @@ export default function WorkoutEdit() {
 
                 {/* Button Row at the bottom */}
                 <div style={BUTTON_ROW}>
-                    <button style={BACK_BTN} onClick={handleBack}>
+                    <button id="back" style={BACK_BTN} onClick={handleBack}>
                         Back
                     </button>
-                    <button style={SAVE_BTN} onClick={handleSave}>
+                    <button id="save" style={SAVE_BTN} onClick={handleSave}>
                         Save
                     </button>
                 </div>

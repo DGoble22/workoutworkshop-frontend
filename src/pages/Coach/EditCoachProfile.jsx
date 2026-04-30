@@ -192,7 +192,7 @@ export default function EditCoachProfile({ onBack, coachId }) {
                     Edit Coach Profile
                 </h1>
                 {onBack && (
-                    <button onClick={onBack} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
+                    <button id="back-to-dash" onClick={onBack} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
                         ← Back to Dashboard
                     </button>
                 )}
@@ -208,6 +208,7 @@ export default function EditCoachProfile({ onBack, coachId }) {
                 <div style={ROW_STYLES}>
                     <span style={DOLLAR_STYLES}>$</span>
                     <input
+                        id="coach-price"
                         style={PRICE_INPUT_STYLES}
                         type="number"
                         min="0"
@@ -224,6 +225,7 @@ export default function EditCoachProfile({ onBack, coachId }) {
             <Section title="Bio">
                 <span style={LABEL_STYLES}>Tell clients about yourself</span>
                 <textarea
+                    id="coach-bio"
                     style={{ ...INPUT_STYLES, height: "100px", resize: "vertical" }}
                     placeholder="Write a short bio..."
                     value={bio}
@@ -235,7 +237,7 @@ export default function EditCoachProfile({ onBack, coachId }) {
             {error && <p style={{ color: "#711A19", marginBottom: "10px" }}>{error}</p>}
             {saveMessage && <p style={{ color: "#2e7d32", marginBottom: "10px" }}>{saveMessage}</p>}
 
-            <button style={SAVE_BUTTON_STYLES} onClick={handleSave} disabled={saving}>
+            <button id="save" style={SAVE_BUTTON_STYLES} onClick={handleSave} disabled={saving}>
                 {saving ? "Saving..." : "Update Profile"}
             </button>
         </div>

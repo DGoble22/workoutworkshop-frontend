@@ -53,7 +53,7 @@ function CoachCard( { rating, price, name, URL, nutrition, bio, id}) {
 
   return (
         <>
-        <Card style={{cursor: "pointer", width: "100%", maxWidth: '55rem', borderRadius:"10px", minWidth:"55rem", maxHeight:"224px", marginTop:"10px"}} onClick={()=>setShow(true)}>
+        <Card id={`coach-${name}`} style={{cursor: "pointer", width: "100%", maxWidth: '55rem', borderRadius:"10px", minWidth:"55rem", maxHeight:"224px", marginTop:"10px"}} onClick={()=>setShow(true)}>
             <Card.Header style={{backgroundColor: "#cb0a0a", borderTopLeftRadius:"10px", borderTopRightRadius:"10px", color: "#ffffff"}}>{name}</Card.Header>
             <Card.Body style={{backgroundColor:"#514E4A", borderBottomLeftRadius:"10px", borderBottomRightRadius:"10px"}}>
             <div style={{display:"flex", alignItems: "center" }}>  {/*main text body*/}

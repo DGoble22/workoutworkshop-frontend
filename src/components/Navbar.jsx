@@ -95,30 +95,29 @@ const Navbar = () => {
                 break;
         }
     };
-
     return (
         <>
         <nav className="navbar navbar-expand navbar-dark navbar-gradient shadow-lg">
             <div className="container-fluid px-4" style={{ display: 'flex', alignItems: 'center' }}>
 
                 {/* Logo */}
-                <Link to="/" className="navbar-brand fw-bold fs-3">Workout Workshop</Link>
+                <Link id="nav-logo" to="/" className="navbar-brand fw-bold fs-3">Workout Workshop</Link>
 
                 {/* Navbar center links */}
                 <div className="collapse navbar-collapse">
                     {isAuthenticated && (
                     <ul className="navbar-nav mx-auto gap-2">
-                        <li className="nav-item">
+                        <li id="nav-home" className="nav-item">
                             <Link to="/" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/' ? 'active' : ''}`}>
                                 Home
                             </Link>
                         </li>
-                        <li className="nav-item">
+                        <li id="nav-workout" className="nav-item">
                             <Link to="/workouts" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname.startsWith('/workout') ? 'active' : ''}`}>
                                 Workout Builder
                             </Link>
                         </li>
-                        <li className="nav-item">
+                        <li id="nav-coach" className="nav-item">
                             {user.role === "C" &&(
                             <Link to="/coach" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/coach' ? 'active' : ''}`}>
                                 Coach
@@ -126,7 +125,7 @@ const Navbar = () => {
                             )}
                         </li>
                         {user.role === 'A' && (
-                        <li className="nav-item">
+                        <li id="nav-admin" className="nav-item">
                             <Link to="/admin" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === ('/admin') ? 'active' : ''}`}>
                                 Admin
                             </Link>
@@ -138,11 +137,11 @@ const Navbar = () => {
                     {/* Conditional rendering of auth buttons / profile icon */}
                     {!isAuthenticated ? (
                         <div className="navbar-auth-right">
-                            <button className="nav-button me-2" onClick={handleOpenLogin}>Login</button>
-                            <button className="nav-button" onClick={handleOpenRegister}>Register</button>
+                            <button id="nav-login" className="nav-button me-2" onClick={handleOpenLogin}>Login</button>
+                            <button id="nav-register" className="nav-button" onClick={handleOpenRegister}>Register</button>
                         </div>
                     ) : (
-                        <div className="profile-menu-container ms-auto" ref={menuRef}>
+                        <div id="nav-user-logo" className="profile-menu-container ms-auto" ref={menuRef}>
                             <img
                                 src={profileImage}
                                 alt="Profile"
@@ -156,14 +155,14 @@ const Navbar = () => {
                                         Hi, {name}!
                                     </div>
                                     <hr />
-                                    <button onClick={() => handleMenuClick('upload')}>Upload Profile Picture</button>
-                                    <button onClick={() => handleMenuClick('username')}>Edit Username</button>
-                                    <button onClick={() => handleMenuClick('password')}>Change Password</button>
-                                    <button onClick={() => handleMenuClick('goals')}>Edit Goals</button>
-                                    <button onClick={() => handleMenuClick('payment')}>Change Payment Details</button>
+                                    <button id="nav-pfp" onClick={() => handleMenuClick('upload')}>Upload Profile Picture</button>
+                                    <button id="nav-username" onClick={() => handleMenuClick('username')}>Edit Username</button>
+                                    <button id="nav-password" onClick={() => handleMenuClick('password')}>Change Password</button>
+                                    <button id="nav-goals" onClick={() => handleMenuClick('goals')}>Edit Goals</button>
+                                    <button id="nav-payment" onClick={() => handleMenuClick('payment')}>Change Payment Details</button>
                                     <hr />
-                                    <button onClick={() => handleMenuClick('logout')}>Sign Out</button>
-                                    <button onClick={() => handleMenuClick('delete')} className="delete-btn">Delete Account</button>
+                                    <button id="nav-signout" onClick={() => handleMenuClick('logout')}>Sign Out</button>
+                                    <button id="nav-delete" onClick={() => handleMenuClick('delete')} className="delete-btn">Delete Account</button>
                                 </div>
                             )}
                         </div>

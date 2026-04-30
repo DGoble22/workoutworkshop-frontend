@@ -428,7 +428,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
     return (
         <div className="auth-modal-overlay" onClick={onClose}>
             <div className="auth-modal-content" onClick={(e) => e.stopPropagation()}>
-                <button className="auth-close-btn" onClick={onClose}>×</button>
+                <button id="register-close-btn" className="auth-close-btn" onClick={onClose}>×</button>
 
                 <h2 className="auth-title">Register ({displayStep} of {totalSteps})</h2>
 
@@ -437,7 +437,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                   <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
                       <div className="auth-field">
                           <label htmlFor="username">Username</label>
-                          <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} required placeholder="Enter a username"/>
+                          <input type="text" id="register-username" name="username" value={formData.username} onChange={handleChange} required placeholder="Enter a username"/>
                         {formData.username !== "" && (
                         <div style={{ height: '20px', marginTop: '6px' }}>
                           {checkingUsername && <span style={{ color: '#666' }}>Checking availability...</span>}
@@ -448,7 +448,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                       </div>
                       <div className="auth-field">
                           <label htmlFor="password">Password</label>
-                          <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Enter your password"/>
+                          <input type="password" id="register-password" name="password" value={formData.password} onChange={handleChange} required placeholder="Enter your password"/>
                       </div>
 
                       {/* Real-time Password Checklist */}
@@ -469,16 +469,16 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
                     <div className="auth-field">
                         <label htmlFor="confirmPassword">Confirm Password</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required placeholder="Confirm your password"/>
+                        <input type="password" id="register-confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required placeholder="Confirm your password"/>
                     </div>
 
                     <div className="auth-field" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexDirection: 'row' }}>
-                        <input type="checkbox" id="isCoach" name="isCoach" checked={formData.isCoach} onChange={handleChange} />
+                        <input type="checkbox" id="register-isCoach" name="isCoach" checked={formData.isCoach} onChange={handleChange} />
                         <label htmlFor="isCoach">I am a coach</label>
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                      <button type="button" className="auth-submit-btn" onClick={goNext} disabled={checkingUsername}>Next</button>
+                      <button id="register-next-1" type="button" className="auth-submit-btn" onClick={goNext} disabled={checkingUsername}>Next</button>
                     </div>
                   </form>
                 )}
@@ -488,15 +488,15 @@ export default function Register({ onClose, onSwitchToLogin }) {
                   <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="first_name">First Name</label>
-                        <input type="text" id="first_name" name="first_name" value={formData.first_name} onChange={handleChange} required placeholder="First name"/>
+                        <input type="text" id="register-first_name" name="first_name" value={formData.first_name} onChange={handleChange} required placeholder="First name"/>
                     </div>
                     <div className="auth-field">
                         <label htmlFor="last_name">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" value={formData.last_name} onChange={handleChange} required placeholder="Last name"/>
+                        <input type="text" id="register-last_name" name="last_name" value={formData.last_name} onChange={handleChange} required placeholder="Last name"/>
                     </div>
                     <div className="auth-field">
                         <label htmlFor="birthday">Birthday</label>
-                        <input type="date" id="birthday" name="birthday" value={formData.birthday} onChange={handleChange} required />
+                        <input type="date" id="register-birthday" name="birthday" value={formData.birthday} onChange={handleChange} required />
                     </div>
 
                       {/*Coach Specific Questions*/}
@@ -504,14 +504,14 @@ export default function Register({ onClose, onSwitchToLogin }) {
                       <>
                         <div className="auth-field">
                             <label htmlFor="bio">Bio</label>
-                            <textarea id="bio" name="bio" value={formData.bio} onChange={handleChange} placeholder="Tell users about yourself" />
+                            <textarea id="register-bio" name="bio" value={formData.bio} onChange={handleChange} placeholder="Tell users about yourself" />
                         </div>
                       </>
                     )}
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
-                      <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
-                      <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+                      <button id="register-back-1" type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
+                      <button id="register-next-2" type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
                     </div>
                   </form>
                 )}
@@ -524,7 +524,7 @@ export default function Register({ onClose, onSwitchToLogin }) {
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                             {certificationOptions.map(opt => (
                                 <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <input type="checkbox" name="certifications" value={opt} checked={formData.certifications.includes(opt)} onChange={handleChange} /> {opt}
+                                    <input id={`register-${opt}`} type="checkbox" name="certifications" value={opt} checked={formData.certifications.includes(opt)} onChange={handleChange} /> {opt}
                                 </label>
                             ))}
                         </div>
@@ -556,8 +556,8 @@ export default function Register({ onClose, onSwitchToLogin }) {
                     ))}
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
-                      <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
-                      <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+                      <button id="register-back-2" type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
+                      <button id="register-next-3" type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
                     </div>
                   </form>
                 )}
@@ -575,12 +575,12 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
                     <div className="auth-field">
                         <label htmlFor="pricing">Pricing (${formData.pricing} / wk)</label>
-                        <input type="range" id="pricing" name="pricing" min="0" max="500" value={formData.pricing} onChange={handleChange} />
+                        <input type="range" id="register-pricing" name="pricing" min="0" max="500" value={formData.pricing} onChange={handleChange} />
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
-                        <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
-                        <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+                        <button id="register-back-3" type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
+                        <button id="register-next-4" type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
                     </div>
                   </form>
                 )}
@@ -590,19 +590,19 @@ export default function Register({ onClose, onSwitchToLogin }) {
                   <form onSubmit={(e) => { e.preventDefault(); goNext(); }} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="current_weight">Current Weight: {formData.current_weight} lbs</label>
-                        <input type="range" id="current_weight" name="current_weight" min="60" max="400" value={formData.current_weight} onChange={handleChange} />
+                        <input type="range" id="register-current_weight" name="current_weight" min="60" max="400" value={formData.current_weight} onChange={handleChange} />
                     </div>
 
                     <div className="auth-field">
                         <label htmlFor="goal_weight">Goal Weight: {formData.goal_weight} lbs</label>
-                        <input type="range" id="goal_weight" name="goal_weight" min="60" max="400" value={formData.goal_weight} onChange={handleChange} />
+                        <input type="range" id="register-goal_weight" name="goal_weight" min="60" max="400" value={formData.goal_weight} onChange={handleChange} />
                     </div>
 
                     <div className="auth-field">
                       <label>Goal Type (required)</label>
                       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                         {goalType.map((goal) => (
-                          <label key={goal} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                          <label id={goal} key={goal} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
                             <input type="radio" name="goal_type" value={goal} checked={formData.goal_type === goal} onChange={handleChange} style={{ marginRight: '6px' }}/>
                             {goal}
                           </label>
@@ -612,15 +612,15 @@ export default function Register({ onClose, onSwitchToLogin }) {
 
                     <div className="auth-field">
                         <label htmlFor="goal_text">Goal Notes (optional)</label>
-                        <input type="text" id="goal_text" name="goal_text" value={formData.goal_text} onChange={handleChange} placeholder="e.g., Lose 15 lbs by summer"/>
+                        <input type="text" id="register-goal_text" name="goal_text" value={formData.goal_text} onChange={handleChange} placeholder="e.g., Lose 15 lbs by summer"/>
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
-                      <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
+                      <button id="register-back-3"type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
                       <div>
-                        <button type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
+                        <button id="register-next-4" type="button" className="auth-submit-btn" onClick={goNext}>Next</button>
 
-                        <button type="button" style={{ marginLeft: '8px' }} className="auth-submit-btn" onClick={() => {
+                        <button id="register-skip" type="button" style={{ marginLeft: '8px' }} className="auth-submit-btn" onClick={() => {
                             if (!formData.goal_type) {
                               toast.error('Please select a goal type before finishing.');
                               return;
@@ -638,34 +638,34 @@ export default function Register({ onClose, onSwitchToLogin }) {
                   <form onSubmit={handleSubmit} className="auth-form">
                     <div className="auth-field">
                         <label htmlFor="cardName">Name on Card</label>
-                        <input type="text" id="cardName" name="cardName" value={formData.cardName} onChange={handleChange} placeholder="Full name" />
+                        <input type="text" id="register-cardName" name="cardName" value={formData.cardName} onChange={handleChange} placeholder="Full name" />
                     </div>
 
                     <div className="auth-field">
                         <label htmlFor="cardNumber">Card Number</label>
-                        <input type="text" id="cardNumber" name="cardNumber" value={formData.cardNumber} onChange={handleChange} placeholder="1234 5678 9123 4567" />
+                        <input type="text" id="register-cardNumber" name="cardNumber" value={formData.cardNumber} onChange={handleChange} placeholder="1234 5678 9123 4567" />
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px' }}>
                         <div className="auth-field" style={{ flex: 1 }}>
                             <label htmlFor="cardExpMonth">Expiry Month</label>
-                            <input id="cardExpMonth" name="cardExpMonth" className="expiry-input" value={formData.cardExpMonth} onChange={handleChange} placeholder="MM" />
+                            <input id="register-cardExpMonth" name="cardExpMonth" className="expiry-input" value={formData.cardExpMonth} onChange={handleChange} placeholder="MM" />
                         </div>
 
                         <div className="auth-field" style={{ flex: 1 }}>
                             <label htmlFor="cardExpYear">Expiry Year</label>
-                            <input id="cardExpYear" name="cardExpYear" className="expiry-input" value={formData.cardExpYear} onChange={handleChange} placeholder="YYYY" />
+                            <input id="register-cardExpYear" name="cardExpYear" className="expiry-input" value={formData.cardExpYear} onChange={handleChange} placeholder="YYYY" />
                         </div>
                     </div>
 
                     <div className="auth-field">
                         <label htmlFor="cardCVC">CVC</label>
-                        <input type="text" id="cardCVC" name="cardCVC" value={formData.cardCVC} onChange={handleChange} placeholder="CVC" />
+                        <input type="text" id="register-cardCVC" name="cardCVC" value={formData.cardCVC} onChange={handleChange} placeholder="CVC" />
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
-                        <button type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
-                        <button type="submit" className="auth-submit-btn">Finish</button>
+                        <button id="register-back-4" type="button" className="auth-submit-btn" onClick={goBack}>Back</button>
+                        <button id="register-finish" type="submit" className="auth-submit-btn">Finish</button>
                     </div>
                   </form>
                 )}

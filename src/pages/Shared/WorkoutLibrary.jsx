@@ -349,6 +349,7 @@ export default function WorkoutLibrary() {
             <div style={LIST_CONTAINER}>
                 {libraryData.map((workout) => (
                     <button
+                        id={`workout-${workout.title}`}
                         key={workout.id}
                         style={WORKOUT_BTN}
                         onClick={() => setSelectedWorkout(workout)}
@@ -358,7 +359,7 @@ export default function WorkoutLibrary() {
                     </button>
                 ))}
 
-                <button style={BACK_BTN} onClick={handleBack}>
+                <button id="back" style={BACK_BTN} onClick={handleBack}>
                     Back
                 </button>
             </div>
@@ -367,7 +368,7 @@ export default function WorkoutLibrary() {
             {selectedWorkout && (
                 <div style={MODAL_OVERLAY} onClick={() => setSelectedWorkout(null)}>
                     <div style={MODAL_CONTENT} onClick={(e) => e.stopPropagation()}>
-                        <button style={MODAL_CLOSE_BTN} onClick={() => setSelectedWorkout(null)}>
+                        <button id="close-workout" style={MODAL_CLOSE_BTN} onClick={() => setSelectedWorkout(null)}>
                             ×
                         </button>
 
@@ -405,11 +406,12 @@ export default function WorkoutLibrary() {
                                 style={{ padding: "8px", borderRadius: "5px", border: "none", backgroundColor: "#D9D9D9", color: "#000", fontWeight: "bold", outline: "none", cursor: "pointer" }}
                             >
                                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-                                    <option key={day} value={day}>{day}</option>
+                                    <option id={`select-${day}`} key={day} value={day}>{day}</option>
                                 ))}
                             </select>
 
                             <button
+                                id="add"
                                 onClick={handleAssignWorkout}
                                 style={{ marginLeft: "auto", padding: "10px 20px", backgroundColor: "#0c571b", color: "#000", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", boxShadow: "0 2px 5px rgba(0,0,0,0.2)" }}
                             >

@@ -127,6 +127,7 @@ export default function EditUsernameModal({ onClose }) {
                         <input
                             type="text"
                             placeholder="Enter new username"
+                            id="new-username"
                             value={newUsername}
                             onChange={(e) => setNewUsername(e.target.value)}
                             maxLength={50}
@@ -142,8 +143,8 @@ export default function EditUsernameModal({ onClose }) {
                     )}
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', marginTop: '20px' }}>
-                        <button type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
-                        <button type="submit" className="auth-submit-btn" disabled={isSubmitting}>
+                        <button id="username-cancel" type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
+                        <button id="username-submit" type="submit" className="auth-submit-btn" disabled={isSubmitting}>
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </button>
                     </div>

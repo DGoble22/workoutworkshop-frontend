@@ -76,8 +76,8 @@ export default function FireModal( {show, handleClose, name, id}){
                     <b>Are you sure you want to fire<br/>{name}</b>
                 </div>
                 <div style={{display:"flex", width:"100%", height:"100%", alignItems:"center", justifyContent:"center", gap:"10%"}}>
-                    <button onClick={handleClose} style={{border:"none", backgroundColor:"#2C2C2C", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>Back</button>
-                    <button disabled={buttonOmmited} onClick={fireCoach} style={{border:"none", backgroundColor:"#711A19", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>{conformation}</button>
+                    <button id="fire-cancel" onClick={handleClose} style={{border:"none", backgroundColor:"#2C2C2C", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>Back</button>
+                    <button id="fire-confirm" disabled={buttonOmmited} onClick={fireCoach} style={{border:"none", backgroundColor:"#711A19", height:"50%", width:"35%", borderRadius:"8px", color:"#ffffff"}}>{conformation}</button>
                 </div>
             </div>
         </div>

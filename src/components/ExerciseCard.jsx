@@ -128,19 +128,20 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
             <div style={HEADER_STYLES}>
                 {name} | {equipment}
                 {manage &&
-                    <button onClick={()=>handleDelete()} style={REMOVEBUTTON_STYLES}>-</button>
+                    <button id={`remove-${name}`} onClick={()=>handleDelete()} style={REMOVEBUTTON_STYLES}>-</button>
                 }
             </div>
 
             <div style={{display:"flex", width:"100%", height:"75%", alignItems:"center", paddingLeft:"10px"}}>{/*main body*/}
                 
-                <a style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
+                <a href={URL} style={{display:"flex", position:"relative", width:"45%", height:"90%", alignItems:"center", borderRadius:"15px", overflow:"hidden"}}> {/*video container*/}
                     <img  src={thumbnail} style={{width:"100%", maxWidth:"100%", height:"100%", objectFit:"fill"}} alt={"https://via.placeholder.com/120x80"}/>
                 </a>
                 <div style={{display:"flex", width:"55%", height:"90%", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:"10px", paddingLeft:"8px", paddingRight:"8px"}}> {/*work out info*/}
                     <div style={WORKOUTDATA_BARS}>
                         Reps:
                         <input
+                            id={`reps-${name}`}
                             onChange={(e) => {
                                 const onlyNumbers = e.target.value.replace(/\D/g, '');
                                 handleUpdate('reps', onlyNumbers);
@@ -155,6 +156,7 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
                     <div style={WORKOUTDATA_BARS}>
                         Sets:
                         <input
+                            id={`sets-${name}`}
                             onChange={(e) => {
                                 const onlyNumbers = e.target.value.replace(/\D/g, '');
                                 handleUpdate('sets', onlyNumbers);
@@ -169,6 +171,7 @@ export default function ExerciseCard({ URL, name, manage, handleDelete, handleUp
                     <div style={WORKOUTDATA_BARS}>
                         Weight:
                         <input
+                            id={`weight-${name}`}
                             onChange={(e) => {
                                 const onlyNumbers = e.target.value.replace(/\D/g, '');
                                 handleUpdate('weight', onlyNumbers);

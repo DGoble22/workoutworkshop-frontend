@@ -216,20 +216,20 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                         <Modal.Title>{coach?.name}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Button onClick={handleViewCoachInfo} style={{ display: 'block', margin: '0 auto' ,backgroundColor: "#711A19", borderColor: "#711A19"}}>View Profile</Button>
+                        <Button id="coach-profile" onClick={handleViewCoachInfo} style={{ display: 'block', margin: '0 auto' ,backgroundColor: "#711A19", borderColor: "#711A19"}}>View Profile</Button>
                         <h3 style={{textAlign: "center", marginTop: "10px"}}>Report Details</h3>
                         <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '16px', marginTop: '16px' }}>
                             <p>"{report?.reason}"</p>
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button style={{backgroundColor: "#14AE5C", borderColor: "#14AE5C"}} onClick={handleDismissReport}>
+                        <Button id="dismiss-report" style={{backgroundColor: "#14AE5C", borderColor: "#14AE5C"}} onClick={handleDismissReport}>
                             Dismiss Report
                         </Button>
-                        <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleDisableModal}>
+                        <Button id="disable-coach" style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleDisableModal}>
                             Disable Coach
                         </Button>
-                        <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleBanModal}>
+                        <Button id="ban-coach" style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleBanModal}>
                             Ban Coach
                         </Button>
                     </Modal.Footer>
@@ -244,18 +244,18 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                 <Modal.Body>
                     <p>Please provide the duration for disabling the account:</p>
                     <div className="d-flex justify-content-between">
-                        <input type="number" className="form-control me-2" placeholder="Day" value={disableDuration.day} onChange={(e) => setDisableDuration({ ...disableDuration, day: e.target.value })}/>
-                        <input type="number" className="form-control me-2" placeholder="Month" value={disableDuration.month} onChange={(e) => setDisableDuration({ ...disableDuration, month: e.target.value })}/>
-                        <input type="number" className="form-control" placeholder="Year" value={disableDuration.year} onChange={(e) => setDisableDuration({ ...disableDuration, year: e.target.value })}/>
+                        <input id="disable-day" type="number" className="form-control me-2" placeholder="Day" value={disableDuration.day} onChange={(e) => setDisableDuration({ ...disableDuration, day: e.target.value })}/>
+                        <input id="disable-month" type="number" className="form-control me-2" placeholder="Month" value={disableDuration.month} onChange={(e) => setDisableDuration({ ...disableDuration, month: e.target.value })}/>
+                        <input id="disable-year" type="number" className="form-control" placeholder="Year" value={disableDuration.year} onChange={(e) => setDisableDuration({ ...disableDuration, year: e.target.value })}/>
                     </div>
                     <p className="mt-3">Reason for disabling the account:</p>
-                    <textarea className="form-control" rows="3" value={disableReason} onChange={(e) => setDisableReason(e.target.value)} placeholder="Enter reason here..."/>
+                    <textarea id="diable-reason" className="form-control" rows="3" value={disableReason} onChange={(e) => setDisableReason(e.target.value)} placeholder="Enter reason here..."/>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleModalClose}>
+                    <Button id="disable-cancel" variant="secondary" onClick={handleModalClose}>
                         Cancel
                     </Button>
-                    <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleDisableConfirm}>
+                    <Button id="disable-confirm" style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleDisableConfirm}>
                         Confirm Disable
                     </Button>
                 </Modal.Footer>
@@ -268,13 +268,13 @@ export default function ViewCoachReportModal({show, handleClose, reportID}) {
                 </Modal.Header>
                 <Modal.Body>
                     <p>Please provide a reason for banning the account:</p>
-                    <textarea className="form-control" rows="3" value={banReason} onChange={(e) => setBanReason(e.target.value)} placeholder="Enter reason here..."/>
+                    <textarea id="ban-reason" className="form-control" rows="3" value={banReason} onChange={(e) => setBanReason(e.target.value)} placeholder="Enter reason here..."/>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleModalClose}>
+                    <Button id="cancel-ban" variant="secondary" onClick={handleModalClose}>
                         Cancel
                     </Button>
-                    <Button style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleBanConfirm}>
+                    <Button id="confirm-ban" style={{backgroundColor: "#711A19", borderColor: "#711A19"}} onClick={handleBanConfirm}>
                         Confirm Ban
                     </Button>
                 </Modal.Footer>

@@ -136,8 +136,8 @@ export default function EditPaymentDetailsModal({ onClose }) {
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between', marginTop: '20px' }}>
-                        <button type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
-                        <button type="submit" className="auth-submit-btn" disabled={isSubmitting}>
+                        <button id="cancel" type="button" className="auth-submit-btn" style={{ backgroundColor: '#6c757d' }} onClick={onClose}>Cancel</button>
+                        <button id="finish" type="submit" className="auth-submit-btn" disabled={isSubmitting}>
                             {isSubmitting ? 'Saving...' : 'Save'}
                         </button>
                     </div>

@@ -116,23 +116,21 @@ export default function ReportModal( {show, handleClose, id}){
     }
 
     return(
-        <div style={OVERLAY_STYLES}>
-            <div style={MODAL_STYLES}>
+        <div style={OVERLAY_STYLES} onClick={handleClose}>
+            <div style={MODAL_STYLES} onClick={(e) => e.stopPropagation()}>
                 <div style={HEADER_STYLES}>
                     <div style={{display:"flex", maxWidth:"100%", width:"100%", height:"75%", marginLeft:"25px", alignItems:"center", justifyContent:"center"}}>
                         <h3><b>REPORT</b></h3>
                     </div>
-                    <div style={{maxWidth:"100%", height:"100%", float:"right"}}>
-                        <button onClick={handleClose} style={CLOSEBUTTON_STYLES}> X </button>
-                    </div>
+
                 </div>
                 <div style={{display:"flex", marginLeft:"15px", float:"left", justifyContent:"left"}}>
                     Explain Report:
                 </div>
                 <div style={{display:"flex", height:"100%", minHeight:"100%", alignItems:"center", flexDirection:"column"}}>
-                    <textarea onChange={(e) => {setReport(e.target.value), setReportError(false)}} style={{width:"95%", height:"55%", overflowWrap:"break-word"}}/>
+                    <textarea id="report-text" onChange={(e) => {setReport(e.target.value), setReportError(false)}} style={{width:"95%", height:"55%", overflowWrap:"break-word"}}/>
                     <ReportError show={reportError}/>
-                    <button disabled={buttonOmmited} onClick={()=>validateReport()} style={{display:"flex", width:"95%", height:"10%", borderRadius:"5px", marginTop:"10px", color:"#ffffff", backgroundColor:"#2C2C2C", alignItems:"center", justifyContent:"center"}}> {reportButton} </button>
+                    <button id="submit-report" disabled={buttonOmmited} onClick={()=>validateReport()} style={{display:"flex", width:"95%", height:"10%", borderRadius:"5px", marginTop:"10px", color:"#ffffff", backgroundColor:"#2C2C2C", alignItems:"center", justifyContent:"center"}}> {reportButton} </button>
                 </div>
             </div>
         </div>

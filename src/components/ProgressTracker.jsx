@@ -99,7 +99,7 @@ const ProgressTracker = ({ userId, token }) => {
         <div className={styles.progressTracker}>
             <h3>My Progress Photos</h3>
             <p>Track pictures of your progress.</p>
-            <form onSubmit={handleUpload} className={styles.progressUploadForm}>
+            <form id="progress-photos" onSubmit={handleUpload} className={styles.progressUploadForm}>
                 {/* Photo Upload */}
                 <input id="progress-upload-input" type="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files[0])} style={{ display: 'none' }}/>
                 <label htmlFor="progress-upload-input" className={styles.progressUploadLabel}>
@@ -108,7 +108,7 @@ const ProgressTracker = ({ userId, token }) => {
 
                 {/* Upload Button */}
                 {selectedFile && (
-                    <button type="submit" disabled={loading} className={styles.progressUploadSubmit}>
+                    <button id="submit-photo" type="submit" disabled={loading} className={styles.progressUploadSubmit}>
                         {loading ? 'Uploading...' : 'Upload Now'}
                     </button>
                 )}
@@ -124,7 +124,7 @@ const ProgressTracker = ({ userId, token }) => {
                         <div key={pic.picture_id} className={styles.progressCard} style={{ position: 'relative' }}>
                             {/* Delete Button - Only shows in "Show All" mode or if less than 3 images */}
                             {(showAll || pictures.length <= 3) && (
-                                <button onClick={() => handleDelete(pic.picture_id)} className={styles.deleteBtn} title="Delete Photo">×</button>
+                                <button id={`delete-photo-${pic.id}`} onClick={() => handleDelete(pic.picture_id)} className={styles.deleteBtn} title="Delete Photo">×</button>
                             )}
 
                             {!showAll && pictures.length > 3 && (
@@ -143,7 +143,7 @@ const ProgressTracker = ({ userId, token }) => {
 
             <div className={styles.progressToggleRow}>
                 {pictures.length > 3 && (
-                    <button onClick={() => setShowAll(!showAll)} className={styles.progressToggleBtn}>
+                    <button id="highlights" onClick={() => setShowAll(!showAll)} className={styles.progressToggleBtn}>
                         {showAll ? 'Show Highlights' : `Show All ${pictures.length} Photos`}
                     </button>
                 )}

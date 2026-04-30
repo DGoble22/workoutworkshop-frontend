@@ -286,7 +286,7 @@ export default function Home() {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
             stars.push(
-                <span key={i} className={`star ${dailyRating >= i ? "selected" : ""}`} onClick={() => handleStarClick(i)}>
+                <span id={`star-${i}`} key={i} className={`star ${dailyRating >= i ? "selected" : ""}`} onClick={() => handleStarClick(i)}>
                     ★
                 </span>
             );
@@ -379,10 +379,10 @@ export default function Home() {
                             <p className="home-subtitle">Build plan, track goals, and connect with coaches.</p>
 
                             <div className="home-actions">
-                                <button type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
+                                <button id="home-login" type="button" className="home-auth-btn home-auth-btn-login" onClick={handleOpenLogin}>
                                     Login
                                 </button>
-                                <button type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
+                                <button id="home-register" type="button" className="home-auth-btn home-auth-btn-register" onClick={handleOpenRegister}>
                                     Register
                                 </button>
                             </div>
@@ -453,6 +453,7 @@ export default function Home() {
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
                             <button
                                 className="home-DOTW-card"
+                                id={`DOTW-${day}`}
                                 key={day}
                                 onClick={() => handleDayClick(day)}
                                 onMouseOver={(e) => e.target.style.transform = "scale(1.05)"} 
@@ -472,14 +473,8 @@ export default function Home() {
                             <h3>Workout Plan</h3>
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
-                                <button onClick={() => {
-                                    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-                                    const today = days[new Date().getDay()];
-                                    handleDayClick(today);
-                                }}>
-                                    Create a Plan
-                                </button>
-                                {hasCoach ? (<button onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+                                <button id="home-create-plan" onClick={()=>navigate("/workouts")}>Create a Plan</button>
+                                {hasCoach ? (<button id="home-coach" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" onClick={()=>navigate('/FindCoach')}>Get Coaching</button>)}
                             </div>
                         </div>
 
@@ -488,7 +483,7 @@ export default function Home() {
                                 <h3>Meal Plan</h3>
                                 <p>View the meal plan your coach created for you.</p>
                                 <div className="dashboard-card-actions">
-                                    <button onClick={() => navigate('/meal-plan')}>
+                                    <button id="view-mealplan" onClick={() => navigate('/meal-plan')}>
                                         View Meal Plan
                                     </button>
                                 </div>
@@ -517,14 +512,15 @@ export default function Home() {
 
                                 {/* Graph Tabs */}
                                 <select
+                                    id="graph-category"
                                     value={graphType}
                                     onChange={(e) => setGraphType(e.target.value)}
                                     style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", cursor: "pointer", fontWeight: "bold" }}
                                 >
-                                    <option value="Weight">Weight</option>
-                                    <option value="Workouts">Weekly Workouts</option>
-                                    <option value="Calories">Calories</option>
-                                    <option value="Surveys">Surveys</option>
+                                    <option id="graph-weight" value="Weight">Weight</option>
+                                    <option id="graph-workouts" value="Workouts">Weekly Workouts</option>
+                                    <option id="graph-calories" value="Calories">Calories</option>
+                                    <option id="graph-surveys" value="Surveys">Surveys</option>
                                 </select>
                             </div>
 
@@ -586,6 +582,7 @@ export default function Home() {
                         <div className="home-top-bar">
                             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
                                 <button
+                                    id={`DOTW-${day}`}
                                     className="home-DOTW-card"
                                     key={day}
                                     onClick={() => handleDayClick(day)}
@@ -609,11 +606,11 @@ export default function Home() {
                                     
                                     <div className="exercise-categories">In Progress</div>
                                     {inProgress.map((exercise,index)=>(
-                                        <button key={index} onClick={()=>completeExercise(index, exercise)}className="exercise-inprogress">{exercise.name}  {exercise.sets} X {exercise.reps}</button>
+                                        <button id={`complete-${exercise.name}`} key={index} onClick={()=>completeExercise(index, exercise)}className="exercise-inprogress">{exercise.name}  {exercise.sets} X {exercise.reps}</button>
                                     ))}
                                     <div className="exercise-categories">Completed</div>
                                     {completedExercises.map((exercise,index) =>
-                                        <button key={index} onClick={()=>completeExercise(index, exercise)} className="exercise-completed">{exercise.name}  {exercise.sets} X {exercise.reps}</button>
+                                        <button id={`complete-${exercise.name}`} key={index} onClick={()=>completeExercise(index, exercise)} className="exercise-completed">{exercise.name}  {exercise.sets} X {exercise.reps}</button>
                                     )}
                                 </div>
                             </div>
@@ -638,7 +635,7 @@ export default function Home() {
                                     <span>Workouts Completed</span>
                                 </div>
 
-                                 <button className="home-menu-button" onClick={() => handleMenuClick("/calendar")}>
+                                 <button id="calendar" className="home-menu-button" onClick={() => handleMenuClick("/calendar")}>
                                     {/* Calendar Icon */}
                                     <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -655,7 +652,7 @@ export default function Home() {
                                     </div>
                                 </button>
 
-                                {hasCoach ? (<button className="home-menu-button" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button className="home-menu-button" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+                                {hasCoach ? (<button id="home-coach" className="home-menu-button" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" className="home-menu-button" onClick={()=>navigate('/FindCoach')}>Get Coaching</button>)}
                             </div>
                             
                         </div>
@@ -665,7 +662,7 @@ export default function Home() {
                                     <h3>Meal Plan</h3>
                                     <p>View the meal plan your coach created for you.</p>
                                     <div className="dashboard-card-actions">
-                                        <button onClick={() => navigate('/meal-plan')}>
+                                        <button id="view-mealplan" onClick={() => navigate('/meal-plan')}>
                                             View Meal Plan
                                         </button>
                                     </div>
@@ -695,14 +692,15 @@ export default function Home() {
 
                                 {/* Graph Tabs */}
                                 <select
+                                    id="graph-category"
                                     value={graphType}
                                     onChange={(e) => setGraphType(e.target.value)}
                                     style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", cursor: "pointer", fontWeight: "bold" }}
                                 >
-                                    <option value="Weight">Weight</option>
-                                    <option value="Workouts">Weekly Workouts</option>
-                                    <option value="Calories">Calories</option>
-                                    <option value="Surveys">Surveys</option>
+                                    <option id="graph-weight" value="Weight">Weight</option>
+                                    <option id="graph-workouts" value="Workouts">Weekly Workouts</option>
+                                    <option id="graph-calories" value="Calories">Calories</option>
+                                    <option id="graph-surveys" value="Surveys">Surveys</option>
                                 </select>
                             </div>
 

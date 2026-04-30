@@ -84,8 +84,8 @@ export default function ReviewModal( {show, handleClose, coach_id, name} ){
             <div style={HEADER_STYLES}>
                 <h3>{name}</h3>
                 <div style={{display:"flex", float:"right", maxWidth:"100%", width:"100%", height:"75%", marginLeft:"10%", alignItems:"center", flexDirection:"row", justifyContent:"flex-end"}}>
-                    <button onClick={handleOpenLeaveReview} style={{borderRadius:"25px", marginRight:"5px"}}>Leave Review</button>
-                    <button onClick={handleClose} style={CLOSEBUTTON_STYLES}> X </button>
+                    <button id="leave-review" onClick={handleOpenLeaveReview} style={{borderRadius:"25px", marginRight:"5px"}}>Leave Review</button>
+                    <button id="close-reviews" onClick={handleClose} style={CLOSEBUTTON_STYLES}> X </button>
                 </div>
             </div>
             <div style={REVIEWSTEXT_STYLES}>

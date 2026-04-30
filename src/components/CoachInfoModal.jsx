@@ -198,23 +198,23 @@ function Header( { id, handleClose, handleOpenApply, handleOpenReport, handleOpe
         if (isHired) {
             return (
                 <>
-                    <button onClick={handleOpenReport} style={REPORTBUTTON_STYLES}>Report</button>
-                    <button onClick={handleOpenFire} style={FIREBUTTON_STYLES}>Fire</button>
-                    <button onClick={handleClose} style={TEMPButton_Styles}> X</button>
+                    <button id="coach-report" onClick={handleOpenReport} style={REPORTBUTTON_STYLES}>Report</button>
+                    <button id="coach-fire" onClick={handleOpenFire} style={FIREBUTTON_STYLES}>Fire</button>
+                    <button id="coach-close" onClick={handleClose} style={TEMPButton_Styles}> X</button>
                 </>
             )
         } else {
             if (!hasCoach) {
                 return (
                     <>
-                        <button onClick={handleOpenApply} style={APPLYBUTTON_STYLES}>Apply</button>
-                        <button onClick={handleClose} style={TEMPButton_Styles}> X</button>
+                        <button id="coach-apply" onClick={handleOpenApply} style={APPLYBUTTON_STYLES}>Apply</button>
+                        <button id="coach-close" onClick={handleClose} style={TEMPButton_Styles}> X</button>
                     </>
                 )
             } else {
                 return (
                     <>
-                        <button onClick={handleClose} style={TEMPButton_Styles}> X</button>
+                        <button id="coach-close" onClick={handleClose} style={TEMPButton_Styles}> X</button>
                     </>
                 )
             }
@@ -222,7 +222,7 @@ function Header( { id, handleClose, handleOpenApply, handleOpenReport, handleOpe
     }else {
         return (
             <>
-                <button onClick={handleClose} style={TEMPButton_Styles}> X</button>
+                <button id="coach-close" onClick={handleClose} style={TEMPButton_Styles}> X</button>
             </>
         )
     }
@@ -292,7 +292,7 @@ export default function CoachInfoModal( {show, handleClose, name, URL, price, ca
                             </div>{/*ROW1*/}
 
                         <div style={{display: "flex", width:"95%", height:"25%", marginTop:"20px", flexDirection:"row"}}>{/*Row2*/}
-                            <div style={REVIEW_STYLES} onClick={handleOpenReviews}> {/*REVIEWS*/}
+                            <div id="coach-reviews" style={REVIEW_STYLES} onClick={handleOpenReviews}> {/*REVIEWS*/}
                                 <h3>REVIEWS</h3>
                                 <div style={BIOTEXT_STYLES}/>
                             </div> {/*REVIEWS*/}

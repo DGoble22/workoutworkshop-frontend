@@ -133,6 +133,7 @@ function MealSection({ title, items, onAdd, onRemove, onUpdate }) {
                         <tr key={item.id}>
                             <td style={TD_STYLES}>
                                 <input
+                                    id={`${title}-fooditem`}
                                     style={INPUT_STYLES}
                                     value={item.food}
                                     onChange={e => onUpdate(item.id, "food", e.target.value)}
@@ -141,6 +142,7 @@ function MealSection({ title, items, onAdd, onRemove, onUpdate }) {
                             </td>
                             <td style={TD_STYLES}>
                                 <input
+                                    id={`${title}-portion`}
                                     style={INPUT_STYLES}
                                     value={item.portion}
                                     onChange={e => onUpdate(item.id, "portion", e.target.value)}
@@ -149,6 +151,7 @@ function MealSection({ title, items, onAdd, onRemove, onUpdate }) {
                             </td>
                             <td style={TD_STYLES}>
                                 <input
+                                    id={`${title}-cal`}
                                     style={{ ...INPUT_STYLES, width: "60px" }}
                                     type="number"
                                     value={item.calories === 0 ? "" : item.calories}
@@ -157,13 +160,13 @@ function MealSection({ title, items, onAdd, onRemove, onUpdate }) {
                                 />
                             </td>
                             <td style={TD_STYLES}>
-                                <button style={REMOVE_BTN_STYLES} onClick={() => onRemove(item.id)}>✕</button>
+                                <button id={`${title}-remove`} style={REMOVE_BTN_STYLES} onClick={() => onRemove(item.id)}>✕</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            <button style={ADD_BUTTON_STYLES} onClick={onAdd}>+ Add Food Item</button>
+            <button id={`add-${title}`}style={ADD_BUTTON_STYLES} onClick={onAdd}>+ Add Food Item</button>
         </div>
     )
 }
@@ -261,7 +264,7 @@ export default function CreateMealPlan({ onBack, client, coachId }) {
         }))
 
         try {
-            const res = await fetch(`${apiBase}/coach/meal-plan/${coachId}/${client.user_id}`, {
+            const res = await fetch(`${apiBase}/coach/save-meal-plan/${coachId}/${client.user_id}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ meals: mealsPayload })
@@ -284,7 +287,7 @@ export default function CreateMealPlan({ onBack, client, coachId }) {
             <div style={{ width: "100%", marginBottom: "20px", textAlign: "center" }}>
                 <h1 style={{ fontWeight: "800", textDecoration: "underline" }}>Create Meal Plan</h1>
                 {onBack && (
-                    <button onClick={onBack} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
+                    <button id="back-to-dash" onClick={onBack} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
                         ← Back to Dashboard
                     </button>
                 )}
@@ -298,6 +301,7 @@ export default function CreateMealPlan({ onBack, client, coachId }) {
             <div style={{ display: "flex", gap: "8px", width: "100%", marginBottom: "20px", flexWrap: "wrap" }}>
                 {DAYS.map(({ label, dow }) => (
                     <button
+                        id={`dotw-${label}`}
                         key={dow}
                         onClick={() => setSelectedDay(dow)}
                         style={{
@@ -336,7 +340,7 @@ export default function CreateMealPlan({ onBack, client, coachId }) {
             {error && <p style={{ color: "#cb0a0a", marginTop: "10px" }}>{error}</p>}
             {saveMessage && <p style={{ color: "#2e7d32", marginTop: "10px" }}>{saveMessage}</p>}
 
-            <button style={SAVE_BUTTON_STYLES} onClick={handleSave} disabled={saving}>
+            <button id="save-meal-plan" style={SAVE_BUTTON_STYLES} onClick={handleSave} disabled={saving}>
                 {saving ? "Saving..." : "Save Meal Plan"}
             </button>
         </div>
