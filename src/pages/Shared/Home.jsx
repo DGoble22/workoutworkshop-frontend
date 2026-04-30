@@ -474,7 +474,7 @@ export default function Home() {
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
                                 <button id="home-create-plan" onClick={()=>navigate("/workouts")}>Create a Plan</button>
-                                {hasCoach ? (<button id="home-coach" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+                                {hasCoach ? (<button id="home-coach" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" onClick={()=>navigate('/FindCoach')}>Get Coaching</button>)}
                             </div>
                         </div>
 
@@ -503,11 +503,6 @@ export default function Home() {
                             </div>
                         </div>
 
-<<<<<<< HEAD
-                        <div id="metrics" className="dashboard-card-progress-metric">
-                            <h3>Progress Metrics</h3>
-                            <p>Review trends in performance, weight, and goal progress over time.</p>
-=======
                         <div className="dashboard-card-progress-metric">
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "15px" }}>
                                 <div style={{ textAlign: "center"}}>
@@ -517,18 +512,18 @@ export default function Home() {
 
                                 {/* Graph Tabs */}
                                 <select
+                                    id="graph-category"
                                     value={graphType}
                                     onChange={(e) => setGraphType(e.target.value)}
                                     style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", cursor: "pointer", fontWeight: "bold" }}
                                 >
-                                    <option value="Weight">Weight</option>
-                                    <option value="Workouts">Weekly Workouts</option>
-                                    <option value="Calories">Calories</option>
-                                    <option value="Surveys">Surveys</option>
+                                    <option id="graph-weight" value="Weight">Weight</option>
+                                    <option id="graph-workouts" value="Workouts">Weekly Workouts</option>
+                                    <option id="graph-calories" value="Calories">Calories</option>
+                                    <option id="graph-surveys" value="Surveys">Surveys</option>
                                 </select>
                             </div>
 
->>>>>>> 8933fd0f03b50870de913bceda325defaa646dc8
                             <div style={{ display: "flex", width: "100%", minWidth: 280, height: 220, alignItems: "center", justifyContent: "center" }}>
                                 <ResponsiveContainer width="100%" height={220} minWidth={280}>
 
@@ -657,7 +652,7 @@ export default function Home() {
                                     </div>
                                 </button>
 
-                                {hasCoach ? (<button id="home-coach" className="home-menu-button" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" className="home-menu-button" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
+                                {hasCoach ? (<button id="home-coach" className="home-menu-button" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" className="home-menu-button" onClick={()=>navigate('/FindCoach')}>Get Coaching</button>)}
                             </div>
                             
                         </div>
@@ -697,14 +692,15 @@ export default function Home() {
 
                                 {/* Graph Tabs */}
                                 <select
+                                    id="graph-category"
                                     value={graphType}
                                     onChange={(e) => setGraphType(e.target.value)}
                                     style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", cursor: "pointer", fontWeight: "bold" }}
                                 >
-                                    <option value="Weight">Weight</option>
-                                    <option value="Workouts">Weekly Workouts</option>
-                                    <option value="Calories">Calories</option>
-                                    <option value="Surveys">Surveys</option>
+                                    <option id="graph-weight" value="Weight">Weight</option>
+                                    <option id="graph-workouts" value="Workouts">Weekly Workouts</option>
+                                    <option id="graph-calories" value="Calories">Calories</option>
+                                    <option id="graph-surveys" value="Surveys">Surveys</option>
                                 </select>
                             </div>
 

@@ -75,6 +75,63 @@ if __name__ == "__main__":
     time.sleep(3)
     driver.find_element(By.ID, "request-accept-UITest last name").click()
     time.sleep(1)
+
+    driver.find_element(By.ID, "nav-home").click()
+    time.sleep(2)
+    driver.find_element(By.ID, "nav-coach").click()
+    time.sleep(3)
+
+    driver.find_element(By.ID, "mealplan-UITest last name").click()
+    time.sleep(1)
+
+    driver.find_element(By.ID, "dotw-Wednesday").click()
+    time.sleep(1.5)
+
+    driver.find_element(By.ID, "dotw-Monday").click()
+    time.sleep(1.5)
+
+    #breakfast
+    driver.find_element(By.ID, "add-Breakfast").click()
+    time.sleep(1)
+
+    bFood=driver.find_element(By.ID, "Breakfast-fooditem")
+    bFood.send_keys("Eggs")
+    bPortion=driver.find_element(By.ID, "Breakfast-portion")
+    bPortion.send_keys("3")
+    bCals=driver.find_element(By.ID, "Breakfast-cal")
+    bCals.send_keys("180")
+    time.sleep(1)
+
+    #lunch
+    driver.find_element(By.ID, "add-Lunch").click()
+    time.sleep(1)
+
+    bFood=driver.find_element(By.ID, "Lunch-fooditem")
+    bFood.send_keys("chicken")
+    bPortion=driver.find_element(By.ID, "Lunch-portion")
+    bPortion.send_keys("300g")
+    bCals=driver.find_element(By.ID, "Lunch-cal")
+    bCals.send_keys("450")
+    time.sleep(1)
+
+    #dinner
+    driver.find_element(By.ID, "add-Dinner").click()
+    time.sleep(1)
+
+    bFood=driver.find_element(By.ID, "Dinner-fooditem")
+    bFood.send_keys("Pasta")
+    bPortion=driver.find_element(By.ID, "Dinner-portion")
+    bPortion.send_keys("300g")
+    bCals=driver.find_element(By.ID, "Dinner-cal")
+    bCals.send_keys("600")
+    time.sleep(1)
+    driver.find_element(By.ID, "save-meal-plan").click()
+    time.sleep(2)
+
+    #back to dash
+    driver.find_element(By.ID, "back-to-dash").click()
+    time.sleep(1)
+
     driver.find_element(By.ID, "nav-user-logo").click()
     time.sleep(1)
     driver.find_element(By.ID, "nav-signout").click()
@@ -83,19 +140,6 @@ if __name__ == "__main__":
     time.sleep(1)
     login(driver, "UItest", "Correctpass123")
     time.sleep(2)
-
-    #fire current coach
-    driver.find_element(By.ID, "home-coach").click()
-    time.sleep(1)
-    driver.find_element(By.ID, "coach-fire").click()
-    time.sleep(1)
-    driver.find_element(By.ID, "fire-confirm").click()
-    time.sleep(1)
-    driver.find_element(By.ID, "fire-cancel").click()
-    time.sleep(1)
-
-    driver.find_element(By.ID, "coach-close").click()
-    time.sleep(1)
 
     driver.find_element(By.ID, "home-create-plan").click()
     time.sleep(1.5)
@@ -130,10 +174,7 @@ if __name__ == "__main__":
     time.sleep(1.5)
     driver.find_element(By.ID, "nav-home").click()
     time.sleep(2)
-    driver.find_element(By.ID, "home-coach").click()
-    time.sleep(2)
-    driver.find_element(By.ID, "nav-home").click()
-    time.sleep(2)
+
 
     #view meal plan
     element=driver.find_element(By.ID, "star-3")
@@ -145,8 +186,21 @@ if __name__ == "__main__":
     time.sleep(2)
     driver.find_element(By.ID, "mealplan-M").click()
     time.sleep(2)
+
     driver.find_element(By.ID, "back").click()
     time.sleep(2.5)
+
+    #fire coach
+    driver.find_element(By.ID, "home-coach").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "coach-fire").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "fire-confirm").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "fire-cancel").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "coach-close").click()
+    time.sleep(1)
 
     #upload progress pic
     element=driver.find_element(By.ID, "star-3")
@@ -172,6 +226,24 @@ if __name__ == "__main__":
     driver.find_element(By.ID, "star-5").click()
     time.sleep(1)
 
+    #graphs
+    element=driver.find_element(By.ID, "graph-category")
+    actions.move_to_element(element).perform()
+    time.sleep(1)
+    element.click()
+    time.sleep(1)
+    driver.find_element(By.ID, "graph-workouts").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "graph-category").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "graph-calories").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "graph-category").click()
+    time.sleep(1)
+    driver.find_element(By.ID, "graph-surveys").click()
+    time.sleep(1)
+
+    #scroll up
     element=driver.find_element(By.ID, "nav-user-logo")
     action.scroll_to_element(element).perform()
     time.sleep(1)
@@ -205,4 +277,5 @@ if __name__ == "__main__":
 
     subprocess.run(["npx", "nyc", "report", 
     "-n", "src/pages/Shared/Home.jsx", 
-    "-n", "src/components/ProgressTracker.jsx"], check=True, shell=True)
+    "-n", "src/components/ProgressTracker.jsx",
+    "-n", "src/pages/Shared/UserMealPlan.jsx"], check=True, shell=True)

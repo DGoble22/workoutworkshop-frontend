@@ -264,7 +264,7 @@ export default function CreateMealPlan({ onBack, client, coachId }) {
         }))
 
         try {
-            const res = await fetch(`${apiBase}/coach/meal-plan/${coachId}/${client.user_id}`, {
+            const res = await fetch(`${apiBase}/coach/save-meal-plan/${coachId}/${client.user_id}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ meals: mealsPayload })

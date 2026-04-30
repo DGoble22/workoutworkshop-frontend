@@ -245,6 +245,15 @@ if __name__ == "__main__":
     driver.find_element(By.ID, "save-meal-plan").click()
     time.sleep(2)
 
+    driver.find_element(By.ID, "Dinner-remove").click()
+    time.sleep(1.5)
+    driver.find_element(By.ID, "Lunch-remove").click()
+    time.sleep(1.5)
+    driver.find_element(By.ID, "Breakfast-remove").click()
+    time.sleep(1.5)
+    driver.find_element(By.ID, "save-meal-plan").click()
+    time.sleep(2)
+
     #back to dash
     driver.find_element(By.ID, "back-to-dash").click()
     time.sleep(1)
