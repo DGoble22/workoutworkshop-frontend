@@ -50,7 +50,7 @@ export default function FindCoach() {
     const [unfiltered, setUnFiltered] = useState([]); //stores all coaches pulled from backend
     const [filtered, setFiltered] = useState([]); //stores the filtered results
     const [searchTerm, setSearchTerm] = useState("");
-    const [category, setCategory] = useState("all"); // "all", "strength", or "nutritionist"
+    const [category, setCategory] = useState("all"); // all, strength, or nutritionist
 
     const apiBase = import.meta.env.VITE_API_URL;
     useEffect(() => {
@@ -61,7 +61,7 @@ export default function FindCoach() {
 
 
     useEffect(() => {
-        let data = [...unfiltered]; //restore data to a copy of unfiltered
+        let data = [...unfiltered] //restore data to a copy of unfiltered
         if (searchTerm) {
             // set data after search term
             data = data.filter(coach => 
@@ -71,29 +71,29 @@ export default function FindCoach() {
 
         // filter coaches based on filter
         if (category === "strength") {
-            data = data.filter(coach => coach["is_nutritionist"] === 0);
+            data = data.filter(coach => coach["is_nutritionist"] === 0)
         } else if (category === "nutritionist") {
-            data = data.filter(coach => coach["is_nutritionist"] === 1);
+            data = data.filter(coach => coach["is_nutritionist"] === 1)
         }
 
         setFiltered(data);
-    }, [searchTerm, category, unfiltered]);
+    }, [searchTerm, category, unfiltered])
 
     function handleSearch(e) {
-        setSearchTerm(e.target.value);
+        setSearchTerm(e.target.value)
     }
 
     function filterStrength() {
-        setCategory("strength");
+        setCategory("strength")
     }
 
     function filterNutritionist() {
-        setCategory("nutritionist");
+        setCategory("nutritionist")
     }
 
     function clearFilter() {
-        setSearchTerm("");
-        setCategory("all");
+        setSearchTerm("")
+        setCategory("all")
     }
 
 
