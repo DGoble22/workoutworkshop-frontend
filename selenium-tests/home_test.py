@@ -135,7 +135,19 @@ if __name__ == "__main__":
     driver.find_element(By.ID, "nav-home").click()
     time.sleep(2)
 
-   
+    #view meal plan
+    element=driver.find_element(By.ID, "star-3")
+    actions.move_to_element(element).perform()
+    time.sleep(1)
+    driver.find_element(By.ID, "view-mealplan").click()
+    time.sleep(3)
+    driver.find_element(By.ID, "mealplan-TH").click()
+    time.sleep(2)
+    driver.find_element(By.ID, "mealplan-M").click()
+    time.sleep(2)
+    driver.find_element(By.ID, "back").click()
+    time.sleep(2.5)
+
     #upload progress pic
     element=driver.find_element(By.ID, "star-3")
     actions.move_to_element(element).perform()

@@ -121,7 +121,7 @@ export default function UserMealPlan() {
     if (error) return (
         <div style={{ textAlign: "center", padding: "40px" }}>
             <p style={{ color: "#888" }}>{error}</p>
-            <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", color: "#cb0a0a", cursor: "pointer", fontWeight: "600" }}>
+            <button id="back" onClick={() => navigate(-1)} style={{ background: "none", border: "none", color: "#cb0a0a", cursor: "pointer", fontWeight: "600" }}>
                 ← Back
             </button>
         </div>
@@ -136,7 +136,7 @@ export default function UserMealPlan() {
             <div style={PAGE_STYLES}>
                 <div style={{ width: "100%", marginBottom: "20px", textAlign: "center" }}>
                     <h1 style={{ fontWeight: "800", textDecoration: "underline" }}>My Meal Plan</h1>
-                    <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
+                    <button id="back" onClick={() => navigate(-1)} style={{ background: "none", border: "none", color: "#711A19", cursor: "pointer", fontWeight: "600" }}>
                         ← Back
                     </button>
                 </div>
@@ -145,6 +145,7 @@ export default function UserMealPlan() {
                     {DAYS.map(({ label, dow }) => (
                         <button
                             key={dow}
+                            id={`mealplan-${dow}`}
                             onClick={() => setSelectedDay(dow)}
                             style={{
                                 padding: "8px 16px",

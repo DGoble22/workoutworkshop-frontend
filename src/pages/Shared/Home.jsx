@@ -473,19 +473,8 @@ export default function Home() {
                             <h3>Workout Plan</h3>
                             <p>You have no selected workout plan.</p>
                             <div className="dashboard-card-actions">
-<<<<<<< HEAD
                                 <button id="home-create-plan" onClick={()=>navigate("/workouts")}>Create a Plan</button>
                                 {hasCoach ? (<button id="home-coach" onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button id="home-coach" onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
-=======
-                                <button onClick={() => {
-                                    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-                                    const today = days[new Date().getDay()];
-                                    handleDayClick(today);
-                                }}>
-                                    Create a Plan
-                                </button>
-                                {hasCoach ? (<button onClick={()=>handleOpenCoach()}>Your Coach</button>) : (<button onClick={()=>navigate('/findCoach')}>Get Coaching</button>)}
->>>>>>> 1a5715f0eae9488f5f08d4c5c866cc7a3594d860
                             </div>
                         </div>
 
@@ -494,7 +483,7 @@ export default function Home() {
                                 <h3>Meal Plan</h3>
                                 <p>View the meal plan your coach created for you.</p>
                                 <div className="dashboard-card-actions">
-                                    <button onClick={() => navigate('/meal-plan')}>
+                                    <button id="view-mealplan" onClick={() => navigate('/meal-plan')}>
                                         View Meal Plan
                                     </button>
                                 </div>
@@ -619,7 +608,7 @@ export default function Home() {
                                     <h3>Meal Plan</h3>
                                     <p>View the meal plan your coach created for you.</p>
                                     <div className="dashboard-card-actions">
-                                        <button onClick={() => navigate('/meal-plan')}>
+                                        <button id="view-mealplan" onClick={() => navigate('/meal-plan')}>
                                             View Meal Plan
                                         </button>
                                     </div>
