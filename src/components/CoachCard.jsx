@@ -11,7 +11,7 @@ import threestars from "../images/3_star_NOBG.png"
 import fourstars from "../images/4_star_NOBG.png"
 import fivestars from "../images/5_star_NOBG.png"
 
-import DefaultProfilePic from '../images/DefaultProfile.jpg'
+import DefaultProfilePic from '../images/defaultProfile.jpg'
 
 
 /*
