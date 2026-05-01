@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import Image from 'react-bootstrap/Image';
-import DefaultProfilePic from '../images/DefaultProfile.jpg'
+import DefaultProfilePic from '../images/defaultProfile.jpg'
 import axios from 'axios'
 
 import DOTWvailibility from './DOTWavailibility'
