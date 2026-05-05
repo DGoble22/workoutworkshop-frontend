@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
   // Ref to hold the auto-logout timer id
   const logoutTimerRef = useRef(null);
 
-  // Socket Lifecycle
+  /* Socket Lifecycle
   useEffect(() => {
     let newSocket = null;
 
@@ -94,6 +94,7 @@ export function AuthProvider({ children }) {
       }
     };
   }, [token, user]);
+  */
 
   // Persist token to localStorage whenever it changes
   useEffect(() => {
