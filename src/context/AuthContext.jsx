@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
   // Ref to hold the auto-logout timer id
   const logoutTimerRef = useRef(null);
 
-  // Socket Lifecycle
+  //Socket Lifecycle
   useEffect(() => {
     let newSocket = null;
 
@@ -69,6 +69,8 @@ export function AuthProvider({ children }) {
       if (currentUserId) {
         newSocket = io(import.meta.env.VITE_API_URL, {
           query: { user_id: currentUserId },
+          transports: ["websocket"],
+          upgrade: false,
         });
 
         setSocket(newSocket);
