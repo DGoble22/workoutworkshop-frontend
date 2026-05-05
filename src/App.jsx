@@ -3,7 +3,7 @@ import {BrowserRouter, Routes, Route, useLocation} from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import ChatModal from "./components/ChatModal.jsx";
 import {Toaster} from "react-hot-toast";
-import {AuthContext} from "./context/authContext";
+import {AuthContext} from "./context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 
