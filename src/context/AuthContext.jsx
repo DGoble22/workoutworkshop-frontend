@@ -69,6 +69,8 @@ export function AuthProvider({ children }) {
       if (currentUserId) {
         newSocket = io(import.meta.env.VITE_API_URL, {
           query: { user_id: currentUserId },
+          transports: ["websocket"],
+          upgrade: false,
         });
 
         setSocket(newSocket);
