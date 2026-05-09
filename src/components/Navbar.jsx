@@ -74,19 +74,19 @@ const Navbar = () => {
                 setShowUploadModal(true);
                 break;
             case 'username':
-                setShowUsernameModal(true); // Open the modal
+                setShowUsernameModal(true);
                 break;
             case 'password':
-                setShowPasswordModal(true); // <--- Open the modal
+                setShowPasswordModal(true);
                 break;
             case 'goals':
-                setShowGoalsModal(true); // <--- Open the modal
+                setShowGoalsModal(true);
                 break;
             case 'payment':
                 setShowPaymentDetailsModal(true);
                 break;
             case 'delete':
-                setShowDeleteModal(true); // <--- Open the modal
+                setShowDeleteModal(true);
                 break;
             case 'logout':
                 handleLogout();
@@ -95,18 +95,19 @@ const Navbar = () => {
                 break;
         }
     };
+
     return (
         <>
         <nav className="navbar navbar-expand navbar-dark navbar-gradient shadow-lg">
-            <div className="container-fluid px-4" style={{ display: 'flex', alignItems: 'center' }}>
+            {/* Added relative positioning and space-between to the main container */}
+            <div className="container-fluid px-4" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
 
-                {/* Logo */}
-                <Link id="nav-logo" to="/" className="navbar-brand fw-bold fs-3">Workout Workshop</Link>
+                {/* Left Side: Logo */}
+                <Link id="nav-logo" to="/" className="navbar-brand fw-bold fs-3 m-0">Workout Workshop</Link>
 
-                {/* Navbar center links */}
-                <div className="collapse navbar-collapse">
-                    {isAuthenticated && (
-                    <ul className="navbar-nav mx-auto gap-2">
+                {/* Center Side: Links (Absolutely Centered) */}
+                {isAuthenticated && (
+                    <ul className="navbar-nav gap-2" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'row' }}>
                         <li id="nav-home" className="nav-item">
                             <Link to="/" className={`nav-link px-4 py-2 rounded-pill fw-semibold ${location.pathname === '/' ? 'active' : ''}`}>
                                 Home
@@ -132,9 +133,10 @@ const Navbar = () => {
                         </li>
                         )}
                     </ul>
-                    )}
+                )}
 
-                    {/* Conditional rendering of auth buttons / profile icon */}
+                {/* Right Side: Conditional rendering of auth buttons / profile icon */}
+                <div className="navbar-right-controls d-flex align-items-center">
                     {!isAuthenticated ? (
                         <div className="navbar-auth-right">
                             <button id="nav-login" className="nav-button me-2" onClick={handleOpenLogin}>Login</button>
@@ -199,5 +201,4 @@ const Navbar = () => {
     );
 };
 
-
-export default Navbar
+export default Navbar;
